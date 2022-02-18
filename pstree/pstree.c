@@ -16,13 +16,13 @@ Options state;
 int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     assert(argv[i]);
-    printf("argv[%d] = %s\n", i, argv[i]);
+    //printf("argv[%d] = %s\n", i, argv[i]);
     if(strcmp(argv[i],"-V")==0)state.version=1;
     else if(strcmp(argv[i],"-p")==0)state.show_pids=1;
     else if(strcmp(argv[i],"-n")==0)state.numeric_sort=1;
     else {
-      printf("error cle option.\n");
-      assert(0);
+      printf("pstree: invalid option -- '%s'\n",argv[i]);
+      return 0;
     }
   }
   assert(!argv[argc]);
