@@ -14,7 +14,7 @@ typedef struct {
 Options state;
 
 int main(int argc, char *argv[]) {
-  for (int i = 0; i < argc; i++) {
+  for (int i = 1; i < argc; i++) {
     assert(argv[i]);
     printf("argv[%d] = %s\n", i, argv[i]);
     if(strcmp(argv[i],"-V")==0)state.version=1;
