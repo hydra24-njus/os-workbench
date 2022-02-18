@@ -29,6 +29,6 @@ int main(int argc, char *argv[]) {
   if(state.version){
     perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
     return 0;
-    
+  }
   return 0;
 }
