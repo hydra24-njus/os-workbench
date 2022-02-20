@@ -31,15 +31,11 @@ int readprocessfolder(){
   DIR *pDir=opendir("/proc");
   struct dirdent *pEnt;
   if(pDir==NULL){perror("error in readprocessfolder.\n");assert(0);}
-  while(1){
-    pEnt=readdir(pDir);
-    if(pEnt!=NULL){
-      if(pEnt->d_type!=DT_DIR)continue;
-      if(!isdigitstr(pEnt->d_name))continue;
-      //all process folder here.
-      sscanf(pEnt->d_name,"%d",procpid[count++]);
-    }
-    else break;
+  while(pEnt=readdir(pDir)!=NULL){
+    if(pEnt->d_type!=DT_DIR)continue;
+    if(!isdigitstr(pEnt->d_name))continue;
+    //all process folder here.
+    sscanf(pEnt->d_name,"%d",procpid[count++]);
   }
   closedir(pDir);
   return count;
