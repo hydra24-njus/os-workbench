@@ -55,6 +55,7 @@ int getprocess(int n){
     int k=0;
     while(buf[k++]!=' ');
     int k1=k;
+    printf("%s\n",buf+k);
     while(buf[k1++]!=')');
     strncpy(process[cnt].name,buf+k+1,k1-k-2);
     //printf("%s\n",buf+k1+1);
@@ -89,6 +90,6 @@ int main(int argc, char *argv[]) {
   }
   int n=getprocessfolder();
   n=getprocess(n);
-  for(int i=0;i<n;i++)if(process[i].ppid==0)print_tree(i,0);
+  //for(int i=0;i<n;i++)if(process[i].ppid==0)print_tree(i,0);
   return 0;
 }
