@@ -68,7 +68,9 @@ int getprocess(int n){
 }
 
 void print_tree(int root,int deep){
+  for(int i=0;i<deep;i++)printf(" ");
   printf("%s\t%d\n",process[root].name,process[root].pid);
+  for(int i=0;i<1024;i++)if(process[i].ppid==process[root].pid)print_tree(i,deep+1);
 }
 
 int main(int argc, char *argv[]) {
