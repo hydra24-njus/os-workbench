@@ -28,16 +28,16 @@ static int isdigitstr(char *str){
 
 int readprocessfolder(){
   int cnt=0;
-  DIR *Dir=opendir("/proc");
+  DIR *D=opendir("/proc");
   struct dirdent *dir;
-  if(Dir==NULL){perror("error in readprocessfolder.\n");assert(0);}
-  while((dir=readdir(Dir))!=NULL){
+  if(D==NULL){perror("error in readprocessfolder.\n");assert(0);}
+  while((dir=readdir(D))!=NULL){
     if(dir->d_type!=DT_DIR)continue;
     if(!isdigitstr(dir->d_name))continue;
     //all process folder here.
     sscanf(dir->d_name,"%d",procpid[cnt++]);
   }
-  closedir(Dir);
+  closedir(D);
   return cnt;
 }
 
