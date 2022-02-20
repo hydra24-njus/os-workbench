@@ -35,7 +35,7 @@ int readprocessfolder(){
     if(dir->d_type!=DT_DIR)continue;
     if(!isdigitstr(dir->d_name))continue;
     //all process folder here.
-    sscanf(dir->d_name,"%d",procpid[cnt++]);
+    sscanf(dir->d_name,"%d",&procpid[cnt++]);
   }
   closedir(d);
   return cnt;
