@@ -20,7 +20,7 @@ typedef struct {
 }Options;
 
 Options cli;
-Process process;
+Process process[1024];
 int procpid[1024];
 
 
