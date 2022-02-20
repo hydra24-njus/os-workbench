@@ -28,7 +28,7 @@ static int isdigitstr(char *str){
 
 int readprocessfolder(){
   int counter=0;
-  DIR *d = opendir(PROC);
+  DIR *d = opendir("/proc");
   struct dirent *dir;
   if(d==NULL){perror("error in readprocessfolder.\n");assert(0);}
   while ((dir = readdir(d)) != NULL) {
