@@ -54,13 +54,8 @@ int getprocess(int n){
     sscanf(buf,"%d",&process[cnt].pid);
     int k=0;
     while(buf[k++]!=' ');
-    int k1=k+2;int pp=1;
-    while(1){
-      if(buf[k1]=='(')pp++;
-      else if(buf[k1]==')')pp--;
-      if(pp==0)break;
-      k1++;
-    }
+    int k1=k;
+    while(buf[k1++]!=')');
     strncpy(process[cnt].name,buf+k+1,k1-k-2);
     //printf("%s\n",buf+k1+1);
     sscanf(buf+k1+1,"%c %d",&process[cnt].state,&process[cnt].ppid);
@@ -72,8 +67,7 @@ int getprocess(int n){
 }
 
 void print_tree(int root,int deep){
-  for(int i=0;i<deep;i++)putchar(' ');
-  printf("%s %d\n",process[root].name,process[root].pid);
+printf("%s\t%d\n",process[root].name,process[root].pid);
 }
 
 int main(int argc, char *argv[]) {
