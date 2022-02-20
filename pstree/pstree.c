@@ -56,7 +56,8 @@ int getprocess(int n){
     while(buf[k++]!=' ');
     int k1=k;
     printf("%s\n",buf+k);
-    while(buf[k1++]!=')');
+    while(isdigit(buf[k1++]));
+    while(buf[k1--]!=')');
     strncpy(process[cnt].name,buf+k+1,k1-k-2);
     //printf("%s\n",buf+k1+1);
     sscanf(buf+k1+1,"%c %d",&process[cnt].state,&process[cnt].ppid);
