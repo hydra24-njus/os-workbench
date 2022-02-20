@@ -59,6 +59,7 @@ int getprocess(int n){
       if(buf[k1]=='(')pp++;
       else if(buf[k1]==')')pp--;
       if(pp==0)break;
+      k1++;
     }
     strncpy(process[cnt].name,buf+k+1,k1-k-2);
     //printf("%s\n",buf+k1+1);
