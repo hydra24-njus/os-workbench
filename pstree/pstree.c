@@ -34,10 +34,10 @@ int readprocessfolder(){
   while(1){
     pEnt=readdir(pDir);
     if(pEnt!=NULL){
-      if(dir->d_type!=DT_DIR)continue;
-      if(!isdigitstr(dir->d_name))continue;
+      if(pEnt->d_type!=DT_DIR)continue;
+      if(!isdigitstr(pEnt->d_name))continue;
       //all process folder here.
-      sscanf(dir->d_name,"%d",procpid[count++]);
+      sscanf(pEnt->d_name,"%d",procpid[count++]);
     }
     else break;
   }
