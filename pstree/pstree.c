@@ -51,9 +51,9 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     assert(argv[i]);
     //printf("argv[%d] = %s\n", i, argv[i]);
-    if(strcmp(argv[i],"-V")==0)state.version=1;
-    else if(strcmp(argv[i],"-p")==0)state.show_pids=1;
-    else if(strcmp(argv[i],"-n")==0)state.numeric_sort=1;
+    if(strcmp(argv[i],"-V")==0)cli.version=1;
+    else if(strcmp(argv[i],"-p")==0)cli.show_pids=1;
+    else if(strcmp(argv[i],"-n")==0)cli.numeric_sort=1;
     else {
       printf("pstree: invalid option -- '%s'\n",argv[i]);
       return 0;
