@@ -31,7 +31,7 @@ int readprocessfolder(){
   DIR *pDir=opendir("/proc");
   struct dirdent *dir;
   if(pDir==NULL){perror("error in readprocessfolder.\n");assert(0);}
-  while ((dir = readdir(d)) != NULL) {
+  while ((dir = readdir(pDir)) != NULL) {
     if(dir->d_type!=DT_DIR)continue;
     if(!isdigitstr(dir->d_name))continue;
     //all process folder here.
