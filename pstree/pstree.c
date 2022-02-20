@@ -67,7 +67,7 @@ int getprocess(int n){
 }
 
 void print_tree(int root,int deep){
-  for(int i=0;i<deep;i++)putc(' ');
+  for(int i=0;i<deep;i++)putchar(' ');
   printf("%s\n",process[root].name);
 }
 
