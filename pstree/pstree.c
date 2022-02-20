@@ -26,7 +26,7 @@ static int isdigitstr(char *str){
 }
 
 int readprocessfolder(){
-  usigned int count=0;
+  int count=0;
   DIR *pDir=NULL;
   struct dirdent * pEnt =NULL;
   pDir=opendir("/proc");
