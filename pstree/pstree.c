@@ -22,11 +22,12 @@ typedef struct {
 Options cli;
 Process process;
 int procpid[1024];
-static int isdigitstr(char *str){
-  return (strspn(str,"0123456789")==strlen(str));
-}
 
-int readprocessfolder(){
+
+
+static int isdigitstr(char *str){return (strspn(str,"0123456789")==strlen(str));}
+
+int getprocessfolder(){
   int cnt=0;
   DIR *d=opendir("/proc");
   struct dirent *dir;
@@ -34,10 +35,23 @@ int readprocessfolder(){
   while((dir=readdir(d))!=NULL){
     if(dir->d_type!=DT_DIR)continue;
     if(!isdigitstr(dir->d_name))continue;
-    //all process folder here.
     sscanf(dir->d_name,"%d",&procpid[cnt++]);
   }
   closedir(d);
+  return cnt;
+}
+
+int getprocess(int n){
+  int cnt=0;
+  char buf[1024];
+  char path[64];
+  for(int i=0;i<n;i++){
+    sprintf(path,"/proc/%d/stat",procpid[i]);
+    FILE *fp=fopen(path,"r");
+    if(fp==NULL){perror("%d:process not exit.\n",procpid[i]);assert(0);}
+    fget(buf,sizeof(buf),fp);
+    fclose(fp);
+    printf("%s\n",buf);
   return cnt;
 }
 
@@ -60,7 +74,7 @@ int main(int argc, char *argv[]) {
     perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
     return 0;
   }
-  int n=readprocessfolder();
-  for(int i=0;i<n;i++)printf("%d\n",procpid[i]);
+  int n=getprocessfolder();
+  getprocess(n);
   return 0;
 }
