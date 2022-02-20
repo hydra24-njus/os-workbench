@@ -65,6 +65,6 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   int n=readprocessfolder();
-  for(inti=0;i<n;i++)printf("%d\n",propid[i]);
+  for(int i=0;i<n;i++)printf("%d\n",procpid[i]);
   return 0;
 }
