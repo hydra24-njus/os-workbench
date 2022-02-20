@@ -43,7 +43,7 @@ int getprocessfolder(){
 
 int getprocess(int n){
   int cnt=0;
-  char buf[1024];
+  char buf[128];
   char path[64];
   for(int i=0;i<n;i++){
     sprintf(path,"/proc/%d/stat",procpid[i]);
