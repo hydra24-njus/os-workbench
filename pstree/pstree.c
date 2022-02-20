@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
   }
   assert(!argv[argc]);
-  if(state.version){
+  if(cli.version){
     perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
     return 0;
   }
