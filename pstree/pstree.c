@@ -89,6 +89,6 @@ int main(int argc, char *argv[]) {
   }
   int n=getprocessfolder();
   n=getprocess(n);
-  //for(int i=0;i<n;i++)if(process[i].ppid==0)print_tree(i,0);
+  for(int i=0;i<n;i++)if(process[i].ppid==0)print_tree(i,0);
   return 0;
 }
