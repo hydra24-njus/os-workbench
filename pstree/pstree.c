@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <ctype.h>
 const char *path ="/proc";
 
 typedef struct{
