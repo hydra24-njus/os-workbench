@@ -54,8 +54,12 @@ int getprocess(int n){
     sscanf(buf,"%d",&process[cnt].pid);
     int k=0;
     while(buf[k++]!=' ');
-    int k1=k;
-    while(buf[k1++]!=')');
+    int k1=k+1;int pp=1;
+    while(1){
+      if(buf[k1]=='(')pp++;
+      else if(buf[k1]==')')pp--;
+      if(pp==0)break;
+    }
     strncpy(process[cnt].name,buf+k+1,k1-k-2);
     //printf("%s\n",buf+k1+1);
     sscanf(buf+k1+1,"%c %d",&process[cnt].state,&process[cnt].ppid);
