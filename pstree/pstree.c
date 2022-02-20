@@ -51,7 +51,7 @@ int getprocess(int n){
     if(fp==NULL){printf("%d:process not exit.\n",procpid[i]);assert(0);}
     fgets(buf,sizeof(buf),fp);
     fclose(fp);
-    sscanf(buf,"%d (%s) %c %d",&process[cnt].pid,process[cnt].name,&process[cnt].state,&process[cnt].ppid);
+    sscanf(buf,"%d (%s %c %d",&process[cnt].pid,process[cnt].name,&process[cnt].state,&process[cnt].ppid);
     cnt++;
   }
   return cnt;
