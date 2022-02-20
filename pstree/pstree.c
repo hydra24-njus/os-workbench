@@ -51,7 +51,8 @@ int getprocess(int n){
     if(fp==NULL){printf("%d:process not exit.\n",procpid[i]);assert(0);}
     fgets(buf,sizeof(buf),fp);
     fclose(fp);
-    printf("%s\n",buf);
+    sscanf(buf,"%d (%s) %c %d",process[cnt].pid,process[cnt].name,process[cnt].state,process[cnt].ppid);
+    cnt++;
   }
   return cnt;
 }
@@ -76,6 +77,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   int n=getprocessfolder();
-  getprocess(n);
+  n=getprocess(n);
+  for(int i=0;i<n;i++)printf("%s\n",process[i].name);
   return 0;
 }
