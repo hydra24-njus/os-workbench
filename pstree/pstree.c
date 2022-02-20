@@ -53,7 +53,7 @@ int getprocess(int n){
     fclose(fp);
     sscanf(buf,"%d",&process[cnt].pid);
     int k=0;
-    while(buf[k++]!=' ')
+    while(buf[k++]!=' ');
     printf("%s\n",buf+k);
     //sscanf(buf,"%d %s %c %d",&process[cnt].pid,process[cnt].name,&process[cnt].state,&process[cnt].ppid);
     
