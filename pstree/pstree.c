@@ -66,7 +66,10 @@ int getprocess(int n){
   return cnt;
 }
 
-
+void print_tree(int root,int deep){
+  for(int i=0;i<deep;i++)putch(' ');
+  printf("%s\n")
+}
 
 int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
@@ -87,6 +90,6 @@ int main(int argc, char *argv[]) {
   }
   int n=getprocessfolder();
   n=getprocess(n);
-  for(int i=0;i<n;i++)printf("%d\t%s\n",process[i].pid,process[i].name);
+  for(int i=0;i<n;i++)if(process[i].ppid==0)print_tree(i,0);
   return 0;
 }
