@@ -43,7 +43,7 @@ int getprocessfolder(){
 
 int getprocess(int n){
   int cnt=0;
-  char buf[128];
+  char buf[64];
   char path[64];
   for(int i=0;i<n;i++){
     sprintf(path,"/proc/%d/stat",procpid[i]);
@@ -60,6 +60,7 @@ int getprocess(int n){
     //printf("%s\n",buf+k1+1);
     sscanf("%c %d",buf+k1,process[cnt].state,&process[cnt].ppid);
     printf("%d\t%s\t%c\t%d\n",process[cnt].pid,process[cnt].name,process[cnt].state,process[cnt].ppid);
+    printf("%s\n\n",buf);
     //sscanf(buf,"%d %s %c %d",&process[cnt].pid,process[cnt].name,&process[cnt].state,&process[cnt].ppid);
     
     cnt++;
