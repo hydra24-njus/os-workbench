@@ -49,9 +49,10 @@ int getprocess(int n){
     sprintf(path,"/proc/%d/stat",procpid[i]);
     FILE *fp=fopen(path,"r");
     if(fp==NULL){perror("%d:process not exit.\n",procpid[i]);assert(0);}
-    fget(buf,sizeof(buf),fp);
+    fgets(buf,sizeof(buf),fp);
     fclose(fp);
     printf("%s\n",buf);
+  }
   return cnt;
 }
 
