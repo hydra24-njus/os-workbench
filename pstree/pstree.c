@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
   }
   assert(!argv[argc]);
   if(cli.version){
-    printf("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
+    perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
     return 0;
   }
   int n=getprocessfolder();
