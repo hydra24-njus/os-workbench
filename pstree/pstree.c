@@ -52,6 +52,7 @@ int getprocess(int n){
     fgets(buf,sizeof(buf),fp);
     fclose(fp);
     sscanf(buf,"%d",&process[cnt].pid);
+    printf("%s",buf);
     //sscanf(buf,"%d %s %c %d",&process[cnt].pid,process[cnt].name,&process[cnt].state,&process[cnt].ppid);
     
     cnt++;
@@ -80,6 +81,6 @@ int main(int argc, char *argv[]) {
   }
   int n=getprocessfolder();
   n=getprocess(n);
-  for(int i=0;i<n;i++)printf("%d\t%s\n",process[i].pid,process[i].name);
+  //for(int i=0;i<n;i++)printf("%d\t%s\n",process[i].pid,process[i].name);
   return 0;
 }
