@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     assert(argv[i]);
     //printf("argv[%d] = %s\n", i, argv[i]);
-    if(strcmp(argv[i],"-V")==0)cli.version=1;
+    if(strcmp(argv[i],"-V")==0||strcmp(argv[i],"--version")==0)cli.version=1;
     else if(strcmp(argv[i],"-p")==0||strcmp(argv[i],"--show-pids")==0)cli.show_pids=1;
     else if(strcmp(argv[i],"-n")==0||strcmp(argv[i],"--numeric-sort")==0)cli.numeric_sort=1;
     else {
