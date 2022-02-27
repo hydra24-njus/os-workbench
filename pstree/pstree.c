@@ -77,8 +77,8 @@ void print_tree(int root,int deep){
 }
 bool cmp(const Process *a,const Process *b){
   for(int i=0;i<128;i++){
-    if(a.name[i]<b.name[i])return true;
-    else if(a.name[i]>b.name[i])return false;
+    if(a->name[i]<b->name[i])return true;
+    else if(a->name[i]>b->name[i])return false;
   }
 }
 int main(int argc, char *argv[]) {
