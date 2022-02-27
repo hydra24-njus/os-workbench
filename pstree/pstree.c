@@ -76,7 +76,7 @@ void print_tree(int root,int deep){
   for(int i=0;i<1024;i++)if(process[i].ppid==process[root].pid)print_tree(i,deep+4);
 }
 int cmp11(const void *aa,const void *bb){
-Process *a=aa;Process *b=bb;
+const Process *a=aa;const Process *b=bb;
   for(int i=0;i<128;i++){
     if(a->name[i]<b->name[i])return true;
     else if(a->name[i]>b->name[i])return false;
