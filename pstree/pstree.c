@@ -75,7 +75,7 @@ void print_tree(int root,int deep){
     printf("%s\n",process[root].name);
   for(int i=0;i<1024;i++)if(process[i].ppid==process[root].pid)print_tree(i,deep+4);
 }
-int cmp(const Process *a,const Process *b){
+int cmp11(const Process *a,const Process *b){
   for(int i=0;i<128;i++){
     if(a->name[i]<b->name[i])return true;
     else if(a->name[i]>b->name[i])return false;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
   int n=getprocessfolder();
   n=getprocess(n);
   if(cli.numeric_sort==0){
-    qsort(process,n,sizeof(Process),cmp);
+    qsort(process,n,sizeof(Process),cmp11);
   }
   for(int i=0;i<n;i++)if(process[i].pid==1)print_tree(i,0);
   return 0;
