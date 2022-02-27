@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
   }
   assert(!argv[argc]);
   if(cli.version){
-    perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n");
+    perror("pstree 1.0\n\tCopyright (C) 2022 hydra24.\n修复了无参数下运行不是字典序的问题。");
     return 0;
   }
   int n=getprocessfolder();
