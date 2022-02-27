@@ -78,10 +78,10 @@ void print_tree(int root,int deep){
 int cmp11(const void *aa,const void *bb){
 const Process *a=aa;const Process *b=bb;
   for(int i=0;i<128;i++){
-    if(a->name[i]<b->name[i])return true;
-    else if(a->name[i]>b->name[i])return false;
+    if(a->name[i]<b->name[i])return false;
+    else if(a->name[i]>b->name[i])return true;
   }
-  return true;
+  return false;
 }
 int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
