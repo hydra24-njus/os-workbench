@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
   int n=getprocessfolder();
   n=getprocess(n);
   if(cli.numeric_sort==0){
-    sort(process,n,cmp);
+    qsort(process,n,sizeof(Process),cmp);
   }
   for(int i=0;i<n;i++)if(process[i].pid==1)print_tree(i,0);
   return 0;
