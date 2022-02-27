@@ -80,6 +80,7 @@ bool cmp(const Process *a,const Process *b){
     if(a->name[i]<b->name[i])return true;
     else if(a->name[i]>b->name[i])return false;
   }
+  return true;
 }
 int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
