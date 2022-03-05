@@ -12,7 +12,7 @@ void print_key() {
   if (event.keycode != AM_KEY_NONE && event.keydown) {
     puts("Key pressed: ");
     puts(key_names[event.keycode]);
+    if(strcmp(key_names[event.keycode],"ESCAPE")==0)puts("1");
     puts("\n");
-    if(strcmp(key_names[event.keycode],"ESCAPE")==0)assert(0);
   }
 }
