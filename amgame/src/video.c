@@ -23,7 +23,7 @@ static void draw_tile(int x, int y, int w, int h, uint32_t color) {
 }
 
 void splash() {
-  init();  printf("%d %d\n",w,h);
+  init();  //printf("%d %d\n",w,h);
   for (int x = 0; x * SIDE <= w; x ++) {
     for (int y = 0; y * SIDE <= h; y++) {
       if ((x & 1) ^ (y & 1)) {
@@ -43,6 +43,7 @@ void draw_action(int i,int j){
 }
 void game_init(){
   a=w/(2*SIDE),b=h/(2*SIDE);
+  printf("a=%d b=%d\n",a,b);
 }
 void game_action(char ch){
   if(ch=='a')a=(a-1)>0?a-1:a-1+w/SIDE;
