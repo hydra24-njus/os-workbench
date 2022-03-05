@@ -1,6 +1,6 @@
 #include <game.h>
 
-#define SIDE 32
+#define SIDE 16
 static int w, h;
 
 static void init() {

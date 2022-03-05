@@ -1,6 +1,7 @@
 #include <game.h>
 
 // Operating system is a C program!
+static int w,h;
 int main(const char *args) {
   ioe_init();
   puts("mainargs = \"");
@@ -8,7 +9,7 @@ int main(const char *args) {
   puts("\"\n");
 
   splash();
-int a=8,b=8;
+int a=w/2,b=h/2;
   puts("Press any key to see its key code...\n");
   while (1) {
     char ch=read_key();
