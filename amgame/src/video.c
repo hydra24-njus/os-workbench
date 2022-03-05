@@ -2,7 +2,7 @@
 
 #define SIDE 16
 static int w, h;
-
+static int a,b;
 void init() {
   AM_GPU_CONFIG_T info = {0};
   ioe_read(AM_GPU_CONFIG, &info);
@@ -40,4 +40,14 @@ void draw_action(int i,int j){
       else draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0x000000); 
     }
   }
+}
+void game_init(){
+  a=w/(2*16),b=h/(2*16);
+}
+void game_action(char ch){
+  if(ch=='a')a=(a-1)>0?a-1:a-1+w/SIDE;
+  if(ch=='d')a=(a+1)<w/SIDE?a+1:a+1-w/SIDE;
+  if(ch=='w')b=(b-1)>0?b-1:b-1+h;
+  if(ch=='s')b=(b+1)<h/SIDE?b+1:b+1-h/SIDE;
+  draw_action(a,b);
 }
