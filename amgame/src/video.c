@@ -25,7 +25,7 @@ static void draw_tile(int x, int y, int w, int h, uint32_t color) {
 }
 
 void splash() {
-  init();  //printf("%d %d\n",w,h);
+  init();  printf("%d %d\n",w,h);
   for (int x = 0; x * SIDE <= w; x ++) {
     for (int y = 0; y * SIDE <= h; y++) {
       if ((x & 1) ^ (y & 1)) {
