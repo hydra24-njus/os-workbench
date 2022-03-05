@@ -5,6 +5,7 @@
 
 void splash();
 void print_key();
+char read_key();
 static inline void puts(const char *s) {
   for (; *s; s++) putch(*s);
 }
