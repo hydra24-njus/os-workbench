@@ -13,5 +13,6 @@ void print_key() {
     puts("Key pressed: ");
     puts(key_names[event.keycode]);
     puts("\n");
+    if(strcmp(key_names[event.keycode],"escape")==0)return ;
   }
 }
