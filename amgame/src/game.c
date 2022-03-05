@@ -10,6 +10,7 @@ int main(const char *args) {
   puts("\"\n");
 
   splash();
+  printf("%d %d\n",w,h);
 int a=w/(2*16),b=h/(2*16);
   puts("Press any key to see its key code...\n");
   while (1) {
