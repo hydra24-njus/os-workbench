@@ -3,11 +3,13 @@
 #define SIDE 16
 static int w, h;
 static int a,b;
+void game_init();
 void init() {
   AM_GPU_CONFIG_T info = {0};
   ioe_read(AM_GPU_CONFIG, &info);
   w = info.width;
   h = info.height;
+  game_init();
 }
 
 static void draw_tile(int x, int y, int w, int h, uint32_t color) {
