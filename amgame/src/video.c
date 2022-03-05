@@ -4,7 +4,7 @@
 static int w, h;
 static int a,b;
 void game_init();
-void init() {
+static void init() {
   AM_GPU_CONFIG_T info = {0};
   ioe_read(AM_GPU_CONFIG, &info);
   w = info.width;

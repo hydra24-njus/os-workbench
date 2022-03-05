@@ -2,7 +2,6 @@
 #include <amdev.h>
 #include <klib.h>
 #include <klib-macros.h>
-void init();
 void splash();
 void print_key();
 char read_key();
