@@ -10,7 +10,7 @@ int main(const char *args) {
   puts("\"\n");
 
   splash();
-int a=w/2,b=h/2;
+int a=w/(2*16),b=h/(2*16);
   puts("Press any key to see its key code...\n");
   while (1) {
     char ch=read_key();
