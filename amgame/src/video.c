@@ -3,7 +3,7 @@
 #define SIDE 16
 static int w, h;
 
-static void init() {
+void init() {
   AM_GPU_CONFIG_T info = {0};
   ioe_read(AM_GPU_CONFIG, &info);
   w = info.width;
@@ -24,7 +24,7 @@ static void draw_tile(int x, int y, int w, int h, uint32_t color) {
 
 void splash() {
   init();
-  printf("%d\t%d\n",w,h);
+  
   for (int x = 0; x * SIDE <= w; x ++) {
     for (int y = 0; y * SIDE <= h; y++) {
       if ((x & 1) ^ (y & 1)) {
