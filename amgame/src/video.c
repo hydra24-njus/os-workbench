@@ -27,8 +27,17 @@ void splash() {
   for (int x = 0; x * SIDE <= w; x ++) {
     for (int y = 0; y * SIDE <= h; y++) {
       if ((x & 1) ^ (y & 1)) {
-        draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0x00ffff); // white
+        draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0xffffff); // white
       }
+    }
+  }
+}
+void draw_action(int i,int j){
+    for (int x = 0; x * SIDE <= w; x ++) {
+    for (int y = 0; y * SIDE <= h; y++) {
+      if (x!=i&&y!=j)
+        draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0xffffff); // white
+      else draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0x000000); 
     }
   }
 }
