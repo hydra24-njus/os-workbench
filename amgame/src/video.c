@@ -42,7 +42,7 @@ void draw_action(int i,int j){
   }
 }
 void game_init(){
-  a=w/(2*16),b=h/(2*16);
+  a=w/(2*SIDE),b=h/(2*SIDE);
 }
 void game_action(char ch){
   if(ch=='a')a=(a-1)>0?a-1:a-1+w/SIDE;
