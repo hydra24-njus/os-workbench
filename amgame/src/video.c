@@ -51,6 +51,6 @@ void game_action(char ch){
   if(ch=='a')a=(a-1)>=0?a-1:a-1+w/SIDE;
   if(ch=='d')a=(a+1)<w/SIDE?a+1:a+1-w/SIDE;
   if(ch=='w')b=(b-1)>0?b-1:b-1+h;
-  if(ch=='s')b=(b+1)<=h/SIDE?b+1:b+1-h/SIDE;
+  if(ch=='s')b=(b+1)<h/SIDE?b+1:b+1-h/SIDE;
   draw_action(a,b);
 }
