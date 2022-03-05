@@ -12,7 +12,7 @@ int main(const char *args) {
   puts("Press any key to see its key code...\n");
   while (1) {
     char ch=read_key();
-    printf("%s\n",ch);
+    if(ch=='a'||ch=='w'||ch=='d'||ch=='s')printf("%s\n",ch);
   }
   return 0;
 }
