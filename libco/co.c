@@ -11,14 +11,14 @@ struct co {
 };
 
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
-  debug("co_start");
+  debug("co_start\n");
   return NULL;
 }
 
 void co_wait(struct co *co) {
-  debug("co_wait");
+  debug("co_wait\n");
 }
 
 void co_yield() {
-  debug("co_yield");
+  debug("co_yield\n");
 }
