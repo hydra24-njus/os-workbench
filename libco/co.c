@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #ifdef LOCAL_MACHINE
   #define debug(...) printf(__VA_ARGS__)
+  #include<stdio.h>
 #else
   #define debug()
 #endif
