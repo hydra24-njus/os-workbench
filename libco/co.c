@@ -1,5 +1,6 @@
 #include "co.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <setjmp.h>
 #ifdef LOCAL_MACHINE
@@ -9,8 +10,8 @@
   #define debug(...)
 #endif
 
-#define STACK_SIZE 1<<10
-
+#define STACK_SIZE 4096
+#define CO_MAX 128
 enum co_status {
   CO_NEW = 1, // 新创建，还未执行过
   CO_RUNNING, // 已经执行过
@@ -28,7 +29,7 @@ struct co {
   struct co *    waiter;  // 是否有其他协程在等待当前协程
   jmp_buf        context; // 寄存器现场 (setjmp.h)
   uint8_t        stack[STACK_SIZE]; // 协程的堆栈
-};
+}coset[CO_MAX];
 
 static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
   asm volatile (
@@ -62,4 +63,8 @@ void co_wait(struct co *co) {
 
 void co_yield() {
   debug("co_yield\n");
+}
+
+void __attribute__((constructor)) co_init(){
+  for(int i=0;i<CO_MAX;i++)coset[i].status=CO_DEAD;
 }
