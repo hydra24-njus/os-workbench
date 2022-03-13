@@ -30,6 +30,7 @@ struct co {
   jmp_buf        context; // 寄存器现场 (setjmp.h)
   uint8_t        stack[STACK_SIZE]; // 协程的堆栈
 }coset[CO_MAX];
+struct co *ptr_now;
 
 static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
   asm volatile (
@@ -67,4 +68,7 @@ void co_yield() {
 
 void __attribute__((constructor)) co_init(){
   for(int i=0;i<CO_MAX;i++)coset[i].status=CO_DEAD;
+  coset[0].name="main";
+  coset[0].status=CO_RUNNING;
+  ptr_now=&coset[0];
 }
