@@ -20,14 +20,14 @@ enum co_status {
   CO_DEAD,
 };
 
-__attribute((aligned(8)))struct co {
+struct co {
   char *name;
   void (*func)(void *);
   void *arg;
   enum co_status status;
   struct co *    waiter;
   jmp_buf        context;
-  uint8_t        stack[STACK_SIZE];
+  __attribute((aligned(16)))uint8_t        stack[STACK_SIZE];
 }coset[CO_MAX];
 struct co *current;
 
