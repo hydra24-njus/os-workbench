@@ -3,34 +3,33 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <setjmp.h>
+
 #ifdef LOCAL_MACHINE
-  #define debug(...) printf(__VA_ARGS__)
   #include<stdio.h>
+  #define debug(...) printf(__VA_ARGS__)
 #else
   #define debug(...)
 #endif
 
-#define STACK_SIZE 4096
+#define STACK_SIZE (1<<16)
 #define CO_MAX 128
 enum co_status {
-  CO_NEW = 1, // 新创建，还未执行过
-  CO_RUNNING, // 已经执行过
-  CO_WAITING, // 在 co_wait 上等待
-  CO_DEAD,    // 已经结束，但还未释放资源
+  CO_NEW = 1,
+  CO_RUNNING,
+  CO_WAITING,
+  CO_DEAD,
 };
-
 
 struct co {
   char *name;
-  void (*func)(void *); // co_start 指定的入口地址和参数
+  void (*func)(void *);
   void *arg;
-
-  enum co_status status;  // 协程的状态
-  struct co *    waiter;  // 是否有其他协程在等待当前协程
-  jmp_buf        context; // 寄存器现场 (setjmp.h)
-  uint8_t        stack[STACK_SIZE]; // 协程的堆栈
+  enum co_status status;
+  struct co *    waiter;
+  jmp_buf        context;
+  uint8_t        stack[STACK_SIZE];
 }coset[CO_MAX];
-struct co *ptr_now;
+struct co *current;
 
 static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
   asm volatile (
@@ -44,31 +43,63 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
   );
 }
 
+void __attribute__((constructor)) co_init(){
+  for(int i=1;i<CO_MAX;i++)coset[i].status=CO_DEAD;
+  coset[0].name="main";
+  coset[0].status=CO_RUNNING;
+  current=&coset[0];
+}
 
-
-
-
-
-
-
-
+void co_entry(){
+  current->status=CO_RUNNING;
+  current->func(current->arg);
+  if(current->waiter)current->waiter->status=CO_RUNNING;
+  current->status=CO_DEAD;
+  co_yield();
+}
 
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
-  debug("co_start\n");
+  for(int i=0;i<CO_MAX;i++){
+    if(coset[i].status==CO_DEAD){
+      coset[i].name=(char*)name;
+      coset[i].func=func;
+      coset[i].arg=arg;
+      coset[i].status=CO_NEW;
+      return &coset[i];
+    }
+  }
+  debug("no available coroutines.\n");
   return NULL;
 }
 
 void co_wait(struct co *co) {
-  debug("co_wait\n");
+  current->status=CO_WAITING;
+  co->waiter=current;
+  while(co->status!=CO_DEAD)co_yield();
+  current->status=CO_RUNNING;
 }
 
 void co_yield() {
-  debug("co_yield\n");
-}
-
-void __attribute__((constructor)) co_init(){
-  for(int i=0;i<CO_MAX;i++)coset[i].status=CO_DEAD;
-  coset[0].name="main";
-  coset[0].status=CO_RUNNING;
-  ptr_now=&coset[0];
+  int val=setjmp(current->context);
+  if(val==0){
+    //choose new coroutine;
+    do{
+      current=&coset[rand()%CO_MAX];
+    }while(current->status>CO_RUNNING);
+    //jmp to new coroutine;
+    switch(current->status){
+      case CO_NEW:
+        stack_switch_call((void*)(current->stack+STACK_SIZE-sizeof(uintptr_t)),co_entry,(uintptr_t)NULL);
+        break;
+      case CO_RUNNING:
+        longjmp(current->context,1);
+        break;
+      default:
+        debug("error status type.\n");
+        break;
+    }
+  }
+  else{
+    //do nothing;
+  }
 }
