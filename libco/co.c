@@ -20,7 +20,7 @@ enum co_status {
   CO_DEAD,
 };
 
-__attribute((aligned(16)))struct co {
+__attribute((aligned(8)))struct co {
   char *name;
   void (*func)(void *);
   void *arg;
