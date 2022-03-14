@@ -90,6 +90,7 @@ void co_wait(struct co *co) {
       coset[i].flag=false;
       
     }
+  }
   //free(co);
 }
 
