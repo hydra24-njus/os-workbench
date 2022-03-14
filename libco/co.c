@@ -10,7 +10,6 @@
 #else
   #define debug(...)
 #endif
-
 #define STACK_SIZE (1<<16)
 #define CO_MAX 128
 enum co_status {
@@ -50,16 +49,14 @@ void __attribute__((constructor)) co_init(){
   current=&coset[0];
 }
 
-void co_entry(){
+void co_wrapper(){
   current->status=CO_RUNNING;
   current->func(current->arg);
-  if(current->waiter)current->waiter->status=CO_RUNNING;
   current->status=CO_DEAD;
-  co_yield();
+  
 }
-
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
-  for(int i=0;i<CO_MAX;i++){
+  for(int i=1;i<CO_MAX;i++){
     if(coset[i].status==CO_DEAD){
       coset[i].name=(char*)name;
       coset[i].func=func;
@@ -68,7 +65,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
       return &coset[i];
     }
   }
-  debug("no available coroutines.\n");
+  debug("no available coroutine.\n");
   return NULL;
 }
 
@@ -82,22 +79,21 @@ void co_wait(struct co *co) {
 void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
-    //choose new coroutine;
+    int random=rand()%CO_MAX;
     do{
-      current=&coset[rand()%CO_MAX];
+      current=&coset[(random++)%CO_MAX];
     }while(current->status>CO_RUNNING);
-    //jmp to new coroutine;
     switch(current->status){
       case CO_NEW:
-        stack_switch_call((void*)(current->stack+STACK_SIZE-sizeof(uintptr_t)),co_entry,(uintptr_t)NULL);
+        stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
         break;
       case CO_RUNNING:
         longjmp(current->context,1);
         break;
       default:
-        debug("error status type.\n");
-        break;
-    }
+      	debug("error status.\n");
+      	break;
+     }
   }
   else{
     //do nothing;
