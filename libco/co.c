@@ -73,13 +73,20 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   }
   return NULL;
 }
-
+void co_free(struct co *co){
+  for(int i=0;i<CO_MAX;i++){
+    if(coset[i]==co){
+      free(coset[i]);
+      return;
+    }
+  }
+}
 void co_wait(struct co *co) {
   current->status=CO_WAITING;
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
   current->status=CO_RUNNING;
-  free(co);
+  co_free(co);
 }
 
 void co_yield() {
