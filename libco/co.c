@@ -53,7 +53,7 @@ void __attribute__((constructor)) co_init(){
 
 void co_wrapper(struct co* co){
   co->status=CO_RUNNING;
-  co->func(current->arg);
+  co->func(current->arg);co->status=CO_DEAD;
   if(co->waiter)co->waiter->status=CO_RUNNING;
   co->status=CO_DEAD;
   co_yield();
