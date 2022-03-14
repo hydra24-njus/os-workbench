@@ -107,7 +107,7 @@ void co_yield() {
     }while(1);
     switch(current->status){
       case CO_NEW:
-        stack_switch_call(current->stack+STACK_SIZE,co_wrapper,(uintptr_t)current);
+        stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)current);
         break;
       case CO_RUNNING:
         longjmp(current->context,1);
