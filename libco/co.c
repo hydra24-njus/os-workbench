@@ -104,7 +104,7 @@ void co_yield() {
         longjmp(current->context,1);
         break;
       default:
-      	debug("error status.\n");exit();
+      	debug("error status.\n");exit(1);
       	break;
      }
   }
