@@ -57,6 +57,7 @@ void co_wrapper(){
   co_yield();
 }
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
+debug("costart\n");
   for(int i=1;i<CO_MAX;i++){
     if(coset[i].status==CO_DEAD){
       coset[i].name=(char*)name;
