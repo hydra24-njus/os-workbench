@@ -62,6 +62,7 @@ void co_wrapper(struct co* co){
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
     if(!(void*)coset[i]){
+      debug("pid:%d\n",i);
       coset[i]=(uintptr_t)malloc(sizeof(struct co));
       ((struct co*)coset[i])->name=(char*)name;
       ((struct co*)coset[i])->func=func;
@@ -95,9 +96,9 @@ void co_yield() {
   if(val==0){
     int i=rand()%5;
     do{
+      
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
         current=(struct co*)coset[i];
-        debug("%d ",i);
         break;
       }
       i=rand()%5;
