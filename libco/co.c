@@ -53,6 +53,7 @@ void co_wrapper(){
   current->status=CO_RUNNING;
   current->func(current->arg);
   current->status=CO_DEAD;
+  co_yield();
 }
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
@@ -73,7 +74,6 @@ void co_wait(struct co *co) {
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
   if(current->waiter)current->waiter->status=CO_RUNNING;
-  co_yield();
 }
 
 void co_yield() {
