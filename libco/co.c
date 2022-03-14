@@ -68,7 +68,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
     if(coset[i].flag==false){
       coset[i].flag=true;
-      coset[i].this=malloc(sizeof(struct co));
+      coset[i].this=(uintptr_t)malloc(sizeof(struct co));
       ((struct co*)coset[i].this)->name=(char*)name;
       ((struct co*)coset[i].this)->func=func;
       ((struct co*)coset[i].this)->arg=arg;
