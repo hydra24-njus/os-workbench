@@ -86,7 +86,7 @@ void co_yield() {
   int val=setjmp(current->context);
   if((void*)coset[4])debug("3.status:%d\n",((struct co*)coset[4])->status);
   if(val==0){
-    for(int i=0;i<CO_MAX;i++){
+    for(int i=CO_MAX-1;i>=0;i--){
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
         current=(struct co*)coset[i];
         break;
