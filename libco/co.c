@@ -64,10 +64,10 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
     if((void*)coset[i]){
       debug("%d\n",i);
       coset[i]=(uintptr_t)malloc(sizeof(struct co));
-      (struct co*)coset[i]->name=(char*)name;
-      (struct co*)coset[i]->func=func;
-      (struct co*)coset[i]->arg=arg;
-      (struct co*)coset[i]->status=CO_NEW;
+      ((struct co*)coset[i])->name=(char*)name;
+      ((struct co*)coset[i])->func=func;
+      ((struct co*)coset[i])->arg=arg;
+      ((struct co*)coset[i])->status=CO_NEW;
       return (struct co*)coset[i];
     }
   }
