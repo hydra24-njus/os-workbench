@@ -79,10 +79,8 @@ void co_wait(struct co *co) {
 void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
-    int random=rand()%128;
     do{
-      current=&coset[random%128];
-      debug("%d\n",random++);
+      current=&coset[rand()%CO_MAX];
     }while(current->status>CO_RUNNING);
     switch(current->status){
       case CO_NEW:
