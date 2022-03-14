@@ -95,7 +95,7 @@ void co_yield() {
     do{
       random=rand()%CO_MAX;
       current=(struct co*)coset[random].this;
-    }while(coset[random].flag==true&&((struct co*)coset[random].this)->status>CO_RUNNING);
+    }while(current->status>CO_RUNNING&&coset[random].flag==true);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
