@@ -82,6 +82,7 @@ void co_yield() {
     int random=rand()%CO_MAX;
     do{
       current=&coset[(random++)%CO_MAX];
+      debug("%d\n",random);
     }while(current->status>CO_RUNNING);
     switch(current->status){
       case CO_NEW:
