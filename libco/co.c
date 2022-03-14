@@ -75,7 +75,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
 }
 void co_free(struct co *co){
   for(int i=0;i<CO_MAX;i++){
-    if(coset[i]==co){
+    if(coset[i]==(uintptr_t)co){
       free((void*)coset[i]);
       return;
     }
