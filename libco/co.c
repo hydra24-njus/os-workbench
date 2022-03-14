@@ -84,7 +84,7 @@ void co_wait(struct co *co) {
 
 void co_yield() {
   int val=setjmp(current->context);
-  debug("3.status:%d\n"(struct co*)coset[3]->status);
+  debug("3.status:%d\n",(struct co*)coset[3]->status);
   if(val==0){
     for(int i=0;i<CO_MAX;i++){
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
