@@ -54,8 +54,9 @@ void __attribute__((constructor)) co_init(){
 void co_wrapper(){
   current->status=CO_RUNNING;
   current->func(current->arg);
-  current->status=CO_DEAD;
+  
   if(current->waiter)current->waiter->status=CO_RUNNING;
+  current->status=CO_DEAD;
   co_yield();
 }
 
