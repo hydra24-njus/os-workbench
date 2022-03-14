@@ -99,7 +99,8 @@ void co_yield() {
         current=(struct co*)coset[i];
         break;
       }
-    }while(i=rand()%CO_MAX);
+      i=rand()%CO_MAX;
+    }while(1);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)current);
