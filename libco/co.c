@@ -82,7 +82,7 @@ void co_yield() {
     int random=rand()%CO_MAX;
     do{
       current=&coset[(random++)%CO_MAX];
-    }while(current->status>CO_RUNNING);
+    }while(current->status==CO_DEAD);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
