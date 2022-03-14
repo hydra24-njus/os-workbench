@@ -54,7 +54,6 @@ void __attribute__((constructor)) co_init(){
 void co_wrapper(struct co* co){
   co->status=CO_RUNNING;
   co->func(current->arg);
-  
   if(co->waiter)co->waiter->status=CO_RUNNING;
   co->status=CO_DEAD;
   co_yield();
@@ -88,6 +87,7 @@ void co_yield() {
   if(val==0){
     for(int i=0;i<CO_MAX;i++){
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
+      debug("%d\n",i);
         current=(struct co*)coset[i];
         break;
       }
