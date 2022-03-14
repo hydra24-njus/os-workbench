@@ -77,6 +77,7 @@ void co_free(struct co *co){
   for(int i=0;i<CO_MAX;i++){
     if(coset[i]==(uintptr_t)co){
       free((void*)coset[i]);
+      coset[i]=NULL;
       return;
     }
   }
