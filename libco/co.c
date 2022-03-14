@@ -30,6 +30,7 @@ struct co {
 };
 struct ptr{
   uintptr_t this;
+  bool wait;
   bool flag;
 }coset[CO_MAX];
 int coroutine_num=0;
@@ -48,7 +49,7 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 }
 
 void __attribute__((constructor)) co_init(){
-  for(int i=0;i<CO_MAX;i++)coset[i].flag=false;
+  for(int i=0;i<CO_MAX;i++){coset[i].flag=false;coset[i].wait=false;
   coset[0].this=(uintptr_t)malloc(sizeof(struct co));
   ((struct co*)coset[0].this)->name="main";
   ((struct co*)coset[0].this)->status=CO_RUNNING;
@@ -83,15 +84,18 @@ void co_wait(struct co *co) {
   current->status=CO_WAITING;
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
-  free(co);
+  //free(co);
 }
 
 void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
-    do{
-      current=(struct co*)coset[rand()%CO_MAX].this;
-    }while(current->status!=CO_DEAD||current->status!=CO_WAITING);
+    for(int i=rand()%CO_MAX;i;i=(i+1)%CO_MAX){
+      if(coset[i].flag==true&&((struct co*)coset[i].this)->status>CO_RUNNING){
+        current=(struct co*)coset[i].this;
+        break;
+      }
+    }
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
