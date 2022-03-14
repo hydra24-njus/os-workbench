@@ -48,10 +48,12 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 }
 
 void __attribute__((constructor)) co_init(){
+  for(int i=0;i<CO_MAX;i++)coset[i].flag=false;
   coset[0].this=(uintptr_t)malloc(sizeof(struct co));
   ((struct co*)coset[0].this)->name="main";
   ((struct co*)coset[0].this)->status=CO_RUNNING;
   current=(struct co*)coset[0].this;
+  coset[0].flag=true;
 }
 
 void co_wrapper(){
@@ -63,17 +65,16 @@ void co_wrapper(){
 }
 
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
-  if(coroutine_num==128){
-    debug("no available coroutine.\n");
-    return NULL;
-  }
-  else{
-    coset[++coroutine_num]=malloc(sizeof(struct co));
-    coset[coroutine_num]->name=(char*)name;
-    coset[coroutine_num]->func=func;
-    coset[coroutine_num]->arg=arg;
-    coset[coroutine_num]->status=CO_NEW;
-    return coset[coroutine_num];
+  for(int i=1;i<CO_MAX;i++){
+    if(coset[i].flag==false){
+      coset[i].flag=true;
+      coset[i].this=malloc(sizeof(struct co));
+      ((struct co*)coset[i].this)->name=(char*)name;
+      ((struct co*)coset[i].this)->func=func;
+      ((struct co*)coset[i].this)->arg=arg;
+      ((struct co*)coset[i].this)->status=CO_NEW;
+      return (struct co*)coset[i].this;
+    }
   }
   return NULL;
 }
@@ -89,7 +90,7 @@ void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
     do{
-      current=coset[rand()%CO_MAX];
+      current=(struct co*)coset[rand()%CO_MAX].this;
     }while(current->status!=CO_DEAD||current->status!=CO_WAITING);
     switch(current->status){
       case CO_NEW:
