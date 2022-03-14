@@ -88,7 +88,7 @@ void co_wait(struct co *co) {
   for(int i=0;i<CO_MAX;i++){
     if(coset[i].flag==true&&((struct co*)coset[i].this)->status==CO_DEAD){
       coset[i].flag=false;
-      if(((struct co*)coset[i].this)->waiter)free(coset[i].this);
+      if(((struct co*)coset[i].this)->waiter)free((void*)coset[i].this);
     }
   }
   //free(co);
