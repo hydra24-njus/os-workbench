@@ -104,7 +104,7 @@ static void test_2() {
 
     co_wait(thd1);
     co_wait(thd2);
-
+printf("34\n");
     g_running = 0;
 
     co_wait(thd3);
