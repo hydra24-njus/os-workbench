@@ -92,6 +92,7 @@ void co_yield() {
         break;
       case CO_WAITING:
         debug("waiting now.\n");
+        break;
       default:
       	debug("error status.\n");
       	break;
