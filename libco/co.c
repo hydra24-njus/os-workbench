@@ -44,7 +44,6 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 }
 
 void __attribute__((constructor)) co_init(){
-  printf("%u\n",(unsigned int)sizeof(struct co));
   coset[0]=malloc(sizeof(struct co));
   coset[0]->name="main";
   coset[0]->status=CO_RUNNING;
@@ -66,11 +65,11 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   }
   else{
     coset[++coroutine_num]=malloc(sizeof(struct co));
-    coset[coroutine_num-1]->name=(char*)name;
-    coset[coroutine_num-1]->func=func;
-    coset[coroutine_num-1]->arg=arg;
-    coset[coroutine_num-1]->status=CO_NEW;
-    return coset[coroutine_num-1];
+    coset[coroutine_num]->name=(char*)name;
+    coset[coroutine_num]->func=func;
+    coset[coroutine_num]->arg=arg;
+    coset[coroutine_num]->status=CO_NEW;
+    return coset[coroutine_num];
   }
   return NULL;
 }
