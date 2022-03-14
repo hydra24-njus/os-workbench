@@ -89,6 +89,7 @@ void co_yield() {
     for(int i=CO_MAX-1;i>=0;i--){
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
         current=(struct co*)coset[i];
+        debug("i=%d\n",i);
         break;
       }
     }
