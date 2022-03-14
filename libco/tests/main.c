@@ -63,12 +63,13 @@ static void do_produce(Queue *queue) {
 static void producer(void *arg) {
     Queue *queue = (Queue*)arg;
     for (int i = 0; i < 100; ) {
+    
         if (!q_is_full(queue)) {
             // co_yield();
             do_produce(queue);
             i += 1;
-            printf("co4.i=%d\n",i);
         }
+        printf("co4.i=%d\n",i);
         co_yield();
     }
 }
