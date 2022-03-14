@@ -107,8 +107,8 @@ printf("12\n");
 printf("34\n");
     g_running = 0;
 
-    co_wait(thd3);
-    co_wait(thd4);
+    //co_wait(thd3);
+    //co_wait(thd4);
 
     while (!q_is_empty(queue)) {
         do_consume(queue);
