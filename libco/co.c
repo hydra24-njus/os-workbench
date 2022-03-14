@@ -90,7 +90,7 @@ void co_wait(struct co *co) {
 void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
-    for(int i=rand()%CO_MAX;i;i=(i+1)%CO_MAX){
+    for(int i=0;i<CO_MAX;i++){
       if(coset[i].flag==true&&((struct co*)coset[i].this)->status>CO_RUNNING){
         current=(struct co*)coset[i].this;
         break;
