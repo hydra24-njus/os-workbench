@@ -46,8 +46,8 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 
 void __attribute__((constructor)) co_init(){
   coset[0]=(uintptr_t)malloc(sizeof(struct co));
-  (struct co*)coset[0]->name="main";
-  (struct co*)coset[0]>status=CO_RUNNING;
+  ((struct co*)coset[0])->name="main";
+  ((struct co*)coset[0])->status=CO_RUNNING;
   current=(struct co*)coset[0];
 }
 
