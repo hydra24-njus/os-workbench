@@ -69,7 +69,6 @@ static void producer(void *arg) {
             do_produce(queue);
             i += 1;
         }
-        printf("co4.i=%d\n",i);
         co_yield();
     }
 }

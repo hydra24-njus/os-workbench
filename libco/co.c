@@ -93,13 +93,13 @@ void co_yield() {
   int val=setjmp(current->context);
   //if((void*)coset[4])debug("4.status:%d\n",((struct co*)coset[4])->status);
   if(val==0){
-    int random=rand()%CO_MAX;
-    for(int i=random;i<CO_MAX;i=(i+1)%CO_MAX){
+    int i=rand()%CO_MAX;
+    do{
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
         current=(struct co*)coset[i];
         break;
       }
-    }
+    }while(i=rand()%CO_MAX);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)current);
