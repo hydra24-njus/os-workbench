@@ -28,11 +28,7 @@ struct co {
   jmp_buf        context;
   __attribute((aligned(16)))uint8_t        stack[STACK_SIZE];
 };
-struct ptr{
-  uintptr_t this;
-  bool wait;
-  bool flag;
-}coset[CO_MAX];
+uintptr_t coset[CO_MAX];
 int coroutine_num=0;
 struct co *current;
 
@@ -49,12 +45,10 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 }
 
 void __attribute__((constructor)) co_init(){
-  for(int i=0;i<CO_MAX;i++){coset[i].flag=false;coset[i].wait=false;}
-  coset[0].this=(uintptr_t)malloc(sizeof(struct co));
-  ((struct co*)coset[0].this)->name="main";
-  ((struct co*)coset[0].this)->status=CO_RUNNING;
-  current=(struct co*)coset[0].this;
-  coset[0].flag=true;
+  coset[0]=(uintptr_t)malloc(sizeof(struct co));
+  (struct co*)coset[0]->name="main";
+  (struct co*)coset[0]>status=CO_RUNNING;
+  current=(struct co*)coset[0];
 }
 
 void co_wrapper(){
@@ -67,15 +61,14 @@ void co_wrapper(){
 
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
-    if(coset[i].flag==false){
+    if((void*)coset[i]){
       debug("%d\n",i);
-      coset[i].flag=true;
-      coset[i].this=(uintptr_t)malloc(sizeof(struct co));
-      ((struct co*)coset[i].this)->name=(char*)name;
-      ((struct co*)coset[i].this)->func=func;
-      ((struct co*)coset[i].this)->arg=arg;
-      ((struct co*)coset[i].this)->status=CO_NEW;
-      return (struct co*)coset[i].this;
+      coset[i]=(uintptr_t)malloc(sizeof(struct co));
+      (struct co*)coset[i]->name=(char*)name;
+      (struct co*)coset[i]->func=func;
+      (struct co*)coset[i]->arg=arg;
+      (struct co*)coset[i]->status=CO_NEW;
+      return (struct co*)coset[i];
     }
   }
   return NULL;
@@ -85,12 +78,6 @@ void co_wait(struct co *co) {
   current->status=CO_WAITING;
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
-  for(int i=0;i<CO_MAX;i++){
-    if(coset[i].flag==true&&((struct co*)coset[i].this)->status==CO_DEAD){
-      coset[i].flag=false;
-      if(((struct co*)coset[i].this)->waiter)free((void*)coset[i].this);
-    }
-  }
   //free(co);
 }
 
@@ -98,8 +85,8 @@ void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
     for(int i=0;i<CO_MAX;i++){
-      if((void*)coset[i].this&&(((struct co*)coset[i].this)->status==CO_NEW||((struct co*)coset[i].this)->status==CO_RUNNING)){
-        current=(struct co*)coset[i].this;
+      if((void*)coset[i]&&((struct co*)coset[i]->status==CO_NEW||(struct co*)coset[i]->status==CO_RUNNING)){
+        current=(struct co*)coset[i];
         break;
       }
     }
