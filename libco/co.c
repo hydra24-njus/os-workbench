@@ -53,6 +53,7 @@ void co_wrapper(){
   current->status=CO_RUNNING;
   current->func(current->arg);
   current->status=CO_DEAD;
+  if(current->waiter)current->waiter->status=CO_RUNNING;
   co_yield();
 }
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
@@ -73,7 +74,6 @@ void co_wait(struct co *co) {
   current->status=CO_WAITING;
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
-  current->status=CO_RUNNING;
 }
 
 void co_yield() {
@@ -82,7 +82,7 @@ void co_yield() {
     int random=rand()%CO_MAX;
     do{
       current=&coset[(random++)%CO_MAX];
-    }while(current->status>CO_RUNNING);
+    }while(current->status==CO_DEAD);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
@@ -90,6 +90,8 @@ void co_yield() {
       case CO_RUNNING:
         longjmp(current->context,1);
         break;
+      case CO_WAITING:
+        debug("waiting now.\n");
       default:
       	debug("error status.\n");
       	break;
