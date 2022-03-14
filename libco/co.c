@@ -51,12 +51,12 @@ void __attribute__((constructor)) co_init(){
   current=(struct co*)coset[0];
 }
 
-void co_wrapper(){
-  current->status=CO_RUNNING;
-  current->func(current->arg);
+void co_wrapper(struct co* co){
+  co->status=CO_RUNNING;
+  co->func(current->arg);
   
-  if(current->waiter)current->waiter->status=CO_RUNNING;
-  current->status=CO_DEAD;
+  if(co->waiter)co->waiter->status=CO_RUNNING;
+  co->status=CO_DEAD;
   co_yield();
 }
 
@@ -94,7 +94,7 @@ void co_yield() {
     }
     switch(current->status){
       case CO_NEW:
-        stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
+        stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)current);
         break;
       case CO_RUNNING:
         longjmp(current->context,1);
