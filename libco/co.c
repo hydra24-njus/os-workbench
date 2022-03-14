@@ -68,6 +68,7 @@ void co_wrapper(){
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
     if(coset[i].flag==false){
+      debug("%d\n",i);
       coset[i].flag=true;
       coset[i].this=(uintptr_t)malloc(sizeof(struct co));
       ((struct co*)coset[i].this)->name=(char*)name;
