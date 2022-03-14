@@ -86,7 +86,7 @@ void co_wait(struct co *co) {
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
   for(int i=0;i<CO_MAX;i++){
-    if(((struct co*)coset[i].this)->status==CO_DEAD){
+    if(coset[i].flag==true&&((struct co*)coset[i].this)->status==CO_DEAD){
       coset[i].flag=false;
       
     }
