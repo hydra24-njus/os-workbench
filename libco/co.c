@@ -81,16 +81,13 @@ void co_yield() {
     int random=rand()%CO_MAX;
     do{
       current=&coset[(random++)%CO_MAX];
-    }while(current->status==CO_DEAD);
+    }while(current->status>CO_RUNNING);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
         break;
       case CO_RUNNING:
         longjmp(current->context,1);
-        break;
-      case CO_WAITING:
-        co_yield();
         break;
       default:
       	debug("error status.\n");
