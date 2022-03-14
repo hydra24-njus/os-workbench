@@ -33,7 +33,6 @@ struct co {
   __attribute((aligned(16)))uint8_t        stack[STACK_SIZE];
 };
 uintptr_t coset[CO_MAX];
-int coroutine_num=0;
 struct co *current;
 
 static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
