@@ -15,7 +15,7 @@
   #define debug(...)
 #endif
 #define STACK_SIZE (1<<16)
-#define CO_MAX 128
+#define CO_MAX 129
 enum co_status {
   CO_NEW = 1,
   CO_RUNNING,

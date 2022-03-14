@@ -117,7 +117,7 @@ static void test_2() {
     q_free(queue);
 }
 
-int main() {
+/*int main() {
     setbuf(stdout, NULL);
 
     printf("Test #1. Expect: (X|Y){0, 1, 2, ..., 199}\n");
@@ -129,4 +129,51 @@ int main() {
     printf("\n\n");
 
     return 0;
+}*/
+void entry1(void *arg) {
+  int f = 0;
+  while (1) {
+    if (f == 9000) {
+      break;
+    }
+    if (f > 9000) {
+      printf("error a\n");
+      exit(0);
+    }
+    printf("a%d,%d\n ", (int)arg, f);
+
+    f++;
+    co_yield();
+  }
+}
+
+void entry2(void *arg) {
+  int f = 0;
+  while (1) {
+    if (f == 9000) {
+      break;
+    }
+    if (f > 9000) {
+      printf("error b\n");
+      exit(0);
+    }
+    printf("b%d,%d\n ", (int)arg, f);
+    f++;
+    co_yield();
+  }
+}
+int main() {
+  struct co *co1[65] = {0};
+  struct co *co2[65] = {0};
+
+  for (int i = 1; i <= 64; i++) {
+    co1[i] = co_start("co1", entry1, (void *)i);
+    co2[i] = co_start("co2", entry2, (void *)i);
+  }
+  for (int i = 1; i <= 64; i++) {
+    co_wait(co2[i]);
+    co_wait(co1[i]);
+  }
+  printf("finished\n");
+  return 0;
 }
