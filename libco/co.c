@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <setjmp.h>
-
+#include <stdbool.h>
 #ifdef LOCAL_MACHINE
   #include<stdio.h>
   #define debug(...) printf(__VA_ARGS__)
@@ -28,7 +28,11 @@ struct co {
   jmp_buf        context;
   __attribute((aligned(16)))uint8_t        stack[STACK_SIZE];
 };
-struct co *coset[CO_MAX];int coroutine_num=0;
+struct ptr{
+  uintptr_t this;
+  bool flag;
+}coset[CO_MAX];
+int coroutine_num=0;
 struct co *current;
 
 static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
@@ -44,10 +48,10 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
 }
 
 void __attribute__((constructor)) co_init(){
-  coset[0]=malloc(sizeof(struct co));
-  coset[0]->name="main";
-  coset[0]->status=CO_RUNNING;
-  current=coset[0];
+  coset[0].this=malloc(sizeof(struct co));
+  coset[0].this->name="main";
+  coset[0].this->status=CO_RUNNING;
+  current=coset[0].this;
 }
 
 void co_wrapper(){
@@ -86,7 +90,7 @@ void co_yield() {
   if(val==0){
     do{
       current=coset[rand()%CO_MAX];
-    }while(current->status>CO_RUNNING);
+    }while(current->status!=CO_DEAD||current->status!=CO_WAITING);
     switch(current->status){
       case CO_NEW:
         stack_switch_call(current->stack+STACK_SIZE-sizeof(uintptr_t),co_wrapper,(uintptr_t)NULL);
