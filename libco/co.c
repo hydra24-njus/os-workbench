@@ -73,6 +73,7 @@ void co_wait(struct co *co) {
   co->waiter=current;
   while(co->status!=CO_DEAD)co_yield();
   if(current->waiter)current->waiter->status=CO_RUNNING;
+  co_yield();
 }
 
 void co_yield() {
