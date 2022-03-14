@@ -53,6 +53,7 @@ void co_wrapper(){
   current->status=CO_RUNNING;
   current->func(current->arg);
   current->status=CO_DEAD;
+  current->waiter->status=CO_RUNNING;
   co_yield();
 }
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
