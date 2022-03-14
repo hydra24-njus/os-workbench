@@ -98,7 +98,7 @@ void co_yield() {
   int val=setjmp(current->context);
   if(val==0){
     for(int i=0;i<CO_MAX;i++){
-      if(coset[i].flag==true&&(((struct co*)coset[i].this)->status==CO_NEW||((struct co*)coset[i].this)->status==CO_RUNNING)){
+      if((void*)coset[i].this&&(((struct co*)coset[i].this)->status==CO_NEW||((struct co*)coset[i].this)->status==CO_RUNNING)){
         current=(struct co*)coset[i].this;
         break;
       }
