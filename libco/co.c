@@ -91,7 +91,7 @@ void co_yield() {
         longjmp(current->context,1);
         break;
       case CO_WAITING:
-        debug("waiting now.\n");
+        co_yield();
         break;
       default:
       	debug("error status.\n");
