@@ -1,3 +1,7 @@
+/*
+*改为使用malloc和free进行内存管理
+*小规模测试下没有问题
+*/
 #include "co.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,7 +66,7 @@ void co_wrapper(struct co* co){
 struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   for(int i=1;i<CO_MAX;i++){
     if(!(void*)coset[i]){
-      debug("pid:%d\n",i);
+      debug("cid:%d\n",i);
       coset[i]=(uintptr_t)malloc(sizeof(struct co));
       ((struct co*)coset[i])->name=(char*)name;
       ((struct co*)coset[i])->func=func;
@@ -73,6 +77,7 @@ struct co *co_start(const char *name, void (*func)(void *), void *arg) {
   }
   return NULL;
 }
+
 void co_free(struct co *co){
   for(int i=0;i<CO_MAX;i++){
     if(coset[i]==(uintptr_t)co){
@@ -94,14 +99,12 @@ void co_yield() {
   int val=setjmp(current->context);
   //if((void*)coset[4])debug("4.status:%d\n",((struct co*)coset[4])->status);
   if(val==0){
-    int i=rand()%CO_MAX;
     do{
-      
+      int i=rand()%CO_MAX;
       if((void*)coset[i]&&(((struct co*)coset[i])->status==CO_NEW||((struct co*)coset[i])->status==CO_RUNNING)){
         current=(struct co*)coset[i];
         break;
       }
-      i=rand()%CO_MAX;
     }while(1);
     switch(current->status){
       case CO_NEW:
