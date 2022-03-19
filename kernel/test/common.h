@@ -1,2 +1,2 @@
 #include "thread.h"
-#include <glib>
+#include <glib.h>
