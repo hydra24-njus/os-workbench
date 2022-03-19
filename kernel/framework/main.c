@@ -1,7 +1,7 @@
 #include <common.h>
 #include <klib.h>
 void easy_test(){
-  for(int i=63;i<=8192;i+=64){
+  for(int i=63;i<=8192;i+=128){
     uintptr_t ans=(uintptr_t)pmm->alloc(i);
     printf("%d\n",ans);
   }
