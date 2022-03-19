@@ -4,7 +4,7 @@ static void *kalloc(size_t size) {
   int i=0;
   while((1<<i)<size)i++;
   tmp+=(1<<i);
-  if(tmp>heap.end)return NULL;
+  if(tmp>=heap.end)return NULL;
   return tmp;
 }
 
