@@ -2,7 +2,9 @@
 void* tmp;
 static void *kalloc(size_t size) {
   uintptr_t t=(uintptr_t)tmp;
-  while(t%size!=0)t++;
+  int i=0;
+  while((1<<i)<size)i++;
+  while(t%(1<<i)!=0)t++;
   printf("t=%d\t",t);
   tmp=(void*)t+size;
   return (void*)t;
