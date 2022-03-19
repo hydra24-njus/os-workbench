@@ -1,11 +1,14 @@
 #include <common.h>
 void* tmp;
 static void *kalloc(size_t size) {
-  int i=0;
+  int i=0;uintptr_t t=(uintptr_t)tmp;
   while((1<<i)<size)i++;
+  if(t%(1<<i)==0)
+    tmp=tmp+(1<<i)-t%(1<<i);
+  void* ans=tmp;
   tmp=tmp+(1<<i);
   if(tmp>=heap.end)return NULL;
-  return tmp;
+  return ans;
 }
 
 static void kfree(void *ptr) {
