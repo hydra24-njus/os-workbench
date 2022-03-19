@@ -1,10 +1,8 @@
 #include <common.h>
 #include <klib.h>
 void easy_test(){
-  for(int i=1024;i<=8192;i+=128){
-    uintptr_t ans=(uintptr_t)pmm->alloc(i);
+    uintptr_t ans=(uintptr_t)pmm->alloc(64);
     printf("%d\n",ans);
-  }
 }
 int main() {
   os->init();
