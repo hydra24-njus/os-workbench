@@ -3,8 +3,7 @@ void* tmp;
 static void *kalloc(size_t size) {
   int i=0;
   while((1<<i)<size)i++;
-  tmp+=(1<<i);
-  if(tmp>=heap.end)return NULL;
+  tmp=tmp+(1<<i);
   return tmp;
 }
 
@@ -14,6 +13,7 @@ static void kfree(void *ptr) {
 static void pmm_init() {
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
+  tmp=heap.start;
 }
 
 MODULE_DEF(pmm) = {
