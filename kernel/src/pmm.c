@@ -9,7 +9,6 @@ static void *kalloc(size_t size) {
   t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
   unlock(&biglock);
-  if(tmp>heap.end)return NULL;
   return (void*)t;
 }
 
