@@ -6,7 +6,7 @@ static void *kalloc(size_t size) {
   uintptr_t t=(uintptr_t)tmp;
   int i=0;
   while((1<<i)<size)i++;
-  t=t+((1<<i)-t%(1<<i));
+  if(t%(1<<i)!=0)t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
   unlock(&biglock);
   return (void*)t;
