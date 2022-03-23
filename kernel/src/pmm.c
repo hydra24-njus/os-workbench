@@ -3,11 +3,13 @@
 void* tmp;
 struct spinlock_t biglock;
 static void *kalloc(size_t size) {
+  lock(&biglock);
   uintptr_t t=(uintptr_t)tmp;
   int i=0;
   while((1<<i)<size)i++;
   t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
+  unlock(&biglock);
   return (void*)t;
 }
 
