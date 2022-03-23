@@ -8,7 +8,7 @@ static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
-  while(1)printf("%x\n",pmm->alloc(1<<25));
+  while(1)printf("%x\n",pmm->alloc(1<<24));
   while (1) ;
 }
 
