@@ -8,6 +8,7 @@ static void *kalloc(size_t size) {
   int i=0;
   while((1<<i)<size)i++;
   t=t+((1<<i)-t%(1<<i));
+  if(t>(uintptr_t)heap.end)return NULL;
   tmp=(void*)t+size;
   unlock(&biglock);
   return (void*)t;
@@ -18,6 +19,7 @@ static void kfree(void *ptr) {
 
 static void pmm_init() {
   tmp=heap.start;
+  spinlock_init(&biglock);
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
