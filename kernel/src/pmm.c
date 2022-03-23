@@ -8,8 +8,8 @@ static void *kalloc(size_t size) {
   while((1<<i)<size)i++;
   t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
-  if(tmp>heap.end)return NULL;
   unlock(&biglock);
+  if(tmp>heap.end)return NULL;
   return (void*)t;
 }
 
