@@ -8,7 +8,6 @@ static void *kalloc(size_t size) {
   while((1<<i)<size)i++;
   t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
-  assert(t+size>(uintptr_t)heap.end);
   unlock(&biglock);
   return (void*)t;
 }
