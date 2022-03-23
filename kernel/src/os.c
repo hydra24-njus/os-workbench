@@ -9,6 +9,7 @@ static void os_run() {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   for(int i=1;i<100;i++)printf("%x\n",pmm->alloc(i));
+  printf("finished.\n");
   while (1) ;
 }
 
