@@ -1,7 +1,6 @@
 #include <common.h>
-#include <lock.h>
 void* tmp;
-struct spinlock_t biglock;
+spinlock_t biglock;
 static void *kalloc(size_t size) {
   lock(&biglock);
   uintptr_t t=(uintptr_t)tmp;
