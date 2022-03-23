@@ -7,6 +7,7 @@ static void *kalloc(size_t size) {
   int i=0;
   while((1<<i)<size)i++;
   t=t+((1<<i)-t%(1<<i));
+  printf("heap.end=%x\n",heap.end);
   if(t>(uintptr_t)heap.end)return NULL;
   tmp=(void*)t+size;
   unlock(&biglock);
