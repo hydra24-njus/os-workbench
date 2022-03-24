@@ -10,7 +10,7 @@ static void *kalloc(size_t size) {
   tmp=(void*)t+size;
   //if((uintptr_t)tmp>(uintptr_t)heap.end);
   unlock(&biglock);
-  assert(tmp>heap.end);
+  assert(tmp<heap.end);
   return (void*)t;
 }
 
