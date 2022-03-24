@@ -8,9 +8,9 @@ static void *kalloc(size_t size) {
   while((1<<i)<size)i++;
   if(t%(1<<i)!=0)t=t+((1<<i)-t%(1<<i));
   tmp=(void*)t+size;
+  if(tmp>=heap.end)t=0;
   //if((uintptr_t)tmp>(uintptr_t)heap.end);
   unlock(&biglock);
-  assert(tmp<heap.end);
   return (void*)t;
 }
 
