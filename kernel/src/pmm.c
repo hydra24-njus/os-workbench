@@ -1,16 +1,14 @@
 #include <common.h>
-void* tmp;
+void* tmp[8];
 spinlock_t biglock;
 static void *kalloc(size_t size) {
-  lock(&biglock);
-  uintptr_t t=(uintptr_t)tmp;
+  
+  uintptr_t t=(uintptr_t)tmp[cpu_current()];
   int i=0;
   while((1<<i)<size)i++;
   if(t%(1<<i)!=0)t=t+((1<<i)-t%(1<<i));
-  tmp=(void*)t+size;
+  tmp[cpu_current()]=(void*)t+size;
   //assert(tmp<heap.end);
-  if(tmp>=heap.end){t=0;assert(0);}
-  unlock(&biglock);
   return (void*)t;
 }
 
@@ -18,9 +16,10 @@ static void kfree(void *ptr) {
 }
 
 static void pmm_init() {
-  tmp=heap.start;
   spinlock_init(&biglock);
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
+  uintptr_t ttt=pmsize/8;
+  for(int i=0;i<8;i++)tmp[i]=(void*)((uintptr_t)heap.start+ttt*i);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
 
