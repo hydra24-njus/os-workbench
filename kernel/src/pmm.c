@@ -50,7 +50,7 @@ uintptr_t slowpath_alloc(size_t size){
 }
 
 static void *kalloc(size_t size1) {
-  uintptr_t addr=0;
+  uintptr_t addr=0;int cpu=cpu_current();
   size_t size=power2(size1);
   if(size>4096){
   if(size>=(16<<20))return NULL;
@@ -64,7 +64,7 @@ static void *kalloc(size_t size1) {
   while((1<<bitsize)!=size)bitsize++;
   bitsize-=4;
   struct page_t* ptr=NULL;
-  ptr=buddy[cpu_current()][bitsize];
+  ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
     ptr = sbrk(PAGE_SIZE);
@@ -74,7 +74,7 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     ptr->type=size;
-    buddy[cpu_current()][bitsize]=ptr;
+    buddy[cpu][bitsize]=ptr;
     ptr->next=NULL;
     unlock(&biglock);
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
@@ -93,8 +93,8 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     tmp->type=size;
-    tmp->next=buddy[cpu_current()][bitsize];
-    buddy[cpu_current()][bitsize]=tmp;
+    tmp->next=buddy[cpu][bitsize];
+    buddy[cpu][bitsize]=tmp;
     unlock(&biglock);
     ptr=tmp;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->type=size;ptr->cur=0;
@@ -119,8 +119,8 @@ static void *kalloc(size_t size1) {
 static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>heapend)return;
-  struct page_t* header=(struct page_t*)(addr-addr%16384);//考虑位操作优化
-  addr=(addr%16384);
+  struct page_t* header=(struct page_t*)(addr-addr%PAGE_SIZE);//考虑位操作优化
+  addr=(addr%PAGE_SIZE);
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
     header->now--;
@@ -135,6 +135,7 @@ static void kfree(void *ptr) {
   }
   int i=(addr-1024)/header->type;
   header->map[i]=false;
+  header->cur=i;
   header->now--;
   return;
 }
