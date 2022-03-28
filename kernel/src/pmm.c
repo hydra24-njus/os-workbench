@@ -75,14 +75,14 @@ static void *kalloc(size_t size) {
   if (ptr == NULL){ //该cpu没有页
     ptr = new_page();
     switch (size){
-    case 32  :ptr->type=32  ;break;
-    case 64  :ptr->type=64  ;break;
-    case 128 :ptr->type=128 ;break;
-    case 256 :ptr->type=256 ;break;
-    case 512 :ptr->type=512 ;break;
-    case 1024:ptr->type=1024;break;
-    case 2048:ptr->type=2048;break;
-    case 4096:ptr->type=4096;break;
+    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
+    case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
+    case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
+    case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
+    case 512 :ptr->type=512 ;buddy[cpu_current()].p512=ptr ;break;
+    case 1024:ptr->type=1024;buddy[cpu_current()].p1024=ptr;break;
+    case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
+    case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
     }
   }
   else{
