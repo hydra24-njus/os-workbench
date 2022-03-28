@@ -103,6 +103,8 @@ static void *kalloc(size_t size) {
       ptr->map[x]|=y;
       ptr->now++;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
+      if(size==2048)addr+=1024;
+      else if(size==4096)addr+=3072;
       break;
     }
   }
