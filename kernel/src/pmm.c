@@ -46,15 +46,25 @@ struct page_ctl{
 };
 static void *kalloc(size_t size) {
   size=power2(size);
+  void*ptr=NULL;
   switch(size){
-    case 32:break;
-    case 64:break;
-    case 128:break;
-    case 256:break;
-    case 512:break;
-    case 1024:break;
-    case 2048:break;
-    case 4096:break;
+    case 32:ptr=buddy[cpu_current()].p32;break;
+    case 64:ptr=buddy[cpu_current()].p64;break;
+    case 128:ptr=buddy[cpu_current()].p128;break;
+    case 256:ptr=buddy[cpu_current()].p256;break;
+    case 512:ptr=buddy[cpu_current()].p512;break;
+    case 1024:ptr=buddy[cpu_current()].p1024;break;
+    case 2048:ptr=buddy[cpu_current()].p2048;break;
+    case 4096:ptr=buddy[cpu_current()].p4096;break;
+  }
+  if(ptr==NULL){//没有匹配的页
+    
+  }
+  else{
+    while(((struct page_ctl*)ptr)->next!=NULL){
+      if(((struct page_ctl*)ptr)->now<((struct page_ctl*)ptr)->max)break;
+      ptr=((struct page_ctl*)ptr)->next;
+    }
   }
   return 0;
 }
