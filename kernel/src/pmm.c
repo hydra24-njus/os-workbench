@@ -134,8 +134,23 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  if((uintptr_t)ptr>heapend)return;
-  
+  uintptr_t addr=(uintptr_t)ptr;
+  if(addr>heapend)return;
+  struct page_t* header=(struct page_t*)(addr-addr%8192);//考虑位操作优化
+  addr=(addr%8192);
+  if(header->type==2048){//2048 4096 6144
+    int i=addr/2048;
+    header->map[0]-=(1<<i);
+    return;
+  }
+  else if(header->type==4096){
+    header->map[0]=0;
+    return;
+  }
+  int i=(addr-1024)/header->type;
+  int x=i/64,y=i%64;
+  header->map[x]-=(1<<y);
+  return;
 }
 
 static void pmm_init() {
