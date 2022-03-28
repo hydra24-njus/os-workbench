@@ -119,11 +119,8 @@ static void *kalloc(size_t size1) {
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
-    int x=i/64;
-    uint64_t y=1<<(i%64);
-    debug("x=%d,y=%lx\n",x,y);
-    if(((ptr->map[x])&y)==0){//找到页中空闲位置，计算地址
-      ptr->map[x]|=y;
+    if((ptr->map[i])==0){//找到页中空闲位置，计算地址
+      ptr->map[i]=true;
       ptr->now++;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
       if(size==2048)addr+=1024;
