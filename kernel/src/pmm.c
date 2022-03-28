@@ -18,7 +18,6 @@ struct page_t{
   union{
     uint8_t size[8192];
     struct{
-      void* prev;
       void* next;
       size_t type;
       uint64_t map[4];
@@ -89,8 +88,8 @@ static void *kalloc(size_t size1) {
     case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
     case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
     }
+    ptr->next=NULL;
     unlock(&biglock);
-    ptr->prev=NULL;ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;
   }
   else{
@@ -106,7 +105,6 @@ static void *kalloc(size_t size1) {
     tmp->next=ptr;
     ptr->next=NULL;
     unlock(&biglock);
-    //debug("page\n");
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
   debug("ptr=%x\n",ptr);
