@@ -62,6 +62,7 @@ static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
   struct page_t* ptr=NULL;
+  for(int i=0;i<4;i++)ptr->map[i]=0;
   switch(size){
     case 32  :ptr=buddy[cpu_current()].p32  ;break;
     case 64  :ptr=buddy[cpu_current()].p64  ;break;
@@ -74,6 +75,8 @@ static void *kalloc(size_t size) {
   }
   if (ptr == NULL){ //该cpu没有页
     ptr = new_page();
+    ptr->prev=NULL;ptr->next=NULL;
+    ptr->now=0;ptr->max=7168/size;
     switch (size){
     case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
     case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
