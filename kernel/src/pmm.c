@@ -52,7 +52,7 @@ void* new_page(){//TODO();
   return tmp;
 }
 void* slowpath_alloc(size_t size){
-
+  heapend-=size;
   return NULL;
 }
 
