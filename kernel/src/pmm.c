@@ -45,12 +45,6 @@ unsigned int power2(unsigned int size){
   if(size<32)size=32;
   return size;
 }
-void* new_page(){//TODO();
-  void* tmp;
-  tmp=sbrk(8192);
-  debug("new page.tmp=%x.\n",tmp);
-  return tmp;
-}
 uintptr_t slowpath_alloc(size_t size){
   uintptr_t tmp=heapend;
   tmp-=size;
@@ -60,9 +54,9 @@ uintptr_t slowpath_alloc(size_t size){
   return heapend;
 }
 
-static void *kalloc(size_t size) {
+static void *kalloc(size_t size1) {
   uintptr_t addr=0;
-  size=power2(size);
+  size_t size=power2(size1);
   if(size>4096){
     lock(&biglock);
     addr=slowpath_alloc(size);
@@ -83,10 +77,7 @@ static void *kalloc(size_t size) {
   }
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
-    ptr = new_page();
-    ptr->prev=NULL;ptr->next=NULL;
-    ptr->now=0;ptr->max=7168/size;
-    unlock(&biglock);
+    ptr = sbrk(8192);
     switch (size){
     case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
     case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
@@ -97,6 +88,9 @@ static void *kalloc(size_t size) {
     case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
     case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
     }
+    unlock(&biglock);
+    ptr->prev=NULL;ptr->next=NULL;
+    ptr->now=0;ptr->max=7168/size;
   }
   else{
     while(ptr->next!=NULL){
@@ -107,7 +101,7 @@ static void *kalloc(size_t size) {
   if(ptr->now>=ptr->max){//没有空闲页
     struct page_t* tmp=ptr;
     lock(&biglock);
-    ptr = new_page();
+    ptr = sbrk(8192);
     tmp->next=ptr;
     unlock(&biglock);
     ptr->prev=tmp;
@@ -120,7 +114,7 @@ static void *kalloc(size_t size) {
     int x=i/64;
     uint64_t y=1<<(i%64);
     if(((ptr->map[x])&y)==0){//找到页中空闲位置，计算地址
-    debug("i=%d\n",i);
+      debug("i=%d\n",i);
       ptr->map[x]|=y;
       ptr->now++;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
@@ -140,16 +134,19 @@ static void kfree(void *ptr) {
   addr=(addr%8192);
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
+    header->now--;
     header->map[0]-=(1<<i);
     return;
   }
   else if(header->type==4096){
+    header->now--;
     header->map[0]=0;
     return;
   }
   int i=(addr-1024)/header->type;
   int x=i/64,y=i%64;
   header->map[x]-=(1<<y);
+  header->now--;
   return;
 }
 
