@@ -20,7 +20,7 @@ struct page_t{
     struct{
       void* next;
       size_t type;
-      uint64_t map[4];
+      bool map[256];
       int max,now;
     };
   };
