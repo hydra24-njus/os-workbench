@@ -21,7 +21,7 @@ struct page_t{
       void* next;
       size_t type;
       bool map[480];
-      int max,now;
+      int max,now,cur;
     };
   };
 };
@@ -57,8 +57,7 @@ static void *kalloc(size_t size1) {
   uintptr_t addr=0;
   size_t size=power2(size1);
   if(size>4096){
-  return NULL;
-  if(size>(16<<20))return NULL;
+  if(size>=(16<<20))return NULL;
     lock(&biglock);
     addr=slowpath_alloc(size);
     debug("addr=%x\t%d\n",addr,addr);
@@ -96,7 +95,7 @@ static void *kalloc(size_t size1) {
     }
     ptr->next=NULL;
     unlock(&biglock);
-    ptr->now=0;ptr->max=15360/size;
+    ptr->now=0;ptr->max=15360/size;ptr->cur=0;
   }
   else{
     while(ptr->next!=NULL){
@@ -123,13 +122,14 @@ static void *kalloc(size_t size1) {
     }
     unlock(&biglock);
     ptr=tmp;
-    ptr->now=0;ptr->max=15360/size;ptr->type=size;
+    ptr->now=0;ptr->max=15360/size;ptr->type=size;ptr->cur=0;
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
-    if((ptr->map[i])==0){//找到页中空闲位置，计算地址
-      ptr->map[i]=true;
-      ptr->now++;
+    int j=(i+ptr->cur)%ptr->type;
+    if((ptr->map[j])==0){//找到页中空闲位置，计算地址
+      ptr->map[j]=true;
+      ptr->now++;ptr->cur=j;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
