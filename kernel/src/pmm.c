@@ -37,6 +37,7 @@ struct page_ctl{
   union{
     uint8_t size[8192];
     struct{
+      void* prev;
       void* next;
       size_t type;
       uint64_t map[4];
@@ -48,8 +49,9 @@ void new_page(){//TODO();
 
 }
 static void *kalloc(size_t size) {
+  uintptr_t addr=0;
   size=power2(size);
-  void*ptr=NULL;
+  struct page_ctl* ptr=NULL;
   switch(size){
     case 32:ptr=buddy[cpu_current()].p32;break;
     case 64:ptr=buddy[cpu_current()].p64;break;
@@ -60,16 +62,28 @@ static void *kalloc(size_t size) {
     case 2048:ptr=buddy[cpu_current()].p2048;break;
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
-  if(ptr==NULL){//没有匹配的页
+  if(ptr==NULL){//该cpu没有页
     new_page();
   }
   else{
     while(ptr!=NULL){
-      if(((struct page_ctl*)ptr)->now<((struct page_ctl*)ptr)->max)break;
-      ptr=((struct page_ctl*)ptr)->next;
+      if(ptr->now<ptr->max)break;
+      ptr=ptr->next;
     }
   }
-  return 0;
+  if(ptr==NULL){//没有空闲页
+    new_page();
+  }
+  for(int i=0;i<ptr->max;i++){
+    int x=i/64;
+    uint64_t y=1<<(i%64);
+    if(((ptr->map[x])&y)==0){//找到页中空闲位置，计算地址
+      ptr->map[x]|=y;
+      ptr->now++;
+      addr=(uintptr_t)ptr+1024+ptr->type*i;
+    }
+  }
+  return (void*)addr;
 }
 
 static void kfree(void *ptr) {
