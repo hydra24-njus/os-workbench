@@ -119,6 +119,7 @@ static void *kalloc(size_t size) {
       addr=(uintptr_t)ptr+1024+ptr->type*i;
     }
   }
+  printf("addr=%x\n",addr);
   return (void*)addr;
 }
 
