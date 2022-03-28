@@ -8,11 +8,13 @@ static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
-  pmm->alloc(4096);
-  void* tmp1=pmm->alloc(4096);
-  void* tmp2=pmm->alloc(4096);
+  void* tmp=pmm->alloc(16);
+  void* tmp1=pmm->alloc(16);
+  void* tmp2=pmm->alloc(16);
   pmm->free(tmp1);pmm->free(tmp2);
-  pmm->alloc(4096);pmm->alloc(4096);pmm->alloc(4096);pmm->alloc(4096);
+  pmm->alloc(16);pmm->alloc(16);pmm->alloc(17);pmm->alloc(18);
+  pmm->free(tmp);
+  pmm->alloc(16);pmm->alloc(16);pmm->alloc(17);pmm->alloc(18);
   while (1) ;
 }
 
