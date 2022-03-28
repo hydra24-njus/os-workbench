@@ -75,9 +75,13 @@ static void *kalloc(size_t size1) {
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
   if (ptr == NULL){ //该cpu没有页
-    debug("newcpupage\n");
     lock(&biglock);
     ptr = sbrk(8192);
+    if(ptr==0){
+      unlock(&biglock);
+      addr=0;
+      goto ret;
+    }
     switch (size){
     case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
     case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
@@ -102,6 +106,10 @@ static void *kalloc(size_t size1) {
     struct page_t* tmp=ptr;
     lock(&biglock);
     ptr = sbrk(8192);
+    if(ptr==NULL){
+      unlock(&biglock);
+      goto ret;
+    }
     tmp->next=ptr;
     //debug("newpage1\n");
     ptr->next=0;
@@ -126,6 +134,7 @@ static void *kalloc(size_t size1) {
     }
   }
   debug("size=%d\taddr=%x\t%d\n",size,addr,addr);
+  ret:
   return (void*)addr;
 }
 
