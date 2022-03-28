@@ -54,6 +54,12 @@ void* new_page(){//TODO();
 static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
+  if(size>4096){
+    lock(&biglock);
+    addr=(uintptr_t)sbrk(size);
+    unlock(&biglock);
+    return (void*)addr;
+  }
   struct page_t* ptr=NULL;
   switch(size){
     case 32  :ptr=buddy[cpu_current()].p32  ;break;
