@@ -107,6 +107,7 @@ static void *kalloc(size_t size1) {
     unlock(&biglock);
             debug("newpage2\n");
     ptr->prev=tmp;
+            debug("newpage3\n");
     ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
 
