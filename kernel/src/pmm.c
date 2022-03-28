@@ -130,7 +130,7 @@ static void *kalloc(size_t size1) {
     if((ptr->map[j])==false){//找到页中空闲位置，计算地址
       ptr->map[j]=true;
       ptr->now++;ptr->cur=(j+1)%ptr->max;
-      addr=(uintptr_t)ptr+1024+ptr->type*i;
+      addr=(uintptr_t)ptr+1024+ptr->type*j;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
       break;
