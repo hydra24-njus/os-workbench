@@ -103,16 +103,24 @@ static void *kalloc(size_t size1) {
     }
   }
   if(ptr->now>=ptr->max){//没有空闲页
-  debug("newpage\n");
-    struct page_t* tmp=ptr;
+    
     lock(&biglock);
-    ptr = sbrk(8192);
-    if(ptr==NULL){
+    struct page_t* tmp = sbrk(8192);
+    if(tmp==NULL){
       unlock(&biglock);
       goto ret;
     }
-    tmp->next=ptr;
-    ptr->next=0;
+    switch (size){
+      case 32  :tmp->type=32  ;tmp->next=buddy[cpu_current()].p32  ;buddy[cpu_current()].p32=tmp  ;break;
+      case 64  :tmp->type=64  ;tmp->next=buddy[cpu_current()].p64  ;buddy[cpu_current()].p64=tmp  ;break;
+      case 128 :tmp->type=128 ;tmp->next=buddy[cpu_current()].p128 ;buddy[cpu_current()].p128=tmp ;break;
+      case 256 :tmp->type=256 ;tmp->next=buddy[cpu_current()].p256 ;buddy[cpu_current()].p256=tmp ;break;
+      case 512 :tmp->type=512 ;tmp->next=buddy[cpu_current()].p512 ;buddy[cpu_current()].p512=tmp ;break;
+      case 1024:tmp->type=1024;tmp->next=buddy[cpu_current()].p1024;buddy[cpu_current()].p1024=tmp;break;
+      case 2048:tmp->type=2048;tmp->next=buddy[cpu_current()].p2048;buddy[cpu_current()].p2048=tmp;break;
+      case 4096:tmp->type=4096;tmp->next=buddy[cpu_current()].p4096;buddy[cpu_current()].p4096=tmp;break;
+    }
+    
     unlock(&biglock);
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
