@@ -121,7 +121,7 @@ static void *kalloc(size_t size1) {
   for(int i=0;i<ptr->max;i++){
     int x=i/64;
     uint64_t y=1<<(i%64);
-    debug("x=%d,y=%lu\n",x,y);
+    debug("x=%d,y=%lx\n",x,y);
     if(((ptr->map[x])&y)==0){//找到页中空闲位置，计算地址
       ptr->map[x]|=y;
       ptr->now++;
