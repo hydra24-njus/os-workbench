@@ -51,20 +51,23 @@ void* new_page(){//TODO();
   debug("new page.tmp=%x.\n",tmp);
   return tmp;
 }
-void* slowpath_alloc(size_t size){
-  lock(&biglock);
-  heapend-=size;
-  heapend-=heapend%size;
-  debug("large_addr=%x\t%d\n",heapend,heapend);
-  unlock(&biglock);
-  return (void*)heapend;
+uintptr_t slowpath_alloc(size_t size){
+  uintptr_t tmp=heapend;
+  tmp-=size;
+  tmp-=heapend%size;
+  if(tmp<=heaptr)return 0;
+  heapend=tmp;
+  return heapend;
 }
 
 static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
   if(size>4096){
-    return slowpath_alloc(size);
+    lock(&biglock);
+    addr=slowpath_alloc(size);
+    unlock(&biglock);
+    return (void*)addr;
   }
   struct page_t* ptr=NULL;
   switch(size){
