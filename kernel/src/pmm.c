@@ -46,9 +46,7 @@ unsigned int power2(unsigned int size){
 }
 void* new_page(){//TODO();
   void* tmp;
-  lock(&biglock);
   tmp=sbrk(8192);
-  unlock(&biglock);
   debug("new page.tmp=%x.\n",tmp);
   return tmp;
 }
@@ -68,9 +66,11 @@ static void *kalloc(size_t size) {
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
   if (ptr == NULL){ //该cpu没有页
+    lock(&biglock);
     ptr = new_page();
     ptr->prev=NULL;ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;
+    unlock(&biglock);
     switch (size){
     case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
     case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
@@ -92,17 +92,7 @@ static void *kalloc(size_t size) {
     struct page_t* tmp=ptr;
     ptr = new_page();
     ptr->prev=tmp;tmp->next=ptr;ptr->next=NULL;
-    ptr->now=0;ptr->max=7168/size;
-    switch (size){
-    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
-    case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
-    case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
-    case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
-    case 512 :ptr->type=512 ;buddy[cpu_current()].p512=ptr ;break;
-    case 1024:ptr->type=1024;buddy[cpu_current()].p1024=ptr;break;
-    case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
-    case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
-    }
+    ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
   debug("ptr=%x\n",ptr);
   for(int i=0;i<ptr->max;i++){
