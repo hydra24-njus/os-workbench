@@ -37,7 +37,7 @@ unsigned int power2(unsigned int size){
   size|=size>>8;
   size|=size>>16;
   size++;
-  if(size<32)size=32;
+  if(size<16)size=16;
   return size;
 }
 uintptr_t slowpath_alloc(size_t size){
