@@ -66,6 +66,7 @@ static void *kalloc(size_t size) {
   if(size>4096){
     lock(&biglock);
     addr=slowpath_alloc(size);
+    debug("addr=%x\t%d\n",addr,addr);
     unlock(&biglock);
     return (void*)addr;
   }
