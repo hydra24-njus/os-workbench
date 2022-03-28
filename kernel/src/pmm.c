@@ -103,6 +103,7 @@ static void *kalloc(size_t size1) {
     debug("newpage\n");
     struct page_t* tmp=ptr;
     lock(&biglock);
+    debug("newpage2\n");
     ptr = sbrk(8192);
     tmp->next=ptr;
     unlock(&biglock);
