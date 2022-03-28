@@ -111,6 +111,7 @@ static void *kalloc(size_t size) {
     case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
     }
   }
+  debug("ptr=%x\n",ptr);
   for(int i=0;i<ptr->max;i++){
     int x=i/64;
     uint64_t y=1<<(i%64);
