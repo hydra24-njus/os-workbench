@@ -9,8 +9,10 @@ static void os_run() {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   void* tmp=pmm->alloc(4096);
-  pmm->free(tmp);
-  pmm->alloc(4096);
+  void* tmp1=pmm->alloc(4096);
+  void* tmp2=pmm->alloc(4096);
+  pmm->free(tmp);pmm->free(tmp1);pmm->free(tmp2);
+  pmm->alloc(4096);pmm->alloc(4096);pmm->alloc(4096);pmm->alloc(4096);
   while (1) ;
 }
 
