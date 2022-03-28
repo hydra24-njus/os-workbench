@@ -120,8 +120,8 @@ static void *kalloc(size_t size1) {
       case 2048:tmp->type=2048;tmp->next=buddy[cpu_current()].p2048;buddy[cpu_current()].p2048=tmp;break;
       case 4096:tmp->type=4096;tmp->next=buddy[cpu_current()].p4096;buddy[cpu_current()].p4096=tmp;break;
     }
-    
     unlock(&biglock);
+    ptr=tmp;
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
   if(ptr==NULL)return NULL;
