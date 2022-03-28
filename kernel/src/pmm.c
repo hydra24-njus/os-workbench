@@ -74,7 +74,7 @@ static void *kalloc(size_t size) {
     case 2048:ptr=buddy[cpu_current()].p2048;break;
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
-  if (ptr->next == NULL){ //该cpu没有页
+  if (ptr == NULL){ //该cpu没有页
     ptr = new_page();
     ptr->prev=NULL;ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;
@@ -90,7 +90,7 @@ static void *kalloc(size_t size) {
     }
   }
   else{
-    while(ptr!=NULL){
+    while(ptr->next!=NULL){
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
