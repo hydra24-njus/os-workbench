@@ -143,7 +143,7 @@ static void kfree(void *ptr) {
     return;
   }
   int i=(addr-1024)/header->type;
-  int x=i/64,y=i%64;
+  int x=i/64;uint64_t y=i%64;
   header->map[x]-=(1<<y);
   header->now--;
   return;
