@@ -102,7 +102,6 @@ static void *kalloc(size_t size1) {
       ptr=ptr->next;
     }
   }
-  debug("ptr=%x\n",ptr);
   if(ptr->now>=ptr->max){//没有空闲页
   debug("newpage\n");
     struct page_t* tmp=ptr;
