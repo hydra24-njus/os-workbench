@@ -48,6 +48,7 @@ unsigned int power2(unsigned int size){
   size|=size>>8;
   size|=size>>16;
   size++;
+  if(size<32)size=32;
   return size;
 }
 void* new_page(){//TODO();
@@ -62,7 +63,6 @@ static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
   struct page_t* ptr=NULL;
-  for(int i=0;i<4;i++)ptr->map[i]=0;
   switch(size){
     case 32  :ptr=buddy[cpu_current()].p32  ;break;
     case 64  :ptr=buddy[cpu_current()].p64  ;break;
@@ -73,7 +73,7 @@ static void *kalloc(size_t size) {
     case 2048:ptr=buddy[cpu_current()].p2048;break;
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
-  if (ptr == NULL){ //该cpu没有页
+  if (ptr->next == NULL){ //该cpu没有页
     ptr = new_page();
     ptr->prev=NULL;ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;
@@ -94,8 +94,21 @@ static void *kalloc(size_t size) {
       ptr=ptr->next;
     }
   }
-  if(ptr==NULL){//没有空闲页
-    new_page();
+  if(ptr->now>=ptr->max){//没有空闲页
+    struct page_t* tmp=ptr;
+    ptr = new_page();
+    ptr->prev=tmp;tmp->next=ptr;ptr->next=NULL;
+    ptr->now=0;ptr->max=7168/size;
+    switch (size){
+    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
+    case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
+    case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
+    case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
+    case 512 :ptr->type=512 ;buddy[cpu_current()].p512=ptr ;break;
+    case 1024:ptr->type=1024;buddy[cpu_current()].p1024=ptr;break;
+    case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
+    case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
+    }
   }
   for(int i=0;i<ptr->max;i++){
     int x=i/64;
