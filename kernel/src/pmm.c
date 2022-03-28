@@ -107,6 +107,7 @@ static void *kalloc(size_t size) {
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
   debug("ptr=%x\n",ptr);
+  if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
     int x=i/64;
     uint64_t y=1<<(i%64);
