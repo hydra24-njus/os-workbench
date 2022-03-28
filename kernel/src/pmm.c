@@ -2,10 +2,37 @@
 uintptr_t heaptr;
 spinlock_t biglock;
 
+//数据结构
+struct buddy_table{
+  void* p32;
+  void* p64;
+  void* p128;
+  void* p256;
+  void* p512;
+  void* p1024;
+  void* p2048;
+  void* p4096;
+}buddy[8];//smp<=8
+struct page_t{
+  union{
+    uint8_t size[8192];
+    struct{
+      void* prev;
+      void* next;
+      size_t type;
+      uint64_t map[4];
+      int max,now;
+    };
+  };
+};
+
 //辅助函数
 void _init(){
   spinlock_init(&biglock);
   heaptr=(uintptr_t)heap.start;
+  for(int i=0;i<8;i++){
+    buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
+  }
 }
 void* sbrk(int size){
   uintptr_t tmp=heaptr;
@@ -23,47 +50,40 @@ unsigned int power2(unsigned int size){
   size++;
   return size;
 }
-struct buddy_table{
-  void* p32;
-  void* p64;
-  void* p128;
-  void* p256;
-  void* p512;
-  void* p1024;
-  void* p2048;
-  void* p4096;
-}buddy[8];//smp<=8
-struct page_ctl{
-  union{
-    uint8_t size[8192];
-    struct{
-      void* prev;
-      void* next;
-      size_t type;
-      uint64_t map[4];
-      int max,now;
-    };
-  };
-};
-void new_page(){//TODO();
-
+void* new_page(){//TODO();
+  void* tmp;
+  lock(&biglock);
+  tmp=sbrk(8192);
+  unlock(&biglock);
+  return tmp;
 }
+
 static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
-  struct page_ctl* ptr=NULL;
+  struct page_t* ptr=NULL;
   switch(size){
-    case 32:ptr=buddy[cpu_current()].p32;break;
-    case 64:ptr=buddy[cpu_current()].p64;break;
-    case 128:ptr=buddy[cpu_current()].p128;break;
-    case 256:ptr=buddy[cpu_current()].p256;break;
-    case 512:ptr=buddy[cpu_current()].p512;break;
+    case 32  :ptr=buddy[cpu_current()].p32  ;break;
+    case 64  :ptr=buddy[cpu_current()].p64  ;break;
+    case 128 :ptr=buddy[cpu_current()].p128 ;break;
+    case 256 :ptr=buddy[cpu_current()].p256 ;break;
+    case 512 :ptr=buddy[cpu_current()].p512 ;break;
     case 1024:ptr=buddy[cpu_current()].p1024;break;
     case 2048:ptr=buddy[cpu_current()].p2048;break;
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
-  if(ptr==NULL){//该cpu没有页
-    new_page();
+  if (ptr == NULL){ //该cpu没有页
+    ptr = new_page();
+    switch (size){
+    case 32  :ptr->type=32  ;break;
+    case 64  :ptr->type=64  ;break;
+    case 128 :ptr->type=128 ;break;
+    case 256 :ptr->type=256 ;break;
+    case 512 :ptr->type=512 ;break;
+    case 1024:ptr->type=1024;break;
+    case 2048:ptr->type=2048;break;
+    case 4096:ptr->type=4096;break;
+    }
   }
   else{
     while(ptr!=NULL){
