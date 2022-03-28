@@ -10,7 +10,7 @@ void _init(){
 void* sbrk(int size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
-  if(heaptr>heap.end)return NULL;
+  if(heaptr>(uintptr_t)heap.end)return NULL;
   else return (void*)tmp;
 }
 unsigned int power2(unsigned int size){
@@ -33,8 +33,30 @@ struct buddy_table{
   void* p2048;
   void* p4096;
 }buddy[8];//smp<=8
+struct page_ctl{
+  union{
+    uint8_t size[8192];
+    struct{
+      void* next;
+      size_t type;
+      uint64_t map[4];
+      int max,now;
+    };
+  };
+};
 static void *kalloc(size_t size) {
-  //test git pull
+  size=power2(size);
+  switch(size){
+    case 32:break;
+    case 64:break;
+    case 128:break;
+    case 256:break;
+    case 512:break;
+    case 1024:break;
+    case 2048:break;
+    case 4096:break;
+  }
+  return 0;
 }
 
 static void kfree(void *ptr) {
