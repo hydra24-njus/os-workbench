@@ -133,8 +133,8 @@ static void *kalloc(size_t size1) {
       break;
     }
   }
-  debug("size=%d\taddr=%x\t%d\n",size,addr,addr);
   ret:
+  debug("size=%d\taddr=%x\t%d\n",size,addr,addr);
   return (void*)addr;
 }
 
