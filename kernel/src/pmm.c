@@ -2,25 +2,21 @@
 uintptr_t heaptr;
 uintptr_t heapend;
 spinlock_t biglock;
-
+#define HEAD_SIZE 1024
+#define PAGE_SIZE 8192
+#define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
 //数据结构
-struct buddy_table{
-  void* p32;
-  void* p64;
-  void* p128;
-  void* p256;
-  void* p512;
-  void* p1024;
-  void* p2048;
-  void* p4096;
-}buddy[8];//smp<=8
+enum{
+  p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096
+};
+void* buddy[8][9];//smp<=8
 struct page_t{
   union{
-    uint8_t size[16384];
+    uint8_t size[PAGE_SIZE];
     struct{
       void* next;
       size_t type;
-      bool map[480];
+      bool map[512];
       int max,now,cur;
     };
   };
@@ -64,38 +60,24 @@ static void *kalloc(size_t size1) {
     unlock(&biglock);
     return (void*)addr;
   }
+  int bitsize=3;
+  while((1<<bitsize)!=size)bitsize++;
+  bitsize-=4;
   struct page_t* ptr=NULL;
-  switch(size){
-    case 32  :ptr=buddy[cpu_current()].p32  ;break;
-    case 64  :ptr=buddy[cpu_current()].p64  ;break;
-    case 128 :ptr=buddy[cpu_current()].p128 ;break;
-    case 256 :ptr=buddy[cpu_current()].p256 ;break;
-    case 512 :ptr=buddy[cpu_current()].p512 ;break;
-    case 1024:ptr=buddy[cpu_current()].p1024;break;
-    case 2048:ptr=buddy[cpu_current()].p2048;break;
-    case 4096:ptr=buddy[cpu_current()].p4096;break;
-  }
+  ptr=buddy[cpu_current()][bitsize];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
-    ptr = sbrk(16384);
+    ptr = sbrk(PAGE_SIZE);
     if(ptr==0){
       unlock(&biglock);
       addr=0;
       goto ret;
     }
-    switch (size){
-    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
-    case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
-    case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
-    case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
-    case 512 :ptr->type=512 ;buddy[cpu_current()].p512=ptr ;break;
-    case 1024:ptr->type=1024;buddy[cpu_current()].p1024=ptr;break;
-    case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
-    case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
-    }
+    ptr->type=size;
+    buddy[cpu_current()][bitsize]=ptr;
     ptr->next=NULL;
     unlock(&biglock);
-    ptr->now=0;ptr->max=15360/size;ptr->cur=0;
+    ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
   else{
     while(ptr->next!=NULL){
@@ -105,24 +87,17 @@ static void *kalloc(size_t size1) {
   }
   if(ptr->now>=ptr->max){//没有空闲页
     lock(&biglock);
-    struct page_t* tmp = sbrk(16384);
+    struct page_t* tmp = sbrk(PAGE_SIZE);
     if(tmp==NULL){
       unlock(&biglock);
       goto ret;
     }
-    switch (size){
-      case 32  :tmp->type=32  ;tmp->next=buddy[cpu_current()].p32  ;buddy[cpu_current()].p32=tmp  ;break;
-      case 64  :tmp->type=64  ;tmp->next=buddy[cpu_current()].p64  ;buddy[cpu_current()].p64=tmp  ;break;
-      case 128 :tmp->type=128 ;tmp->next=buddy[cpu_current()].p128 ;buddy[cpu_current()].p128=tmp ;break;
-      case 256 :tmp->type=256 ;tmp->next=buddy[cpu_current()].p256 ;buddy[cpu_current()].p256=tmp ;break;
-      case 512 :tmp->type=512 ;tmp->next=buddy[cpu_current()].p512 ;buddy[cpu_current()].p512=tmp ;break;
-      case 1024:tmp->type=1024;tmp->next=buddy[cpu_current()].p1024;buddy[cpu_current()].p1024=tmp;break;
-      case 2048:tmp->type=2048;tmp->next=buddy[cpu_current()].p2048;buddy[cpu_current()].p2048=tmp;break;
-      case 4096:tmp->type=4096;tmp->next=buddy[cpu_current()].p4096;buddy[cpu_current()].p4096=tmp;break;
-    }
+    tmp->type=size;
+    tmp->next=buddy[cpu_current()][bitsize];
+    buddy[cpu_current()][bitsize]=tmp;
     unlock(&biglock);
     ptr=tmp;
-    ptr->now=0;ptr->max=15360/size;ptr->type=size;ptr->cur=0;
+    ptr->now=0;ptr->max=DATA_SIZE/size;ptr->type=size;ptr->cur=0;
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
@@ -168,9 +143,7 @@ static void pmm_init() {
   //init
   spinlock_init(&biglock);
   heaptr=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
-  for(int i=0;i<8;i++){
-    buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
-  }
+  memset(buddy,0,sizeof(buddy));
   //init
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
