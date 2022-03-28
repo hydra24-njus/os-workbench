@@ -27,13 +27,6 @@ struct page_t{
 };
 
 //辅助函数
-void _init(){
-  spinlock_init(&biglock);
-  heaptr=(uintptr_t)heap.start;
-  for(int i=0;i<8;i++){
-    buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
-  }
-}
 void* sbrk(int size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
@@ -132,7 +125,13 @@ static void kfree(void *ptr) {
 }
 
 static void pmm_init() {
-  _init();
+  //init
+  spinlock_init(&biglock);
+  heaptr=(uintptr_t)heap.start;
+  for(int i=0;i<8;i++){
+    buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
+  }
+  //init
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
