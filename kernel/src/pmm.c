@@ -83,7 +83,7 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     switch (size){
-    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
+    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;debug("32");break;
     case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
     case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
     case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
