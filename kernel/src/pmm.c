@@ -1,5 +1,6 @@
 #include <common.h>
 uintptr_t heaptr;
+uintptr_t heapend;
 spinlock_t biglock;
 
 //数据结构
@@ -30,7 +31,7 @@ struct page_t{
 void* sbrk(int size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
-  if(heaptr>(uintptr_t)heap.end)return NULL;
+  if(heaptr>(uintptr_t)heapend)return NULL;
   else return (void*)tmp;
 }
 unsigned int power2(unsigned int size){
@@ -49,6 +50,10 @@ void* new_page(){//TODO();
   tmp=sbrk(8192);
   debug("new page.tmp=%x.\n",tmp);
   return tmp;
+}
+void* slowpath_alloc(size_t size){
+
+  return NULL;
 }
 
 static void *kalloc(size_t size) {
@@ -126,7 +131,7 @@ static void kfree(void *ptr) {
 static void pmm_init() {
   //init
   spinlock_init(&biglock);
-  heaptr=(uintptr_t)heap.start;
+  heaptr=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
   for(int i=0;i<8;i++){
     buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
   }
