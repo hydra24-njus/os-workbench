@@ -105,10 +105,11 @@ static void *kalloc(size_t size1) {
     ptr = sbrk(8192);
     tmp->next=ptr;
     unlock(&biglock);
+            debug("newpage2\n");
     ptr->prev=tmp;
     ptr->next=NULL;
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
-        debug("newpage2\n");
+
   }
   debug("ptr=%x\n",ptr);
   if(ptr==NULL)return NULL;
