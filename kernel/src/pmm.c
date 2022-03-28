@@ -128,7 +128,7 @@ static void *kalloc(size_t size1) {
     }
   }
   ret:
-  debug("%x\tsize=%d\taddr=%x\t%d\n",ptr,size,addr,addr);
+  debug("%x\tsize=%d\taddr=%x\t%d\t%d\n",ptr,size,addr,addr,ptr->now);
   return (void*)addr;
 }
 
