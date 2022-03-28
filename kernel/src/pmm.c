@@ -102,10 +102,10 @@ static void *kalloc(size_t size1) {
     struct page_t* tmp=ptr;
     lock(&biglock);
     ptr = sbrk(8192);
-    debug("newpage2\n");
     tmp->next=ptr;
     debug("newpage1\n");
     ptr->next=NULL;
+        debug("newpage2\n");
     unlock(&biglock);
     
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
