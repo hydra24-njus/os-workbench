@@ -23,7 +23,16 @@ unsigned int power2(unsigned int size){
   size++;
   return size;
 }
-
+struct buddy_table{
+  void* p32;
+  void* p64;
+  void* p128;
+  void* p256;
+  void* p512;
+  void* p1024;
+  void* p2048;
+  void* p4096;
+}buddy[8];//smp<=8
 static void *kalloc(size_t size) {
   //test git pull
 }
