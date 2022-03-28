@@ -101,11 +101,13 @@ static void *kalloc(size_t size1) {
   if(ptr->now>=ptr->max){//没有空闲页
   debug("newpage\n");
     struct page_t* tmp=ptr;
+    debug("newpage1\n");
     lock(&biglock);
     ptr = sbrk(8192);
     tmp->next=ptr;
     ptr->next=NULL;
     unlock(&biglock);
+    debug("newpage2\n");
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
   debug("ptr=%x\n",ptr);
