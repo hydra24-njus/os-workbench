@@ -140,17 +140,16 @@ static void kfree(void *ptr) {
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
     header->now--;
-    header->map[0]-=(1<<i);
+    header->map[i-1]=false;
     return;
   }
   else if(header->type==4096){
     header->now--;
-    header->map[0]=0;
+    header->map[0]=false;
     return;
   }
   int i=(addr-1024)/header->type;
-  int x=i/64;uint64_t y=i%64;
-  header->map[x]-=(1<<y);
+  header->map[i]=false;
   header->now--;
   return;
 }
