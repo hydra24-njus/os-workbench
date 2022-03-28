@@ -44,6 +44,9 @@ struct page_ctl{
     };
   };
 };
+void new_page(){//TODO();
+
+}
 static void *kalloc(size_t size) {
   size=power2(size);
   void*ptr=NULL;
@@ -58,10 +61,10 @@ static void *kalloc(size_t size) {
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
   if(ptr==NULL){//没有匹配的页
-    
+    new_page();
   }
   else{
-    while(((struct page_ctl*)ptr)->next!=NULL){
+    while(ptr!=NULL){
       if(((struct page_ctl*)ptr)->now<((struct page_ctl*)ptr)->max)break;
       ptr=((struct page_ctl*)ptr)->next;
     }
