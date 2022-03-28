@@ -11,7 +11,7 @@ static void os_run() {
   void* tmp=pmm->alloc(16);
   void* tmp1=pmm->alloc(16);
   void* tmp2=pmm->alloc(16);
-  for(int i=0;i<512;i++)pmm->alloc(18);
+  for(int i=0;i<256;i++)pmm->alloc(18);
   printf("\n\n");
   pmm->free(tmp1);pmm->free(tmp2);
   pmm->alloc(16);pmm->alloc(16);pmm->alloc(17);pmm->alloc(18);
