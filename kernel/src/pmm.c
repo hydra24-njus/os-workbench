@@ -58,6 +58,7 @@ static void *kalloc(size_t size) {
     lock(&biglock);
     addr=(uintptr_t)sbrk(size);
     unlock(&biglock);
+    debug("addr=%x\n",addr);
     return (void*)addr;
   }
   struct page_t* ptr=NULL;
