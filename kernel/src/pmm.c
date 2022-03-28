@@ -31,7 +31,7 @@ struct page_t{
 void* sbrk(int size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
-  if(heaptr>(uintptr_t)heapend)return NULL;
+  if(heaptr>heapend)return NULL;
   else return (void*)tmp;
 }
 unsigned int power2(unsigned int size){
