@@ -57,6 +57,7 @@ static void *kalloc(size_t size1) {
   uintptr_t addr=0;
   size_t size=power2(size1);
   if(size>4096){
+  return NULL;
   if(size>(16<<20))return NULL;
     lock(&biglock);
     addr=slowpath_alloc(size);
