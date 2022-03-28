@@ -111,20 +111,15 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     tmp->next=ptr;
-    //debug("newpage1\n");
     ptr->next=0;
-    debug("newpage2\n");
     unlock(&biglock);
-    
     ptr->now=0;ptr->max=7168/size;ptr->type=size;
   }
-  debug("ptr=%x\n",ptr);
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
     int x=i/64;
     uint64_t y=1<<(i%64);
     if(((ptr->map[x])&y)==0){//找到页中空闲位置，计算地址
-      debug("i=%d\n",i);
       ptr->map[x]|=y;
       ptr->now++;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
