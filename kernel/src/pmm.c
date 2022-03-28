@@ -63,11 +63,7 @@ static void *kalloc(size_t size) {
   uintptr_t addr=0;
   size=power2(size);
   if(size>4096){
-    lock(&biglock);
-    addr=(uintptr_t)sbrk(size);
-    unlock(&biglock);
-    debug("size=%d\taddr=%x\n",size,addr);
-    return (void*)addr;
+    return slowpath_alloc(size);
   }
   struct page_t* ptr=NULL;
   switch(size){
