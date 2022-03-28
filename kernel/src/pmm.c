@@ -134,7 +134,8 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-
+  if((uintptr_t)ptr>heapend)return;
+  
 }
 
 static void pmm_init() {
