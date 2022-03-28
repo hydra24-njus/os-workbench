@@ -27,7 +27,7 @@ void* sbrk(int size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
   if(heaptr>heapend)return NULL;
-  else return (void*)tmp;
+  return (void*)tmp;
 }
 unsigned int power2(unsigned int size){
   size--;
@@ -63,8 +63,7 @@ static void *kalloc(size_t size1) {
   int bitsize=3;
   while((1<<bitsize)!=size)bitsize++;
   bitsize-=4;
-  struct page_t* ptr=NULL;
-  ptr=buddy[cpu][bitsize];
+  struct page_t* ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
     ptr = sbrk(PAGE_SIZE);
