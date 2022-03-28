@@ -52,11 +52,11 @@ unsigned int power2(unsigned int size){
   return size;
 }
 void* new_page(){//TODO();
-  debug("new page.\n");
   void* tmp;
   lock(&biglock);
   tmp=sbrk(8192);
   unlock(&biglock);
+  debug("new page.tmp=%x.\n",tmp);
   return tmp;
 }
 
