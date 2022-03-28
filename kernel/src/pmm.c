@@ -106,7 +106,7 @@ static void *kalloc(size_t size) {
       break;
     }
   }
-  debug("addr=%x\n",addr);
+  debug("addr=%x\t%d\n",addr,addr);
   return (void*)addr;
 }
 
