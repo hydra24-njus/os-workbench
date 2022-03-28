@@ -76,6 +76,7 @@ static void *kalloc(size_t size1) {
     case 4096:ptr=buddy[cpu_current()].p4096;break;
   }
   if (ptr == NULL){ //该cpu没有页
+    debug("newcpupage\n");
     lock(&biglock);
     ptr = sbrk(8192);
     switch (size){
@@ -99,6 +100,7 @@ static void *kalloc(size_t size1) {
     }
   }
   if(ptr->now>=ptr->max){//没有空闲页
+    debug("newpage\n");
     struct page_t* tmp=ptr;
     lock(&biglock);
     ptr = sbrk(8192);
