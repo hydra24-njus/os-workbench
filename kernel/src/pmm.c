@@ -52,8 +52,11 @@ void* new_page(){//TODO();
   return tmp;
 }
 void* slowpath_alloc(size_t size){
+  lock(&biglock);
   heapend-=size;
-  return NULL;
+  heapend-=heapend%size;
+  unlock(&biglock);
+  return (void*)heapend;
 }
 
 static void *kalloc(size_t size) {
