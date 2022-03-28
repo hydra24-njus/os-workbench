@@ -56,7 +56,7 @@ void* slowpath_alloc(size_t size){
   heapend-=size;
   heapend-=heapend%size;
   unlock(&biglock);
-  printf("large_addr=%x\n",heapend);
+  printf("large_addr=%x\t%d\n",heapend,heapend);
   return (void*)heapend;
 }
 
