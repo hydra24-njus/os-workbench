@@ -126,7 +126,7 @@ static void *kalloc(size_t size1) {
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
-    int j=(i+ptr->cur)%ptr->type;
+    int j=(i+ptr->cur)%ptr->max;
     if((ptr->map[j])==0){//找到页中空闲位置，计算地址
       ptr->map[j]=true;
       ptr->now++;ptr->cur=j;
