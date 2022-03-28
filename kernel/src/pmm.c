@@ -120,6 +120,7 @@ static void *kalloc(size_t size) {
       ptr->map[x]|=y;
       ptr->now++;
       addr=(uintptr_t)ptr+1024+ptr->type*i;
+      break;
     }
   }
   debug("addr=%x\n",addr);
