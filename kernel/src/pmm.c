@@ -16,11 +16,11 @@ struct buddy_table{
 }buddy[8];//smp<=8
 struct page_t{
   union{
-    uint8_t size[8192];
+    uint8_t size[16384];
     struct{
       void* next;
       size_t type;
-      bool map[256];
+      bool map[480];
       int max,now;
     };
   };
@@ -57,6 +57,7 @@ static void *kalloc(size_t size1) {
   uintptr_t addr=0;
   size_t size=power2(size1);
   if(size>4096){
+  if(size>(16<<20))return NULL;
     lock(&biglock);
     addr=slowpath_alloc(size);
     debug("addr=%x\t%d\n",addr,addr);
@@ -76,7 +77,7 @@ static void *kalloc(size_t size1) {
   }
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
-    ptr = sbrk(8192);
+    ptr = sbrk(16384);
     if(ptr==0){
       unlock(&biglock);
       addr=0;
@@ -94,7 +95,7 @@ static void *kalloc(size_t size1) {
     }
     ptr->next=NULL;
     unlock(&biglock);
-    ptr->now=0;ptr->max=7168/size;
+    ptr->now=0;ptr->max=15360/size;
   }
   else{
     while(ptr->next!=NULL){
@@ -103,9 +104,8 @@ static void *kalloc(size_t size1) {
     }
   }
   if(ptr->now>=ptr->max){//没有空闲页
-    
     lock(&biglock);
-    struct page_t* tmp = sbrk(8192);
+    struct page_t* tmp = sbrk(16384);
     if(tmp==NULL){
       unlock(&biglock);
       goto ret;
@@ -122,7 +122,7 @@ static void *kalloc(size_t size1) {
     }
     unlock(&biglock);
     ptr=tmp;
-    ptr->now=0;ptr->max=7168/size;ptr->type=size;
+    ptr->now=0;ptr->max=15360/size;ptr->type=size;
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
@@ -143,8 +143,8 @@ static void *kalloc(size_t size1) {
 static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>heapend)return;
-  struct page_t* header=(struct page_t*)(addr-addr%8192);//考虑位操作优化
-  addr=(addr%8192);
+  struct page_t* header=(struct page_t*)(addr-addr%16384);//考虑位操作优化
+  addr=(addr%16384);
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
     header->now--;
@@ -152,8 +152,9 @@ static void kfree(void *ptr) {
     return;
   }
   else if(header->type==4096){
+  int i=addr/4096;
     header->now--;
-    header->map[0]=false;
+    header->map[i-1]=false;
     return;
   }
   int i=(addr-1024)/header->type;
