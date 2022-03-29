@@ -121,6 +121,14 @@ static void *kalloc(size_t size) {
       break;
     }
   }
+  int flag=0;
+  for(int i=0;i<ptr->max;i++){
+    if(ptr->map[i]==0){
+      flag=1;
+      break;
+    }
+  }
+  assert(flag);
   debug("%x %d %d\n",addr,ptr->type,ptr->now);
   if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
