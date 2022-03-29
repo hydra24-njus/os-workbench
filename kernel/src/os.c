@@ -16,7 +16,6 @@ static void os_run() {
   for (int i = 1; i <= 224; i++) {
     pmm->alloc(31);
   }
-  pmm->alloc(31);
   while (1) ;
 }
 

@@ -51,7 +51,7 @@ unsigned int bitpos(size_t size){
 }
 void add2full(page_t* ptr){
   if(ptr->state==FULL)return;
-  //debug("add to full(%x):",ptr);
+  debug("add to full(%x):",ptr);
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
   ptr->next=buddy[cpu].type[bitype][FULL];
