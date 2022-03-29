@@ -22,7 +22,7 @@ typedef union{
     void* prev;void* next;
     int type,bitype;
     int max,now,cur,cpu;
-    bool map[896];
+    uint8_t map[896];
   };
 }page_t;
 
