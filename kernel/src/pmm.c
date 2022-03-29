@@ -8,7 +8,7 @@ spinlock_t biglock;
 #define not_max 100
 #define check_not()\
   do{\
-    static int sagiri=0;\
+    int sagiri=0;\
     ++sagiri;\
     assert(sagiri<not_max);\
   }while(0)
