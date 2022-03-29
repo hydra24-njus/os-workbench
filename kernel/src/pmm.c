@@ -51,24 +51,24 @@ unsigned int bitpos(size_t size){
 }
 void add2full(page_t* ptr){
   if(ptr->state==FULL)return;
-  debug("add to full(%x):\nfull:",ptr);
+  //debug("add to full(%x):\nfull:",ptr);
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
   ptr->next=buddy[cpu].type[bitype][FULL];
   if(ptr->next!=NULL)((page_t*)ptr->next)->prev=ptr;
   if(ptr->prev!=NULL)((page_t*)ptr->prev)->next=NULL;
   ptr->state=FULL;
-  buddy[cpu].type[bitype][FULL]=ptr;
+  buddy[cpu].type[bitype][FULL]=ptr;/*
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\nfree:");
   cont=buddy[cpu].type[bitype][FREE];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");
+  debug("\n");*/
 }
 void add2free(page_t* ptr){
   if(ptr->state==FREE)return;
-  debug("add to free(%x):\nfull:",ptr);
+  //debug("add to free(%x):\nfull:",ptr);
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=buddy[cpu].type[bitype][FULL];
   if(tmp==ptr){
@@ -90,13 +90,13 @@ void add2free(page_t* ptr){
     while(tmp->next!=NULL)tmp=tmp->next;
     tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
   }
-  ptr->state=FREE;
+  ptr->state=FREE;/*
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\nfree:");
   cont=buddy[cpu].type[bitype][FREE];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");
+  debug("\n");*/
 }
 
 //static_assert(sizeof(bool)==1);
