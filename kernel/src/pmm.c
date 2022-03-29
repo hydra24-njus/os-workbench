@@ -55,7 +55,14 @@ uintptr_t slowpath_alloc(size_t size){
 
 
 //static_assert(sizeof(bool)==1);
-static void *kalloc(size_t size1) {
+static void *kalloc(size_t size) {
+  size=power2(size);
+  if(size>4096){
+    if(size>(16<<20))return NULL;
+    lock(&biglock);
+
+    unlock(&biglock);
+  }
   return NULL;
 }
 
