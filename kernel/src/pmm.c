@@ -1,7 +1,7 @@
 #include <common.h>
 uintptr_t heaptr;
 uintptr_t heapend;
-uintptr_t bigmemcnt;
+uintptr_t bigmemcnt=0;
 spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
@@ -125,6 +125,8 @@ static void *kalloc(size_t size) {
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
+    if(bigmemcnt>10)return NULL;
+    bigmemcnt++;
     lock(&biglock);
     uintptr_t tmp=heapend;
     tmp-=size;
