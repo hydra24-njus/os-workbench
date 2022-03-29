@@ -45,14 +45,15 @@ size_t power2(size_t size){
   return size;
 }
 unsigned int bitpos(size_t size){
-
-  return 0;
+  int i=2;
+  while((1<<i)<size)i++;
+  return i;
 }
-
 
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size) {
-  size=power2(size);
+  uintptr_t addr=0;
+  size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
     uintptr_t tmp=heapend;
@@ -64,8 +65,14 @@ static void *kalloc(size_t size) {
     unlock(&biglock);
     return (void*)tmp;
   }
-
-  return NULL;
+  page_t* ptr=buddy[cpu].type[bitsize][FREE];
+  if(ptr==NULL){
+    lock(&biglock);
+    ptr=sbrk(8192);
+    unlock(&biglock);
+    buddy[cpu].type[bitsize][FREE]=ptr;
+  }
+  return (void*)addr;
 }
 
 static void kfree(void *ptr) {
