@@ -59,6 +59,7 @@ void add2full(page_t* ptr){
   buddy[cpu].type[bitype][FULL]=ptr;
 }
 void add2free(page_t* ptr){
+  debug("add to full\n\n");
   if(ptr->state==FREE)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
