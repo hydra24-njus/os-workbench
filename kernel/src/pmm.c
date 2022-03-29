@@ -68,7 +68,7 @@ void add2free(page_t* ptr){
   if(ptr->state==FREE)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
-  debug("(tmp=%x)",tmp);
+  //debug("(tmp=%x)",tmp);
   tmp->next=ptr->next;
   ptr->next=NULL;
   ptr->state=FREE;
