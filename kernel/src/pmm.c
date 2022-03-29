@@ -1,6 +1,7 @@
 #include <common.h>
 uintptr_t heaptr;
 uintptr_t heapend;
+uintptr_t bigmemcnt;
 spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
@@ -25,7 +26,11 @@ typedef union{
     uint8_t map[896];
   }__attribute__((packed));
 }page_t;
-
+typedef struct bigmem{
+  uintptr_t start;
+  uintptr_t end;
+}mem_t;
+mem_t bigmem_last;
 //辅助函数
 void* sbrk(size_t size){
   uintptr_t tmp=heaptr;
@@ -125,6 +130,7 @@ static void *kalloc(size_t size) {
     tmp-=size;
     tmp-=tmp%size;
     if(tmp<=heaptr){unlock(&biglock);return NULL;}
+    bigmem_last.start=tmp;bigmem_last.end=heapend;
     heapend=tmp;
     unlock(&biglock);
     return (void*)tmp;
@@ -160,6 +166,11 @@ static void kfree(void *ptr) {
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>heapend)return;
+  if(addr==heapend){
+    lock(&biglock);
+    heapend=bigmem_last.end;
+    unlock(&biglock);
+  }
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   printf("haed-ptr=%x\t",header->type);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
