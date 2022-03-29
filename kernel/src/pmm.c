@@ -128,7 +128,6 @@ static void kfree(void *ptr) {
   if(addr==2048||addr==4096)addr-=1;
   header->map[addr]=0;
   header->now--;
-  debug("header=%x\n",header);
   add2free(header);
   return;
 }
