@@ -89,6 +89,7 @@ static void *kalloc(size_t size1) {
   }
   else{
     while(ptr->next!=NULL){
+      check_not();
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
@@ -108,6 +109,7 @@ static void *kalloc(size_t size1) {
   }
   if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
+    check_not();
     int j=(i+ptr->cur)%ptr->max;
     if((ptr->map[j])==false){//找到页中空闲位置，计算地址
       ptr->map[j]=true;
