@@ -16,7 +16,7 @@ spinlock_t biglock;
 
 //数据结构
 enum{
-  p8=0,p16,p32,p64,p128,p256,p512,p1024,p2048,p4096
+  p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096
 };
 void* buddy[8][10];//smp<=8
 struct page_t{
