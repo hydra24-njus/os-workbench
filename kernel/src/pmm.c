@@ -135,7 +135,7 @@ static void *kalloc(size_t size1) {
 
 static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
-  if(addr>=heapend)return;
+  if(addr>heapend)return;
   struct page_t* header=(struct page_t*)(addr-addr%8192);//考虑位操作优化
   addr=(addr%8192);
   if(header->type==2048){//2048 4096 6144
