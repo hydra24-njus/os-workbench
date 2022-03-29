@@ -170,6 +170,7 @@ static void kfree(void *ptr) {
     lock(&biglock);
     heapend=bigmem_last.end;
     unlock(&biglock);
+    return;
   }
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   printf("haed-ptr=%x\t",header->type);
