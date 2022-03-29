@@ -135,10 +135,10 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  printf("free-ptr=%x\n",ptr);
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
+  printf("free-ptr=%x\n",ptr);
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   addr=(addr%PAGE_SIZE);
   //if(header->type==2048||header->type==2048)addr-=1;
