@@ -147,6 +147,7 @@ static void kfree(void *ptr) {
     header->cur=i;
   }
   add2free(header);
+  debug("1");
   header->now--;
   return;
 }
