@@ -140,14 +140,14 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  printf("free,%x\n",ptr);
+  //printf("free,%x\n",ptr);
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   //printf("haed-ptr=%x\t",header);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
-  printf("addr=%x\n",addr);
+  //printf("addr=%x\n",addr);
   header->map[addr]=0;
   header->now--;
   add2free(header);
