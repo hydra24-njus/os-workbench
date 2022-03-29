@@ -16,6 +16,7 @@ static void os_run() {
   pmm->free(tmp1);
   for(int i=0;i<4;i++)pmm->alloc(2048);
   pmm->free(tmp1);pmm->alloc(2048);
+  pmm->alloc(2048);
   printf("end\n");
   while (1) ;
 }
