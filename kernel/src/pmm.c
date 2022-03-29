@@ -129,7 +129,7 @@ static void *kalloc(size_t size) {
 static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
-  page_t* header=(page_t*)(addr&~(PAGE_SIZE-1));
+  page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   addr=(addr%PAGE_SIZE);printf("type=%d\n",header->type);
   if(addr==2048||addr==4096)addr-=1;
   header->map[addr]=0;
