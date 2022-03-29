@@ -24,6 +24,8 @@ static inline int atomic_xchg(int *addr, int newval) {
 
 typedef unsigned long int uintptr_t;
 #define HEAP_SIZE (1 << 27)
+#define putch(x) putc(x)
+
 
 typedef struct spinlock{
   int locked;
