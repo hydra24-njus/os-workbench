@@ -58,17 +58,17 @@ void add2full(page_t* ptr){
   if(ptr->next!=NULL)((page_t*)ptr->next)->prev=ptr;
   if(ptr->prev!=NULL)((page_t*)ptr->prev)->next=NULL;
   ptr->state=FULL;
-  buddy[cpu].type[bitype][FULL]=ptr;/*
+  buddy[cpu].type[bitype][FULL]=ptr;
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\nfree:");
   cont=buddy[cpu].type[bitype][FREE];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");*/
+  debug("\n");
 }
 void add2free(page_t* ptr){
   if(ptr->state==FREE)return;
-  //debug("add to free(%x):",ptr);
+  debug("add to free(%x):",ptr);
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
   //debug("(tmp=%x)",tmp);
@@ -80,13 +80,13 @@ void add2free(page_t* ptr){
   else{
     while(tmp->next!=NULL)tmp=tmp->next;
     tmp->next=ptr;
-  }/*
+  }
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\nfree:");
   cont=buddy[cpu].type[bitype][FREE];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");*/
+  debug("\n");
 }
 
 //static_assert(sizeof(bool)==1);

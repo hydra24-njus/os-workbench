@@ -13,9 +13,10 @@ static void os_run() {
   for(int i=0;i<224;i++){
     pmm->free((void*)(loco+i*32));
   }
-  for (int i = 1; i <= 224; i++) {
+  pmm->alloc(31);
+  /*for (int i = 1; i <= 224; i++) {
     pmm->alloc(31);
-  }
+  }*/
   while (1) ;
 }
 
