@@ -50,7 +50,7 @@ unsigned int bitpos(size_t size){
   return i;
 }
 void add2full(page_t* ptr){
-  debug("add to full\n");
+  debug("add to full:");
   if(ptr->state==FULL)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
@@ -62,7 +62,7 @@ void add2full(page_t* ptr){
   debug("\n");
 }
 void add2free(page_t* ptr){
-  debug("add to free\n");
+  debug("add to free:");
   if(ptr->state==FREE)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
