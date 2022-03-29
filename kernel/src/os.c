@@ -9,6 +9,8 @@ static void os_run() {
   for (int i = 1; i <= 8; i++) {
     pmm->alloc(2048);
   }
+  pmm->free((void*)0x300800);
+  pmm->alloc(2048);
   while (1) ;
 }
 
