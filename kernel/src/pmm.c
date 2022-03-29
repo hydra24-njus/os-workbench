@@ -52,14 +52,13 @@ unsigned int bitpos(size_t size){
 void add2full(page_t* ptr){
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   debug("add to full\n\n");
-  page_t* cont=buddy[cpu].type[bitype][FULL];
-  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   if(ptr->state==FULL)return;
-
   buddy[cpu].type[bitype][FREE]=ptr->next;
   ptr->next=NULL;
   ptr->state=FULL;
   buddy[cpu].type[bitype][FULL]=ptr;
+  page_t* cont=buddy[cpu].type[bitype][FULL];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
 }
 void add2free(page_t* ptr){
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
