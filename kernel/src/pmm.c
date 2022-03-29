@@ -21,7 +21,10 @@ enum{
 enum{
   FREE=0,FULL
 };
-void* buddy[8][10][2];//smp<=8
+struct cpu_t{
+  void* type[10][2];
+  spinlock_t cpulock;
+}buddy[8];//smp<=8
 struct page_t{
   union{
     uint8_t size[PAGE_SIZE];
@@ -69,7 +72,6 @@ void add2free(void* ptr){
 
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size1) {
-
   uintptr_t addr=0;int cpu=cpu_current();
   size_t size=power2(size1);
   if(size>4096){
@@ -83,7 +85,7 @@ static void *kalloc(size_t size1) {
   int bitsize=3;
   while((1<<bitsize)!=size){bitsize++;check_not();}
   bitsize-=4;
-  struct page_t* ptr=buddy[cpu][bitsize][FREE];
+  struct page_t* ptr=buddy[cpu].type[bitsize][FREE];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
     ptr = sbrk(PAGE_SIZE);
@@ -93,7 +95,7 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     ptr->type=size;
-    buddy[cpu][bitsize][FREE]=ptr;
+    buddy[cpu].type[bitsize][FREE]=ptr;
     ptr->next=NULL;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
