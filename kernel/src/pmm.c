@@ -18,7 +18,10 @@ spinlock_t biglock;
 enum{
   p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096
 };
-void* buddy[8][10];//smp<=8
+enum{
+  FREE=0,FULL
+};
+void* buddy[8][10][2];//smp<=8
 struct page_t{
   union{
     uint8_t size[PAGE_SIZE];
@@ -57,6 +60,13 @@ uintptr_t slowpath_alloc(size_t size){
   heapend=tmp;
   return heapend;
 }
+void add2full(void* ptr){
+
+}
+void add2free(void* ptr){
+
+}
+
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size1) {
 
@@ -73,7 +83,7 @@ static void *kalloc(size_t size1) {
   int bitsize=3;
   while((1<<bitsize)!=size){bitsize++;check_not();}
   bitsize-=4;
-  struct page_t* ptr=buddy[cpu][bitsize];
+  struct page_t* ptr=buddy[cpu][bitsize][FREE];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
     ptr = sbrk(PAGE_SIZE);
@@ -83,31 +93,10 @@ static void *kalloc(size_t size1) {
       goto ret;
     }
     ptr->type=size;
-    buddy[cpu][bitsize]=ptr;
+    buddy[cpu][bitsize][FREE]=ptr;
     ptr->next=NULL;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
-  else{
-    while(ptr->next!=NULL){
-      check_not();
-      if(ptr->now<ptr->max)break;
-      ptr=ptr->next;
-    }
-  }
-  if(ptr->now>=ptr->max){//没有空闲页
-    lock(&biglock);
-    struct page_t* tmp = sbrk(PAGE_SIZE);
-    unlock(&biglock);
-    if(tmp==NULL){
-      goto ret;
-    }
-    tmp->type=size;
-    tmp->next=buddy[cpu][bitsize];
-    buddy[cpu][bitsize]=tmp;
-    ptr=tmp;
-    ptr->now=0;ptr->max=DATA_SIZE/size;ptr->type=size;ptr->cur=0;
-  }
-  if(ptr==NULL)return NULL;
   for(int i=0;i<ptr->max;i++){
     check_not();
     int j=(i+ptr->cur)%ptr->max;
@@ -117,6 +106,7 @@ static void *kalloc(size_t size1) {
       addr=(uintptr_t)ptr+1024+ptr->type*j;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
+      if(ptr->now==ptr->max)add2full(ptr);
       break;
     }
   }
@@ -132,20 +122,21 @@ static void kfree(void *ptr) {
   addr=(addr%PAGE_SIZE);
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
-    header->now--;
     header->map[i-1]=false;
-    return;
   }
   else if(header->type==4096){
-  int i=addr/4096;
-    header->now--;
+    int i=addr/4096;
     header->map[i-1]=false;
-    return;
   }
-  int i=(addr-1024)/header->type;
-  header->map[i]=false;
-  header->cur=i;
+  else{
+    int i=(addr-1024)/header->type;
+    header->map[i]=false;
+    header->cur=i;
+  }
+  lock(&biglock);
+  add2free(header);
   header->now--;
+  unlock(&biglock);
   return;
 }
 
