@@ -8,6 +8,7 @@ static void os_run() {
   }
   for (int i = 1; i <= 224; i++)pmm->alloc(32);
   pmm->free((void*)0x300800);
+  for (int i = 1; i <= 224; i++)pmm->alloc(32);
   pmm->alloc(32);
   while (1) ;
 }
