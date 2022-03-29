@@ -140,7 +140,7 @@ static void kfree(void *ptr) {
   if(addr>=heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   printf("haed-ptr=%x\t",header);
-  addr=(addr%PAGE_SIZE);
+  addr=(addr%PAGE_SIZE);addr=addr/header->type;
   printf("addr=%x\n",addr);
   //if(header->type==2048||header->type==2048)addr-=1;
   header->map[addr]=0;
