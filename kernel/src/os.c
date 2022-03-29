@@ -20,7 +20,7 @@ static void os_run() {
   pmm->alloc(2048);
   printf("end\n");*/
   for(int i=0;i<10000000;i++)pmm->alloc(18);
-  printf("end\n");
+  //printf("end\n");
   while (1) ;
 }
 
