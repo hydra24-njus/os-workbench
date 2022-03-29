@@ -7,9 +7,9 @@ spinlock_t biglock;
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
 //数据结构
 enum{
-  p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096
+  p8=0,p16,p32,p64,p128,p256,p512,p1024,p2048,p4096
 };
-void* buddy[8][9];//smp<=8
+void* buddy[8][10];//smp<=8
 struct page_t{
   union{
     uint8_t size[PAGE_SIZE];
@@ -48,8 +48,9 @@ uintptr_t slowpath_alloc(size_t size){
   heapend=tmp;
   return heapend;
 }
-
+static_assert(sizeof(bool));
 static void *kalloc(size_t size1) {
+
   uintptr_t addr=0;int cpu=cpu_current();
   size_t size=power2(size1);
   if(size>4096){
