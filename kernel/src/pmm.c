@@ -161,7 +161,7 @@ static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
-  //printf("haed-ptr=%x\t",header);
+  printf("haed-ptr=%x\t",header->type);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
   //printf("addr=%x\n",addr);
   header->map[addr]=0;
