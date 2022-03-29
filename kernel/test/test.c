@@ -38,8 +38,8 @@ static void test4(int tid) {
 static void test5(int tid) {
   void* loc;
   for (int i = 1; i <= 10000; i++) {
-    size_t a = rand() % 256 ;
-    loc = pmm->alloc(a);
+    //size_t a = rand() % 256 ;
+    loc = pmm->alloc(255);
     if (i % 5 == 0) pmm->free(loc);
   }
 }
