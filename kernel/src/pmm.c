@@ -70,6 +70,7 @@ void add2full(struct page_t* ptr){
   buddy[cpu].type[btp][FULL]=ptr->next;
 }
 void add2free(struct page_t* ptr){
+  debug("1\n\n");
   int cpu=ptr->cpu,btp=ptr->bitype;
   struct page_t* tmp=buddy[cpu].type[btp][FREE];
   struct page_t* tmp2=buddy[cpu].type[btp][FULL];
@@ -147,7 +148,7 @@ static void kfree(void *ptr) {
     header->cur=i;
   }
   add2free(header);
-  debug("1\n\n");
+  
   header->now--;
   return;
 }
