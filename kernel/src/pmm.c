@@ -59,6 +59,7 @@ void add2full(page_t* ptr){
   buddy[cpu].type[bitype][FULL]=ptr;
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\n");
 }
 void add2free(page_t* ptr){
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
