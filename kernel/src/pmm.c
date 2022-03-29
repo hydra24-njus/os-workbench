@@ -125,7 +125,7 @@ static void *kalloc(size_t size) {
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
-    if(bigmemcnt>5)return NULL;
+    if(bigmemcnt>10)return NULL;
     bigmemcnt++;
     lock(&biglock);
     uintptr_t tmp=heapend;
