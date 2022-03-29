@@ -62,6 +62,9 @@ void add2full(page_t* ptr){
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\n");
+  cont=buddy[cpu].type[bitype][FREE];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\n");
 }
 void add2free(page_t* ptr){
   debug("add to free(%x):",ptr);
@@ -75,7 +78,10 @@ void add2free(page_t* ptr){
   tmp=buddy[cpu].type[bitype][FREE];
   while(tmp->next!=NULL)tmp=tmp->next;
   tmp->next=ptr;
-  page_t* cont=buddy[cpu].type[bitype][FREE];
+  page_t* cont=buddy[cpu].type[bitype][FULL];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\n");
+  cont=buddy[cpu].type[bitype][FREE];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\n");
 }
