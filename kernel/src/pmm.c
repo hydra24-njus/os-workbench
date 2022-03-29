@@ -63,7 +63,7 @@ static void *kalloc(size_t size1) {
   }
   int bitsize=3;
   while((1<<bitsize)!=size){bitsize++;count++;}
-  debug("bitsize %d",count);
+  debug("bitsize %d\n",count);
   count=0;
   bitsize-=4;
   struct page_t* ptr=buddy[cpu][bitsize];
@@ -86,7 +86,7 @@ static void *kalloc(size_t size1) {
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
-    debug("link %d",count++);count=0;
+    debug("link %d\n",count++);count=0;
   }
   if(ptr->now>=ptr->max){//没有空闲页
     lock(&biglock);
