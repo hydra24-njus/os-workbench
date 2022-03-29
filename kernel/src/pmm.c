@@ -148,7 +148,7 @@ static void kfree(void *ptr) {
     header->map[i]=false;
     header->cur=i;
   }
-  add2free(header);
+  if(header->now==header->max)add2free(header);
   
   header->now--;
   return;
