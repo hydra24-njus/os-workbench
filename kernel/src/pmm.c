@@ -21,7 +21,7 @@ typedef union{
   struct{
     void* prev;void* next;
     int type,bitype;
-    int max,now,cur,cpu;
+    int max,now,cur,cpu,state;
     uint8_t map[896];
   };
 }page_t;
@@ -50,16 +50,20 @@ unsigned int bitpos(size_t size){
   return i;
 }
 void add2full(page_t* ptr){
+  if(ptr->state==FULL)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
   ptr->next=NULL;
+  ptr->state=FULL;
   buddy[cpu].type[bitype][FULL]=ptr;
 }
 void add2free(page_t* ptr){
+  if(ptr->state==FREE)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
   tmp->next=ptr->next;
   ptr->next=NULL;
+  ptr->state=FREE;
   tmp=buddy[cpu].type[bitype][FREE];
   while(tmp->next!=NULL)tmp=tmp->next;
   tmp->next=ptr;
