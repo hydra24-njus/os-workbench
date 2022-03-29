@@ -29,7 +29,7 @@ struct page_t{
   union{
     uint8_t size[PAGE_SIZE];
     struct{
-      void* next;
+      void* next;void* prev;
       size_t type;
       bool map[512];
       int max,now,cur,cpu,bitype;
@@ -72,12 +72,9 @@ void add2full(struct page_t* ptr){
 void add2free(struct page_t* ptr){
   int cpu=ptr->cpu,btp=ptr->bitype;
   struct page_t* tmp=buddy[cpu].type[btp][FREE];
-  struct page_t* tmp2=buddy[cpu].type[btp][FULL];
-  while(tmp->next!=NULL)tmp=tmp->next;
-  debug("1\n\n");
-  while(tmp2->next!=ptr||tmp2->next!=NULL)tmp=tmp->next;
-  debug("1\n\n");
+  struct page_t* tmp2=ptr->prev;
   tmp2->next=ptr->next;
+  while(tmp->next!=NULL)tmp=tmp->next;
   tmp->next=ptr;ptr->next=NULL;
 }
 
@@ -109,7 +106,7 @@ static void *kalloc(size_t size1) {
     ptr->type=size;
     ptr->bitype=bitsize;
     buddy[cpu].type[bitsize][FREE]=ptr;
-    ptr->next=NULL;
+    ptr->next=NULL;ptr->prev=NULL;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
   for(int i=0;i<ptr->max;i++){
@@ -132,7 +129,7 @@ static void *kalloc(size_t size1) {
 
 static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
-  if(addr>heapend)return;
+  if(addr>=heapend)return;
   struct page_t* header=(struct page_t*)(addr-addr%PAGE_SIZE);//考虑位操作优化
   addr=(addr%PAGE_SIZE);
   if(header->type==2048){//2048 4096 6144
@@ -151,7 +148,6 @@ static void kfree(void *ptr) {
     header->cur=i;
   }
   if(header->now==header->max)add2free(header);
-  
   header->now--;
   return;
 }
