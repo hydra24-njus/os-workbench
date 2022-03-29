@@ -55,7 +55,15 @@ void add2full(page_t* ptr){
   ptr->next=NULL;
   buddy[cpu].type[bitype][FULL]=ptr;
 }
-
+void add2free(page_t* ptr){
+  size_t bitype=ptr->bitype,cpu=ptr->cpu;
+  page_t* tmp=ptr->prev;
+  tmp->next=ptr->next;
+  ptr->next=NULL;
+  tmp=buddy[cpu].type[bitype][FREE];
+  while(tmp->next!=NULL)tmp=tmp->next;
+  tmp->next=ptr;
+}
 
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size) {
@@ -98,7 +106,15 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  
+  uintptr_t addr=(uintptr_t)ptr;
+  if(addr>=heapend)return;
+  page_t* header=(page_t*)(addr&~(PAGE_SIZE-1));
+  addr=(addr%PAGE_SIZE)/header->type;
+  if(addr==2048||addr==4096)addr-=1;
+  header->map[addr]=0;
+  header->now--;
+  add2free(header);
+  return;
 }
 
 #ifndef TEST
