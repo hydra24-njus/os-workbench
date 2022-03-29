@@ -2,38 +2,38 @@
 uintptr_t heaptr;
 uintptr_t heapend;
 spinlock_t biglock;
+#define HEAD_SIZE 1024
+#define PAGE_SIZE 8192
+#define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
 
 //数据结构
-struct buddy_table{
-  void* p32;
-  void* p64;
-  void* p128;
-  void* p256;
-  void* p512;
-  void* p1024;
-  void* p2048;
-  void* p4096;
-}buddy[8];//smp<=8
-struct page_t{
-  union{
-    uint8_t size[8192];
-    struct{
-      void* next;
-      size_t type;
-      bool map[256];
-      int max,now;
-    };
-  };
+enum{
+  p8=0,p16,p32,p64,p128,p256,p512,p1024,p2048,p4096
 };
+enum{
+  FREE=0,FULL
+};
+struct cpu_t{
+  void* type[10][2];
+}buddy[8];//smp<=8
+typedef union{
+  uint8_t size[PAGE_SIZE];
+  struct{
+    void* prev;void* next;
+    int type,bitype;
+    int max,now,cur,cpu,state;
+    uint8_t map[896];
+  }__attribute__((packed));
+}page_t;
 
 //辅助函数
-void* sbrk(int size){
+void* sbrk(size_t size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
   if(heaptr>heapend)return NULL;
-  else return (void*)tmp;
+  return (void*)tmp;
 }
-unsigned int power2(unsigned int size){
+size_t power2(size_t size){
   size--;
   size|=size>>1;
   size|=size>>2;
@@ -41,132 +41,154 @@ unsigned int power2(unsigned int size){
   size|=size>>8;
   size|=size>>16;
   size++;
-  if(size<32)size=32;
+  if(size<16)size=16;
   return size;
 }
-uintptr_t slowpath_alloc(size_t size){
-  uintptr_t tmp=heapend;
-  tmp-=size;
-  tmp-=heapend%size;
-  if(tmp<=heaptr)return 0;
-  heapend=tmp;
-  return heapend;
+unsigned int bitpos(size_t size){
+  int i=2;
+  while((1<<i)<size)i++;
+  return i;
 }
-
-static void *kalloc(size_t size1) {
-  uintptr_t addr=0;
-  size_t size=power2(size1);
-  if(size>4096){
-    lock(&biglock);
-    addr=slowpath_alloc(size);
-    debug("addr=%x\t%d\n",addr,addr);
-    unlock(&biglock);
-    return (void*)addr;
-  }
-  struct page_t* ptr=NULL;
-  switch(size){
-    case 32  :ptr=buddy[cpu_current()].p32  ;break;
-    case 64  :ptr=buddy[cpu_current()].p64  ;break;
-    case 128 :ptr=buddy[cpu_current()].p128 ;break;
-    case 256 :ptr=buddy[cpu_current()].p256 ;break;
-    case 512 :ptr=buddy[cpu_current()].p512 ;break;
-    case 1024:ptr=buddy[cpu_current()].p1024;break;
-    case 2048:ptr=buddy[cpu_current()].p2048;break;
-    case 4096:ptr=buddy[cpu_current()].p4096;break;
-  }
-  if (ptr == NULL){ //该cpu没有页
-    lock(&biglock);
-    ptr = sbrk(8192);
-    if(ptr==0){
-      unlock(&biglock);
-      addr=0;
-      goto ret;
-    }
-    switch (size){
-    case 32  :ptr->type=32  ;buddy[cpu_current()].p32=ptr  ;break;
-    case 64  :ptr->type=64  ;buddy[cpu_current()].p64=ptr  ;break;
-    case 128 :ptr->type=128 ;buddy[cpu_current()].p128=ptr ;break;
-    case 256 :ptr->type=256 ;buddy[cpu_current()].p256=ptr ;break;
-    case 512 :ptr->type=512 ;buddy[cpu_current()].p512=ptr ;break;
-    case 1024:ptr->type=1024;buddy[cpu_current()].p1024=ptr;break;
-    case 2048:ptr->type=2048;buddy[cpu_current()].p2048=ptr;break;
-    case 4096:ptr->type=4096;buddy[cpu_current()].p4096=ptr;break;
-    }
-    ptr->next=NULL;
-    unlock(&biglock);
-    ptr->now=0;ptr->max=7168/size;
+void add2full(page_t* ptr){
+  if(ptr->state==FULL)return;
+  //debug("add to free(%x):\nfull:",ptr);
+  size_t bitype=ptr->bitype,cpu=ptr->cpu;
+  page_t* tmp=buddy[cpu].type[bitype][FREE];
+  if(tmp==ptr){
+    buddy[cpu].type[bitype][FREE]=ptr->next;
+    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=NULL;
   }
   else{
-    while(ptr->next!=NULL){
-      if(ptr->now<ptr->max)break;
-      ptr=ptr->next;
-    }
+    while(tmp->next!=ptr)tmp=tmp->next;
+    tmp->next=ptr->next;
+    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=tmp;
   }
-  debug("ptr=%x\n",ptr);
-  if(ptr->now>=ptr->max){//没有空闲页
-  debug("newpage\n");
-    struct page_t* tmp=ptr;
+
+  tmp=buddy[cpu].type[bitype][FULL];
+  if(tmp==NULL){
+    buddy[cpu].type[bitype][FULL]=ptr;
+    ptr->next=NULL;ptr->prev=NULL;
+  }
+  else{
+    while(tmp->next!=NULL)tmp=tmp->next;
+    tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
+  }
+  ptr->state=FULL;/*
+  page_t* cont=buddy[cpu].type[bitype][FULL];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\nfree:");
+  cont=buddy[cpu].type[bitype][FREE];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\n");*/
+}
+void add2free(page_t* ptr){
+  if(ptr->state==FREE)return;
+  //debug("add to free(%x):\nfull:",ptr);
+  size_t bitype=ptr->bitype,cpu=ptr->cpu;
+  page_t* tmp=buddy[cpu].type[bitype][FULL];
+  if(tmp==ptr){
+    buddy[cpu].type[bitype][FULL]=ptr->next;
+    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=NULL;
+  }
+  else{
+    while(tmp->next!=ptr)tmp=tmp->next;
+    tmp->next=ptr->next;
+    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=tmp;
+  }
+
+  tmp=buddy[cpu].type[bitype][FREE];
+  if(tmp==NULL){
+    buddy[cpu].type[bitype][FREE]=ptr;
+    ptr->next=NULL;ptr->prev=NULL;
+  }
+  else{
+    while(tmp->next!=NULL)tmp=tmp->next;
+    tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
+  }
+  ptr->state=FREE;/*
+  page_t* cont=buddy[cpu].type[bitype][FULL];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\nfree:");
+  cont=buddy[cpu].type[bitype][FREE];
+  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
+  debug("\n");*/
+}
+
+
+static void *kalloc(size_t size) {
+  uintptr_t addr=0;
+  size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
+  if(size>4096){
+    if(size>(16<<20))return NULL;
     lock(&biglock);
-    ptr = sbrk(8192);
-    if(ptr==NULL){
-      unlock(&biglock);
-      goto ret;
-    }
-    tmp->next=ptr;
-    ptr->next=0;
+    uintptr_t tmp=heapend;
+    tmp-=size;
+    tmp-=tmp%size;
+    if(tmp<=heaptr){unlock(&biglock);return NULL;}
+    heapend=tmp;
     unlock(&biglock);
-    ptr->now=0;ptr->max=7168/size;ptr->type=size;
+    return (void*)tmp;
   }
-  if(ptr==NULL)return NULL;
+  page_t* ptr=buddy[cpu].type[bitsize][FREE];
+  if(ptr==NULL){
+    lock(&biglock);
+    ptr=sbrk(8192);
+    unlock(&biglock);
+    if(ptr==NULL)return NULL;
+    buddy[cpu].type[bitsize][FREE]=ptr;
+    ptr->prev=NULL;ptr->next=NULL;ptr->state=FREE;
+    ptr->type=size;ptr->bitype=bitsize;
+    ptr->max=DATA_SIZE/size;ptr->now=0;
+    ptr->cpu=cpu;ptr->cur=0;
+  }
   for(int i=0;i<ptr->max;i++){
-    if((ptr->map[i])==0){//找到页中空闲位置，计算地址
-      ptr->map[i]=true;
-      ptr->now++;
-      addr=(uintptr_t)ptr+1024+ptr->type*i;
+    if(ptr->map[i]==0){
+      ptr->map[i]=1;ptr->now++;
+      addr=(uintptr_t)ptr+1024+size*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
       break;
     }
   }
-  ret:
-  debug("size=%d\taddr=%x\t%d\n",size,addr,addr);
+  debug("%x %d %d %d\n",addr,ptr->type,ptr->now,ptr->max);
+  if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
 }
 
 static void kfree(void *ptr) {
+  //printf("free,%x\n",ptr);
+  if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>heapend)return;
-  struct page_t* header=(struct page_t*)(addr-addr%8192);//考虑位操作优化
-  addr=(addr%8192);
-  if(header->type==2048){//2048 4096 6144
-    int i=addr/2048;
-    header->now--;
-    header->map[0]-=(1<<i);
-    return;
-  }
-  else if(header->type==4096){
-    header->now--;
-    header->map[0]=0;
-    return;
-  }
-  int i=(addr-1024)/header->type;
-  int x=i/64;uint64_t y=i%64;
-  header->map[x]-=(1<<y);
+  page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
+  //printf("haed-ptr=%x\t",header);
+  addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
+  //printf("addr=%x\n",addr);
+  header->map[addr]=0;
   header->now--;
+  add2free(header);
   return;
 }
 
+#ifndef TEST
+// 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
-  //init
   spinlock_init(&biglock);
   heaptr=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
-  for(int i=0;i<8;i++){
-    buddy[i].p32=buddy[i].p64=buddy[i].p128=buddy[i].p256=buddy[i].p512=buddy[i].p1024=buddy[i].p2048=buddy[i].p4096=NULL;
-  }
-  //init
+  heapend=(uintptr_t)heap.end;
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
+#else
+// 测试代码的 pmm_init ()
+static void pmm_init() {
+  char *ptr  = malloc(HEAP_SIZE);
+  heaptr = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
+  heapend   = (uintptr_t)ptr + HEAP_SIZE;
+  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heaptr, heapend);
+}
+#endif
+
 
 MODULE_DEF(pmm) = {
   .init  = pmm_init,
