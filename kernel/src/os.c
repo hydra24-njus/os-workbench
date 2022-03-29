@@ -7,8 +7,8 @@ static void os_run() {
     //putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   void* loc;
-  for (int i = 1; i <= 100; i++) {
-    loc = pmm->alloc(255);
+  for (int i = 1; i <= 300; i++) {
+    loc = pmm->alloc(31);
     if (i % 5 == 0) pmm->free(loc);
   }
   printf("end\n");
