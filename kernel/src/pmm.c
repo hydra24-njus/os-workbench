@@ -133,7 +133,7 @@ static void *kalloc(size_t size) {
     bigmem_last.start=tmp;bigmem_last.end=heapend;
     heapend=tmp;
     unlock(&biglock);
-    debug("%x\n",tmp);
+    debug("%x\t%d\n",tmp,size);
     return (void*)tmp;
   }
   page_t* ptr=buddy[cpu].type[bitsize][FREE];
@@ -174,7 +174,6 @@ static void kfree(void *ptr) {
     return;
   }
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
-  printf("haed-ptr=%x\t",header->type);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
   //printf("addr=%x\n",addr);
   header->map[addr]=0;
