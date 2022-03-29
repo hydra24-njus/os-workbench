@@ -79,7 +79,7 @@ void add2free(page_t* ptr){
   else{
     while(tmp->next!=ptr)tmp=tmp->next;
     tmp->next=ptr->next;
-    debug("1\n");
+    debug("2\n");
     ((page_t*)ptr->next)->prev=tmp;
   }
 
