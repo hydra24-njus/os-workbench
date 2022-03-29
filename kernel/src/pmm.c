@@ -88,6 +88,7 @@ void add2free(page_t* ptr){
 
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size) {
+  printf("free\n");
   uintptr_t addr=0;
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
@@ -127,6 +128,7 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
+  printf("free\n");
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
