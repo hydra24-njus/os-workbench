@@ -129,11 +129,11 @@ static void *kalloc(size_t size) {
       addr=(uintptr_t)ptr+1024+size*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
-      if(ptr->now==ptr->max)add2full(ptr);
       break;
     }
   }
   debug("%x %d %d %d\n",addr,ptr->type,ptr->now,ptr->max);
+  if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
 }
 
