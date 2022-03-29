@@ -75,7 +75,7 @@ static void pmm_init() {
   char *ptr  = malloc(HEAP_SIZE);
   heaptr = (uintptr_t)ptr;
   heapend   = (uintptr_t)ptr + HEAP_SIZE;
-  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heaptr, heapend);
+  printf("Got %d MiB heap: [%x, %x)\n", HEAP_SIZE >> 20, heaptr, heapend);
 }
 #endif
 
