@@ -107,7 +107,7 @@ static void *kalloc(size_t size) {
     ptr=sbrk(8192);
     unlock(&biglock);
     buddy[cpu].type[bitsize][FREE]=ptr;
-    ptr->prev=NULL;ptr->next=NULL;
+    ptr->prev=NULL;ptr->next=NULL;ptr->state=FREE;
     ptr->type=size;ptr->bitype=bitsize;
     ptr->max=DATA_SIZE/size;ptr->now=0;
     ptr->cpu=cpu;ptr->cur=0;
@@ -118,7 +118,7 @@ static void *kalloc(size_t size) {
       addr=(uintptr_t)ptr+1024+size*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
-      if(ptr->now==ptr->max){debug("1");add2full(ptr);}
+      if(ptr->now==ptr->max)add2full(ptr);
       break;
     }
   }
