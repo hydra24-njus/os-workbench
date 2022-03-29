@@ -89,6 +89,7 @@ void add2free(page_t* ptr){
     while(tmp->next!=NULL)tmp=tmp->next;
     tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
   }
+  ptr->state=FREE;
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
   debug("\nfree:");
