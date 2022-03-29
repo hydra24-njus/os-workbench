@@ -89,7 +89,6 @@ static void *kalloc(size_t size1) {
   }
   else{
     while(ptr->next!=NULL){
-      check_not();
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
