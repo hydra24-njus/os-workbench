@@ -49,6 +49,13 @@ unsigned int bitpos(size_t size){
   while((1<<i)<size)i++;
   return i;
 }
+void add2full(page_t* ptr){
+  size_t bitype=ptr->bitype,cpu=ptr->cpu;
+  buddy[cpu].type[bitype][FREE]=ptr->next;
+  ptr->next=NULL;
+  buddy[cpu].type[bitype][FULL]=ptr;
+}
+
 
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size) {
@@ -79,6 +86,7 @@ static void *kalloc(size_t size) {
   for(int i=0;i<ptr->max;i++){
     if(ptr->map[i]==0){
       ptr->map[i]=1;ptr->now++;
+      if(ptr->now==ptr->max)add2full(ptr);
       addr=(uintptr_t)ptr+1024+size*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
