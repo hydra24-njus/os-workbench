@@ -121,6 +121,7 @@ void add2free(page_t* ptr){
 
 
 static void *kalloc(size_t size) {
+debug("222\n");
   uintptr_t addr=0;
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
