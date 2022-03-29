@@ -8,8 +8,7 @@ static void os_run() {
   }
   void* loc;
   for (int i = 1; i <= 10000; i++) {
-    size_t a = 2044;
-    loc = pmm->alloc(a);
+    loc = pmm->alloc(i);
     if (i % 5 == 0) pmm->free(loc);
   }
   printf("end\n");
