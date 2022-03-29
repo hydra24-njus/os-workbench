@@ -27,13 +27,13 @@ typedef union{
 }page_t;
 
 //辅助函数
-void* sbrk(int size){
+void* sbrk(size_t size){
   uintptr_t tmp=heaptr;
   heaptr+=size;
   if(heaptr>heapend)return NULL;
   return (void*)tmp;
 }
-unsigned int power2(unsigned int size){
+size_t power2(size_t size){
   size--;
   size|=size>>1;
   size|=size>>2;
@@ -44,13 +44,9 @@ unsigned int power2(unsigned int size){
   if(size<16)size=16;
   return size;
 }
-uintptr_t slowpath_alloc(size_t size){
-  uintptr_t tmp=heapend;
-  tmp-=size;
-  tmp-=heapend%size;
-  if(tmp<=heaptr)return 0;
-  heapend=tmp;
-  return heapend;
+unsigned int bitpos(size_t size){
+
+  return 0;
 }
 
 
@@ -68,6 +64,7 @@ static void *kalloc(size_t size) {
     unlock(&biglock);
     return (void*)tmp;
   }
+
   return NULL;
 }
 
