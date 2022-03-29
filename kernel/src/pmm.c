@@ -55,6 +55,7 @@ void add2full(page_t* ptr){
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
   ptr->next=buddy[cpu].type[bitype][FULL];
+  ((page_t*)ptr->next)->prev=ptr;
   if(ptr->prev!=NULL)((page_t*)ptr->prev)->next=NULL;
   ptr->state=FULL;
   buddy[cpu].type[bitype][FULL]=ptr;
