@@ -50,7 +50,7 @@ uintptr_t slowpath_alloc(size_t size){
 }
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size1) {
-
+  int count=0;
   uintptr_t addr=0;int cpu=cpu_current();
   size_t size=power2(size1);
   if(size>4096){
@@ -62,7 +62,9 @@ static void *kalloc(size_t size1) {
     return (void*)addr;
   }
   int bitsize=3;
-  while((1<<bitsize)!=size)bitsize++;
+  while((1<<bitsize)!=size){bitsize++;count++;}
+  debug("bitsize %d",count);
+  count=0;
   bitsize-=4;
   struct page_t* ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
@@ -80,9 +82,11 @@ static void *kalloc(size_t size1) {
   }
   else{
     while(ptr->next!=NULL){
+      count++;
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
+    debug("link %d",count++);count=0;
   }
   if(ptr->now>=ptr->max){//没有空闲页
     lock(&biglock);
