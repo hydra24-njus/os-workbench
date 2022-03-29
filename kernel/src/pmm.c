@@ -121,14 +121,6 @@ static void *kalloc(size_t size) {
       break;
     }
   }
-  int flag=0;
-  for(int i=0;i<ptr->max;i++){
-    if(ptr->map[i]==0){
-      flag=1;
-      break;
-    }
-  }
-  assert(flag);
   debug("%x %d %d\n",addr,ptr->type,ptr->now);
   if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
@@ -139,9 +131,9 @@ static void kfree(void *ptr) {
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
-  printf("haed-ptr=%x\t",header);
+  //printf("haed-ptr=%x\t",header);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
-  printf("addr=%x\n",addr);
+  //printf("addr=%x\n",addr);
   //if(header->type==2048||header->type==2048)addr-=1;
   header->map[addr]=0;
   header->now--;
