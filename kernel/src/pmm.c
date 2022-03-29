@@ -59,9 +59,14 @@ static void *kalloc(size_t size) {
   size=power2(size);
   if(size>4096){
     if(size>(16<<20))return NULL;
+    uintptr_t tmp=heapend;
+    tmp-=size;
+    tmp-=tmp%size;
     lock(&biglock);
-
+    if(tmp<=heaptr){unlock(&biglock);return NULL;}
+    heapend=tmp;
     unlock(&biglock);
+    return (void*)tmp;
   }
   return NULL;
 }
