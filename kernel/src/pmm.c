@@ -133,6 +133,7 @@ static void *kalloc(size_t size) {
     bigmem_last.start=tmp;bigmem_last.end=heapend;
     heapend=tmp;
     unlock(&biglock);
+    debug("%x",tmp);
     return (void*)tmp;
   }
   page_t* ptr=buddy[cpu].type[bitsize][FREE];
