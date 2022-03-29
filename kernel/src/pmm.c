@@ -137,7 +137,7 @@ static void kfree(void *ptr) {
   }
   else{
     int i=(addr-1024)/header->type;
-    header->map[i]=false;
+    header->map[i]=0;
     header->cur=i;
   }
   if(header->now==header->max)add2free(header);
