@@ -132,7 +132,7 @@ static void kfree(void *ptr) {
   }
   else if(header->type==4096){
     int i=addr/4096;
-    header->map[i-1]=false;
+    header->map[i-1]=0;
     header->cur=i-1;
   }
   else{
