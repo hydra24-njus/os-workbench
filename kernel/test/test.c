@@ -20,7 +20,7 @@ static void test2(int tid) {
 
 static void test3(int tid) {
   void* loc;
-  for (int i = 1; i <= 10000; i++) {
+  for (int i = 1; i <= 10; i++) {
     loc = pmm->alloc(5000 + (i * 1000) % 5000);
     pmm->free(loc);
   }
