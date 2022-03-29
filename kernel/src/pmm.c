@@ -85,10 +85,12 @@ void add2free(page_t* ptr){
 
   tmp=buddy[cpu].type[bitype][FREE];
   if(tmp==NULL){
+    debug("3\n");
     buddy[cpu].type[bitype][FREE]=ptr;
     ptr->next=NULL;ptr->prev=NULL;
   }
   else{
+    debug("4\n");
     while(tmp->next!=NULL)tmp=tmp->next;
     tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
   }
