@@ -75,6 +75,7 @@ void add2free(struct page_t* ptr){
   struct page_t* tmp2=buddy[cpu].type[btp][FULL];
   debug("1\n\n");
   while(tmp->next!=NULL)tmp=tmp->next;
+  debug("1\n\n");
   while(tmp2->next!=ptr)tmp=tmp->next;
   debug("1\n\n");
   tmp2->next=ptr->next;
