@@ -32,7 +32,7 @@ struct page_t{
       void* next;
       size_t type;
       bool map[512];
-      int max,now,cur;
+      int max,now,cur,cpu,bitype;
     };
   };
 };
@@ -63,8 +63,11 @@ uintptr_t slowpath_alloc(size_t size){
   heapend=tmp;
   return heapend;
 }
-void add2full(void* ptr){
-
+void add2full(struct page_t* ptr){
+  int cpu=ptr->cpu,btp=ptr->bitype;
+  buddy[cpu].type[btp][FREE]=ptr->next;
+  ptr->next=buddy[cpu].type[btp][FULL];
+  buddy[cpu].type[btp][FULL]=ptr->next;
 }
 void add2free(void* ptr){
 
@@ -94,7 +97,9 @@ static void *kalloc(size_t size1) {
       addr=0;
       goto ret;
     }
+    ptr->cpu=cpu;
     ptr->type=size;
+    ptr->bitype=bitsize;
     buddy[cpu].type[bitsize][FREE]=ptr;
     ptr->next=NULL;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
