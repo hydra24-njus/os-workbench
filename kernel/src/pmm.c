@@ -140,7 +140,7 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  //printf("free\n");
+  printf("free,%x\n",ptr);
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;

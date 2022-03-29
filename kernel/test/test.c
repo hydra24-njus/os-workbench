@@ -8,9 +8,7 @@ static void test0(int tid) {
     loc = pmm->alloc(a);
     //if(loc==NULL)assert(0);
     if (i % 5 == 0){
-    printf("free\n");
     pmm->free(loc);
-    printf("endfree\n");}
   }
 }
 
