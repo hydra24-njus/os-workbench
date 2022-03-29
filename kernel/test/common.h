@@ -25,12 +25,6 @@ static inline int atomic_xchg(int *addr, int newval) {
 typedef unsigned long int uintptr_t;
 #define HEAP_SIZE (1 << 27)
 
-typedef struct {
-  void *start, *end;
-} Area;
-
-Area heap;
-
 typedef struct spinlock{
   int locked;
 }spinlock_t;
