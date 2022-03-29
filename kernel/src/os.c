@@ -10,6 +10,9 @@ static void os_run() {
   }
   void* loc=pmm->alloc(8000);
   pmm->free(loc);
+  loc=pmm->alloc(8000);
+  pmm->free(loc);
+  pmm->alloc(8000);
   while (1) ;
 }
 

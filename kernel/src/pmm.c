@@ -121,12 +121,10 @@ void add2free(page_t* ptr){
 
 
 static void *kalloc(size_t size) {
-debug("222\n");
   uintptr_t addr=0;
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
-    debug("222\n");
     lock(&biglock);
     uintptr_t tmp=heapend;
     tmp-=size;
@@ -135,7 +133,7 @@ debug("222\n");
     bigmem_last.start=tmp;bigmem_last.end=heapend;
     heapend=tmp;
     unlock(&biglock);
-    debug("%x",tmp);
+    debug("%x\n",tmp);
     return (void*)tmp;
   }
   page_t* ptr=buddy[cpu].type[bitsize][FREE];
