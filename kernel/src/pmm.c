@@ -70,16 +70,24 @@ void add2free(page_t* ptr){
   if(ptr->state==FREE)return;
   debug("add to free(%x):\nfull:",ptr);
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
-  page_t* tmp=ptr->prev;
-  //debug("(tmp=%x)",tmp);
-  if(tmp!=NULL)tmp->next=ptr->next;
-  ptr->next=NULL;
-  ptr->state=FREE;
+  page_t* tmp=buddy[cpu].type[bitype][FULL];
+  if(tmp==ptr){
+    buddy[cpu].type[bitype][FULL]=ptr->next;
+    ((page_t*)ptr->next)->prev=NULL;
+  }
+  else{
+    while(tmp->next!=ptr)tmp=tmp->next;
+    tmp->next=ptr->next;
+    ((page_t*)ptr->next)->prev=tmp;
+  }
   tmp=buddy[cpu].type[bitype][FREE];
-  if(tmp==NULL)tmp=ptr;
+  if(tmp==NULL){
+    buddy[cpu].type[bitype][FREE]=ptr;
+    ptr->next=NULL;ptr->prev=NULL;
+  }
   else{
     while(tmp->next!=NULL)tmp=tmp->next;
-    tmp->next=ptr;
+    tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
   }
   page_t* cont=buddy[cpu].type[bitype][FULL];
   while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
