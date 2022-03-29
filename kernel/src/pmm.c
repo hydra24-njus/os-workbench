@@ -5,10 +5,10 @@ spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
-#define not_max 100
+#define not_max 100000
 #define check_not()\
   do{\
-    int sagiri=0;\
+    static int sagiri=0;\
     ++sagiri;\
     assert(sagiri<not_max);\
   }while(0)
