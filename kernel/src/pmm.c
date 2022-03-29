@@ -67,7 +67,7 @@ void add2full(struct page_t* ptr){
   int cpu=ptr->cpu,btp=ptr->bitype;
   buddy[cpu].type[btp][FREE]=ptr->next;
   ptr->next=buddy[cpu].type[btp][FULL];
-  buddy[cpu].type[btp][FULL]=ptr->next;
+  buddy[cpu].type[btp][FULL]=ptr;
 }
 void add2free(struct page_t* ptr){
   int cpu=ptr->cpu,btp=ptr->bitype;
