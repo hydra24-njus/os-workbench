@@ -154,7 +154,7 @@ static void pmm_init() {
 // 测试代码的 pmm_init ()
 static void pmm_init() {
   char *ptr  = malloc(HEAP_SIZE);
-  heaptr = (uintptr_t)ptr;
+  heaptr = (uintptr_t)(ptr&(~(PAGE_SIZE-1)));
   heapend   = (uintptr_t)ptr + HEAP_SIZE;
   printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heaptr, heapend);
 }
