@@ -10,7 +10,9 @@ static void os_run() {
     pmm->alloc(2048);
   }
   pmm->free((void*)0x300800);
-  pmm->alloc(2048);
+  pmm->free((void*)0x301000);
+  pmm->free((void*)0x301800);
+  pmm->alloc(2048);pmm->alloc(2048);pmm->alloc(2048);
   while (1) ;
 }
 
