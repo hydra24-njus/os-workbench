@@ -5,6 +5,11 @@
 #include <string.h>
 
 //摘出来pmm.c需要的am函数
+#ifdef LOCAL_MACHINE
+  #define debug(...) printf(__VA_ARGS__)
+#else
+  #define debug(...)
+#endif
 #ifdef TEST
 static inline int atomic_xchg(int *addr, int newval) {
   int result;
