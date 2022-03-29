@@ -72,7 +72,7 @@ void add2free(page_t* ptr){
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   page_t* tmp=ptr->prev;
   //debug("(tmp=%x)",tmp);
-  tmp->next=ptr->next;
+  if(tmp!=NULL)tmp->next=ptr->next;
   ptr->next=NULL;
   ptr->state=FREE;
   tmp=buddy[cpu].type[bitype][FREE];
