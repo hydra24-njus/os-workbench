@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-//摘出来pmm.c需要的am函数
 #ifdef LOCAL_MACHINE
   #define debug(...) printf(__VA_ARGS__)
 #else
   #define debug(...)
 #endif
+
 #ifdef TEST
 static inline int atomic_xchg(int *addr, int newval) {
   int result;
@@ -20,33 +20,9 @@ static inline int atomic_xchg(int *addr, int newval) {
                : "cc", "memory");
   return result;
 }
-
 #endif
 
-//为了能让test成功编译(提取了os.c)
-#define MODULE(mod)                           \
-  typedef struct mod_##mod##_t mod_##mod##_t; \
-  extern mod_##mod##_t *mod;                  \
-  struct mod_##mod##_t
-
-#define MODULE_DEF(mod)                \
-  extern mod_##mod##_t __##mod##_obj;  \
-  mod_##mod##_t *mod = &__##mod##_obj; \
-  mod_##mod##_t __##mod##_obj
-
-MODULE(os) {
-  void (*init)();
-  void (*run)();
-};
-
-MODULE(pmm) {
-  void (*init)();
-  void *(*alloc)(size_t size);
-  void (*free)(void *ptr);
-};
-
 typedef unsigned long int uintptr_t;
-typedef long int intptr_t;
 #define HEAP_SIZE (1 << 27)
 
 typedef struct {
