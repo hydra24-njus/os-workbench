@@ -5,6 +5,15 @@ spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
+#define not_max 100
+#define check_not()\
+  do{\
+    static int sagiri=0;\
+    ++sagiri;\
+    assert(sagiri<not_max);\
+  }while(0)
+
+
 //数据结构
 enum{
   p8=0,p16,p32,p64,p128,p256,p512,p1024,p2048,p4096
@@ -50,7 +59,7 @@ uintptr_t slowpath_alloc(size_t size){
 }
 //static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size1) {
-  int count=0;
+
   uintptr_t addr=0;int cpu=cpu_current();
   size_t size=power2(size1);
   if(size>4096){
@@ -62,9 +71,7 @@ static void *kalloc(size_t size1) {
     return (void*)addr;
   }
   int bitsize=3;
-  while((1<<bitsize)!=size){bitsize++;count++;}
-  debug("bitsize %d\n",count);
-  count=0;
+  while((1<<bitsize)!=size){bitsize++;check_not();}
   bitsize-=4;
   struct page_t* ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
@@ -82,11 +89,10 @@ static void *kalloc(size_t size1) {
   }
   else{
     while(ptr->next!=NULL){
-      count++;
+      check_not();
       if(ptr->now<ptr->max)break;
       ptr=ptr->next;
     }
-    debug("link %d\n",count++);count=0;
   }
   if(ptr->now>=ptr->max){//没有空闲页
     lock(&biglock);
