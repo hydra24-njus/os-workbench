@@ -127,6 +127,7 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
+  if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
   if(addr>=heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
