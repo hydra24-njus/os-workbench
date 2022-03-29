@@ -48,7 +48,7 @@ uintptr_t slowpath_alloc(size_t size){
   heapend=tmp;
   return heapend;
 }
-static_assert(sizeof(bool)==1);
+//static_assert(sizeof(bool)==1);
 static void *kalloc(size_t size1) {
 
   uintptr_t addr=0;int cpu=cpu_current();
@@ -67,8 +67,8 @@ static void *kalloc(size_t size1) {
   struct page_t* ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
-    unlock(&biglock);
     ptr = sbrk(PAGE_SIZE);
+    unlock(&biglock);
     if(ptr==0){
       addr=0;
       goto ret;
