@@ -5,13 +5,7 @@ spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
-#define not_max 100000
-#define check_not()\
-  do{\
-    static int sagiri=0;\
-    ++sagiri;\
-    assert(sagiri<not_max);\
-  }while(0)
+
 
 
 //数据结构
@@ -91,7 +85,7 @@ static void *kalloc(size_t size1) {
     return (void*)addr;
   }
   int bitsize=3;
-  while((1<<bitsize)!=size){bitsize++;check_not();}
+  while((1<<bitsize)!=size){bitsize++;}
   bitsize-=4;
   struct page_t* ptr=buddy[cpu].type[bitsize][FREE];
   if (ptr == NULL){ //该cpu没有页
@@ -110,7 +104,6 @@ static void *kalloc(size_t size1) {
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
   for(int i=0;i<ptr->max;i++){
-    check_not();
     int j=(i+ptr->cur)%ptr->max;
     if((ptr->map[j])==false){//找到页中空闲位置，计算地址
       ptr->map[j]=true;
