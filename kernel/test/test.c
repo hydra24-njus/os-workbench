@@ -34,7 +34,6 @@ static void test3(int tid) {
   void* loc;
   for (int i = 1; i <= 10000; i++) {
     loc = pmm->alloc(5000 + (i * 1000) % 5000);
-    if(loc==NULL)assert(0);
     pmm->free(loc);
   }
 }
