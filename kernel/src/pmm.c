@@ -50,6 +50,7 @@ unsigned int bitpos(size_t size){
   return i;
 }
 void add2full(page_t* ptr){
+  debug("add to full\n\n");
   if(ptr->state==FULL)return;
   size_t bitype=ptr->bitype,cpu=ptr->cpu;
   buddy[cpu].type[bitype][FREE]=ptr->next;
