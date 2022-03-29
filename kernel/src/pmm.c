@@ -66,6 +66,9 @@ static void kfree(void *ptr) {
 #ifndef TEST
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
+
+  heaptr=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
+
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
