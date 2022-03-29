@@ -105,7 +105,6 @@ static void *kalloc(size_t size) {
   for(int i=0;i<ptr->max;i++){
     if(ptr->map[i]==0){
       ptr->map[i]=1;ptr->now++;
-      if(ptr->now==ptr->max)add2full(ptr);
       addr=(uintptr_t)ptr+1024+size*i;
       if(size==2048)addr+=1024;
       else if(size==4096)addr+=3072;
@@ -113,6 +112,7 @@ static void *kalloc(size_t size) {
     }
   }
   debug("%x\n",addr);
+  if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
 }
 
@@ -124,6 +124,7 @@ static void kfree(void *ptr) {
   if(addr==2048||addr==4096)addr-=1;
   header->map[addr]=0;
   header->now--;
+  debug("header=%x\n",header);
   add2free(header);
   return;
 }
