@@ -135,7 +135,7 @@ static void kfree(void *ptr) {
   //printf("haed-ptr=%x\t",header);
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
   //printf("addr=%x\n",addr);
-  //if(header->type==2048||header->type==2048)addr-=1;
+  if(header->type==2048||header->type==2048)addr-=1;
   header->map[addr]=0;
   header->now--;
   add2free(header);
