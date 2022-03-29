@@ -23,7 +23,7 @@ struct page_t{
     struct{
       void* next;void* prev;
       size_t type;
-      uint8_t map[512];
+      bool map[512];
       int max,now,cur,cpu,bitype;
     };
   };
@@ -103,8 +103,8 @@ static void *kalloc(size_t size1) {
   }
   for(int i=0;i<ptr->max;i++){
     int j=(i+ptr->cur)%ptr->max;
-    if((ptr->map[j])==0){//找到页中空闲位置，计算地址
-      ptr->map[j]=1;
+    if((ptr->map[j])==false){//找到页中空闲位置，计算地址
+      ptr->map[j]=true;
       ptr->now++;ptr->cur=(j+1)%ptr->max;
       addr=(uintptr_t)ptr+1024+ptr->type*j;
       if(size==2048)addr+=1024;
@@ -125,17 +125,17 @@ static void kfree(void *ptr) {
   addr=(addr%PAGE_SIZE);
   if(header->type==2048){//2048 4096 6144
     int i=addr/2048;
-    header->map[i-1]=0;
+    header->map[i-1]=false;
     header->cur=i-1;
   }
   else if(header->type==4096){
     int i=addr/4096;
-    header->map[i-1]=0;
+    header->map[i-1]=false;
     header->cur=i-1;
   }
   else{
     int i=(addr-1024)/header->type;
-    header->map[i]=0;
+    header->map[i]=false;
     header->cur=i;
   }
   if(header->now==header->max)add2free(header);
