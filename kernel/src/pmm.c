@@ -66,16 +66,15 @@ static void *kalloc(size_t size1) {
   struct page_t* ptr=buddy[cpu][bitsize];
   if (ptr == NULL){ //该cpu没有页
     lock(&biglock);
+    unlock(&biglock);
     ptr = sbrk(PAGE_SIZE);
     if(ptr==0){
-      unlock(&biglock);
       addr=0;
       goto ret;
     }
     ptr->type=size;
     buddy[cpu][bitsize]=ptr;
     ptr->next=NULL;
-    unlock(&biglock);
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->cur=0;
   }
   else{
@@ -87,14 +86,13 @@ static void *kalloc(size_t size1) {
   if(ptr->now>=ptr->max){//没有空闲页
     lock(&biglock);
     struct page_t* tmp = sbrk(PAGE_SIZE);
+    unlock(&biglock);
     if(tmp==NULL){
-      unlock(&biglock);
       goto ret;
     }
     tmp->type=size;
     tmp->next=buddy[cpu][bitsize];
     buddy[cpu][bitsize]=tmp;
-    unlock(&biglock);
     ptr=tmp;
     ptr->now=0;ptr->max=DATA_SIZE/size;ptr->type=size;ptr->cur=0;
   }
