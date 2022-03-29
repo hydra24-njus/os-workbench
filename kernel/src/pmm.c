@@ -1,7 +1,7 @@
 #include <common.h>
 uintptr_t heaptr;
 uintptr_t heapend;
-spinlock_t biglock;
+struct spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
