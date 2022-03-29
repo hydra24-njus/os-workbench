@@ -146,10 +146,8 @@ static void kfree(void *ptr) {
     header->map[i]=false;
     header->cur=i;
   }
-  lock(&biglock);
   add2free(header);
   header->now--;
-  unlock(&biglock);
   return;
 }
 
