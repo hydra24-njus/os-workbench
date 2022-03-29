@@ -6,8 +6,6 @@ spinlock_t biglock;
 #define PAGE_SIZE 8192
 #define DATA_SIZE (PAGE_SIZE-HEAD_SIZE)
 
-
-
 //数据结构
 enum{
   p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096
