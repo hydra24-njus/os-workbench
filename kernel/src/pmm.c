@@ -69,8 +69,14 @@ void add2full(struct page_t* ptr){
   ptr->next=buddy[cpu].type[btp][FULL];
   buddy[cpu].type[btp][FULL]=ptr->next;
 }
-void add2free(void* ptr){
-
+void add2free(struct page_t* ptr){
+  int cpu=ptr->cpu,btp=ptr->bitype;
+  struct page_t* tmp=buddy[cpu].type[btp][FREE];
+  struct page_t* tmp2=buddy[cpu].type[btp][FULL];
+  while(tmp->next!=NULL)tmp=tmp->next;
+  while(tmp2->next!=ptr)tmp=tmp->next;
+  tmp2->next=ptr->next;
+  tmp->next=ptr;ptr->next=NULL;
 }
 
 //static_assert(sizeof(bool)==1);
