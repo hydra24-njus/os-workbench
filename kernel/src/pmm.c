@@ -121,7 +121,7 @@ static void *kalloc(size_t size) {
       break;
     }
   }
-  debug("%x %d %d\n",addr,ptr->type,ptr->now);
+  debug("%x %d %d %d\n",addr,ptr->type,ptr->now,ptr->max);
   if(ptr->now==ptr->max){debug("1");add2full(ptr);}
   return (void*)addr;
 }
