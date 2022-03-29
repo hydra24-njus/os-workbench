@@ -7,9 +7,8 @@ static void test0(int tid) {
     size_t a = 2047;
     loc = pmm->alloc(a);
     //if(loc==NULL)assert(0);
-    if (i % 5 == 0)
-    pmm->free(loc);
-  
+    if (i % 5 == 0) pmm->free(loc);
+  }
 }
 
 static void test1(int tid) {
