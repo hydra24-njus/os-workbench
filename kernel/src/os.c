@@ -6,9 +6,9 @@ static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //putch(*s == '*' ? '0' + cpu_current() : *s);
   }
-  for (int i = 1; i <= 27; i++)pmm->alloc(1024);
-  pmm->free((void*)0x300800);
-  pmm->alloc(1024);pmm->alloc(1024);
+  //for (int i = 1; i <= 27; i++)pmm->alloc(1024);
+  //pmm->free((void*)0x300800);
+  //pmm->alloc(1024);pmm->alloc(1024);
   while (1) ;
 }
 
