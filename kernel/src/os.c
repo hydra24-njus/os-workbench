@@ -12,8 +12,8 @@ void test2(int tid) {
   printf("start2\n");
   void* loc;
   for (int i = 1; i <= 10000; i++) {
-    size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
-    loc = pmm->alloc(a);
+    //size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
+    loc = pmm->alloc(10);
     printf("loc=%p\n",loc);
     if(loc==NULL)assert(0);
     //if (i % 5 == 0) pmm->free(loc);
