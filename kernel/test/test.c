@@ -4,6 +4,7 @@
 static void test0(int tid) {
   void* loc=pmm->alloc(16<<10);
   void* loc2=pmm->alloc(16<<10);
+  printf("finished\n");
   pmm->free(loc2);pmm->free(loc);
 }
 
