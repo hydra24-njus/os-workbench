@@ -7,7 +7,7 @@ static void os_run() {
     //putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   void* loc=pmm->alloc(16<<20);
-  printf("alloc pass\n");
+  printf("loc=%p\n",loc);
   pmm->free(loc);
   while (1) ;
 }
