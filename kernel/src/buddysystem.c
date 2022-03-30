@@ -72,6 +72,7 @@ void* buddy_alloc(size_t size){
         page_t* tmp=tree_head->free_list[i];
         tree_head->free_list[i]=tmp->next;
         tmp->next=NULL;
+        tmp->state=1;
         uintptr_t num=map2addr((uintptr_t)tmp);
         return (void*)num;
     }
@@ -79,6 +80,7 @@ void* buddy_alloc(size_t size){
         uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
         page_t* tmp=(page_t*)addr2map(addr);
         page_t* tmp2=(page_t*)addr2map(addr+size);
+        tmp->state=1;tmp2->state=0;
         tree_head->free_list[i]=(void*)tmp2;
         tmp->size=i;tmp2->size=i;
         return (void*)addr;
@@ -86,7 +88,30 @@ void* buddy_alloc(size_t size){
     return NULL;
 }
 void buddy_free(void* addr){
-    //page_t* map=(page_t*)addr2map((uintptr_t)addr);
-    //int i=0;while((1<<i)<map->size)i++;i-=16;
-    
+    page_t* map=(page_t*)addr2map((uintptr_t)addr);
+    map->state=0;
+    map->next=tree_head->free_list[map->size];
+    tree_head->free_list[map->size]=map;
+    /*uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
+    page_t* next_page=NULL;int flag=0;
+    if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);}
+    else next_page=map-sizeof(page_t)*(1<<map->size);
+    if(next_page->state==0){
+        page_t* tmp=tree_head->free_list[map->size];
+        if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
+        else{
+            while(tmp->next!=next_page)tmp=tmp->next;
+            tmp->next=next_page->next;
+        }
+        next_page->next=NULL;
+        if(flag==1){//map first
+            map->size=map->size<<1;
+            next_page->size=0;
+        }
+        else{//next_page first
+            map->size=0;
+            next_page->size=next_page->size<<1;
+        }
+    }*/
+
 }
