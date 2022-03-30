@@ -29,7 +29,6 @@ static inline int atomic_xchg(int *addr, int newval) {
                : "cc", "memory");
   return result;
 }
-
 #endif
 
 typedef unsigned long int uintptr_t;
