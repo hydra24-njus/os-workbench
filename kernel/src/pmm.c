@@ -1,5 +1,5 @@
 #include <common.h>
-uintptr_t heaptr;
+uintptr_t heapstart,heaptr;
 uintptr_t heapend;
 uintptr_t bigmemcnt=0;
 spinlock_t biglock;
@@ -33,9 +33,9 @@ typedef struct bigmem{
 mem_t bigmem_last;
 //辅助函数
 void* sbrk(size_t size){
-  uintptr_t tmp=heaptr;
-  heaptr+=size;
-  if(heaptr>heapend)return NULL;
+  uintptr_t tmp=heapstart;
+  heapstart+=size;
+  if(heapstart>heapend)return NULL;
   return (void*)tmp;
 }
 size_t power2(size_t size){
@@ -125,13 +125,10 @@ static void *kalloc(size_t size) {
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
-    if(bigmemcnt>10)return NULL;
-    bigmemcnt++;
-    lock(&biglock);
     uintptr_t tmp=heapend;
     tmp-=size;
     tmp-=tmp%size;
-    if(tmp<=heaptr){unlock(&biglock);return NULL;}
+    if(tmp<=heapstart){unlock(&biglock);return NULL;}
     bigmem_last.start=tmp;bigmem_last.end=heapend;
     heapend=tmp;
     unlock(&biglock);
@@ -188,7 +185,7 @@ static void kfree(void *ptr) {
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
   spinlock_init(&biglock);
-  heaptr=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
+  heapstart=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
   heapend=(uintptr_t)heap.end;
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
@@ -197,9 +194,9 @@ static void pmm_init() {
 // 测试代码的 pmm_init ()
 static void pmm_init() {
   char *ptr  = malloc(HEAP_SIZE);
-  heaptr = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
+  heapstart = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
   heapend   = (uintptr_t)ptr + HEAP_SIZE;
-  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heaptr, heapend);
+  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapend);
 }
 #endif
 
