@@ -1,7 +1,6 @@
 enum{
-    K6=0,K7,K8,K9,M1,M2,M3,M4,M5
+    K6=0,K7,K8,K9,M1,M2,M3,M4,M5,MAX_ORDER
 };
-#define MAX_ORDER M5
 
 
 

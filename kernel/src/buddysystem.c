@@ -5,7 +5,6 @@
 
 typedef struct{
     int size;
-    int type;
     int state;
     void* next;
 }page_t;
@@ -27,5 +26,18 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     if(heapstart%M16!=0)heapstart=heapstart+M16-heapstart%M16;
     heapend=(heapend>>24)<<24;
     printf("%x~%x,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
-
+    memset(tree_head,0,sizeof(tree));
+    int maxpage=((heapend-heapstart)>>20)/16;
+    tree_head->free_list[M5]=&tree_head->units[0];
+    for(int i=0;i<maxpage-1;i++){
+        tree_head->units[i*256].size=M5;
+        tree_head->units[i*256].state=0;
+        tree_head->units[i*256].next=&tree_head->units[(i+1)*256];
+    }
+    tree_head->units[(maxpage-1)*256].next=NULL;
+    page_t* tmp=tree_head->free_list[M5];
+    while(tmp->next!=NULL){
+        printf("%x->",tmp);
+        tmp=tmp->next;
+    }
 }
