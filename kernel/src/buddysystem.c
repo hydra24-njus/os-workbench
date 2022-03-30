@@ -79,6 +79,7 @@ void* buddy_alloc(size_t size){
     }
     else{
         uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
+        if(addr==0)return NULL;
         page_t* tmp=(page_t*)addr2map(addr);
         page_t* tmp2=(page_t*)addr2map(addr+size);
         tmp->state=1;tmp2->state=0;
