@@ -2,7 +2,7 @@
 #include <thread.h>
 
 static void test0(int tid) {
-  void* loc=pmm->alloc(16<<10);
+  void* loc=pmm->alloc(16<<20);
   printf("alloc pass\n");
   pmm->free(loc);
 }
