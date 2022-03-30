@@ -9,6 +9,7 @@ void test1(int tid) {
 }
 
 void test2(int tid) {
+  printf("start2\n");
   void* loc;
   for (int i = 1; i <= 10000; i++) {
     size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
