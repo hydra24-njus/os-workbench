@@ -26,6 +26,8 @@ unsigned int bitpos(size_t size){
 
 
 static void *kalloc(size_t size) {
+  size=power2(size);
+  return buddy_alloc(size);
   return NULL;
 }
 
