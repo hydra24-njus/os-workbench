@@ -8,7 +8,7 @@ static void os_run() {
   }
   pmm->alloc(16<<20);
   printf("alloc pass\n");
-  pmm->free(0);
+  //pmm->free(0);
   while (1) ;
 }
 
