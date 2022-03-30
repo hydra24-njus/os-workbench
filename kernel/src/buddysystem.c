@@ -90,13 +90,13 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-
+printf("free1\n");
     //找到next_page
     uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
     page_t* next_page=NULL;int flag=0;
     if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);}
     else next_page=map-sizeof(page_t)*(1<<map->size);
-
+printf("free2\n");
     //合并
     if(next_page->state==0){
         //从链表中释放next_page
@@ -117,6 +117,7 @@ void buddy_free(void* addr){
         }
 
     }
+printf("free3\n");
     if(flag==1){
         map->next=tree_head->free_list[map->size];
         tree_head->free_list[map->size]=map;
