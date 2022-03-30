@@ -120,6 +120,7 @@ void buddy_free(void* addr){
             map=next_page;
         }
     }
+    printf("1\n\n");
     //重新加入链表
     map->next=tree_head->free_list[map->size];
     tree_head->free_list[map->size]=map;
