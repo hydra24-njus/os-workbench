@@ -1,5 +1,5 @@
 //以下内容参考xv6实现
-typedef struct spinlock{
+typedef struct{
   int locked;
 }spinlock_t;
 void spinlock_init(spinlock_t *lk);
