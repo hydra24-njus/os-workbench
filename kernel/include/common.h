@@ -35,3 +35,7 @@ typedef unsigned long int uintptr_t;
 #else
   #define debug(...)
 #endif
+
+typedef struct{
+  int locked;
+}spinlock_t;
