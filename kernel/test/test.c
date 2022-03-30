@@ -3,6 +3,7 @@
 
 static void test0(int tid) {
   void* loc=pmm->alloc(16<<10);
+  printf("alloc pass\n");
   pmm->free(loc);
 }
 
