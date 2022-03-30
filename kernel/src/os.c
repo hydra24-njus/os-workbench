@@ -25,6 +25,7 @@ void test3(int tid) {
   void* loc;
   for (int i = 1; i <= 10000; i++) {
     loc = pmm->alloc(5000 + (i * 1000) % 5000);
+    printf("loc=%p\n",loc);
     pmm->free(loc);
   }
   printf("end3\n");
@@ -35,6 +36,7 @@ void test4(int tid) {
   for (int i = 1; i <= 10000; i++) {
     size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
     loc = pmm->alloc(a);
+    printf("loc=%p\n",loc);
     if (i % 2 == 0) pmm->free(loc);
   }
   printf("end4\n");
@@ -45,6 +47,7 @@ void test5(int tid) {
   for (int i = 1; i <= 10000; i++) {
     size_t a = rand() % 128 + 5;
     loc = pmm->alloc(a);
+    printf("loc=%p\n",loc);
     if (i % 5 == 0) pmm->free(loc);
   }
   printf("end5\n");
@@ -62,7 +65,7 @@ static void os_run() {
   //test1(1);
   test2(1);
   test3(1);
-  //test4(1);
+  test4(1);
   //test5(1);
   while (1) ;
 }
