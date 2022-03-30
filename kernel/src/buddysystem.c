@@ -96,6 +96,7 @@ void buddy_free(void* addr){
     if(num%(1<<map->size)==0){
         flag=1;
         next_page=map+sizeof(page_t)*(1<<map->size);
+        printf("%lx,%lx\n",map,next_page);
     }
     else next_page=map-sizeof(page_t)*(1<<map->size);
     //合并
