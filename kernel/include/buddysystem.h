@@ -1,7 +1,7 @@
 enum{
-    K2_6=0,K2_7,K2_8,K2_9,M2_1,M2_2,M2_3,M2_4,M2_5
+    K6=0,K7,K8,K9,M1,M2,M3,M4,M5
 };
-#define MAX_ORDER M2_5
+#define MAX_ORDER M5
 
 typedef struct pagecontrol{
     int size;
