@@ -43,5 +43,6 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
         printf("%x->",num);
         tmp=tmp->next;
     }
+    printf("\n");
     }
 }
