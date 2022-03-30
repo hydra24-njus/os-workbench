@@ -1,6 +1,5 @@
 #include <common.h>
-uintptr_t heapstart,heaptr;
-uintptr_t heapend,heapstop;
+#include <lock.h>
 spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
@@ -26,12 +25,12 @@ typedef union{
   }__attribute__((packed));
 }page_t;
 //辅助函数
-void* sbrk(size_t size){
+/*void* sbrk(size_t size){
   uintptr_t tmp=heapstart;
   heapstart+=size;
   if(heapstart>=heapend)return NULL;
   return (void*)tmp;
-}
+}*/
 size_t power2(size_t size){
   size--;
   size|=size>>1;
@@ -64,9 +63,6 @@ static void kfree(void *ptr) {
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
   spinlock_init(&biglock);
-  heapstart=(uintptr_t)heap.start;if(heapstart%8192!=0)heapstart+=8192-(heapstart%8192);
-  heapstop=(uintptr_t)heap.end;if(heapstop%8192!=0)heapstart-=heapstart%8192;
-  heapend=heapstop-(16<<20);heaptr=heapend;
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
@@ -74,10 +70,9 @@ static void pmm_init() {
 // 测试代码的 pmm_init ()
 static void pmm_init() {
   char *ptr  = malloc(HEAP_SIZE);
-  heapstart = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
-  heapstop   = (uintptr_t)ptr + HEAP_SIZE;heapstop-=heapstop%8192;
-  heapend=heapstop-(16<<20);heapend=heapend&(~((16<<20)-1));heaptr=heapend;
-  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapend);
+  heap.start = ptr;
+  heap.end   = ptr + HEAP_SIZE;
+  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heap.start, heap.end);
 }
 #endif
 
