@@ -36,7 +36,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     }
     tree_head->units[(maxpage-1)*256].next=NULL;
     page_t* tmp=tree_head->free_list[M5];
-    while(tmp->next!=NULL){
+    while(tmp!=NULL){
         printf("%x->",tmp);
         tmp=tmp->next;
     }
