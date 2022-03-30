@@ -26,7 +26,7 @@ uintptr_t map2addr(uintptr_t map){
     return num;
 }
 uintptr_t addr2map(uintptr_t addr){
-    printf("addr=%lx\n",addr);
+    printf("addr=%lx,heap_start=%lx\n",addr,heap_start);
     uintptr_t num=(addr-HEAPSTART);
     printf("num=%ld\n",num);
     num=num/(64<<10);
