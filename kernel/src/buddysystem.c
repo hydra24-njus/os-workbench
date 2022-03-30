@@ -12,8 +12,8 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     printf("%x~%x,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
     int i=0;tree_head->free_list[M5]=heapstart;
     page_t* tmp=tree_head->free_list[M5];
+    heapstart+=M16;
     while(heapstart<heapend){
-        heapstart+=M16;
         tmp->next=heapstart;
         i++;
     }
