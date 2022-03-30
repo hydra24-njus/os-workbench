@@ -5,9 +5,6 @@ static void test0(int tid) {
   void* loc=pmm->alloc(16<<10);
   printf("loc=%lx\n",loc);
   pmm->free(loc);
-  loc=pmm->alloc(16<<10);
-  printf("loc=%lx\n",loc);
-  pmm->free(loc);
 }
 
 static void test1(int tid) {

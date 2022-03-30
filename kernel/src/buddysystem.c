@@ -90,13 +90,16 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-    map->next=tree_head->free_list[map->size];
-    tree_head->free_list[map->size]=map;
-    /*uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
+
+    //找到next_page
+    uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
     page_t* next_page=NULL;int flag=0;
     if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);}
     else next_page=map-sizeof(page_t)*(1<<map->size);
+
+    //合并
     if(next_page->state==0){
+        //从链表中释放next_page
         page_t* tmp=tree_head->free_list[map->size];
         if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
         else{
@@ -112,6 +115,14 @@ void buddy_free(void* addr){
             map->size=0;
             next_page->size=next_page->size<<1;
         }
-    }*/
 
+    }
+    if(flag==1){
+        map->next=tree_head->free_list[map->size];
+        tree_head->free_list[map->size]=map;
+    }
+    else{
+        next_page->next=tree_head->free_list[next_page->size];
+        tree_head->free_list[next_page->size]=next_page;
+    }
 }
