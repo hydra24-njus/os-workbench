@@ -3,14 +3,16 @@
 #include <buddysystem.h>
 
 #define MAGIC_NUM 0x7355608
-
+#define PAGE_SIZE (64<<10)
 spinlock_t biglock;
 
 typedef union{
   struct{
     int magic;
+    void* next;
     int type;
     int max,now,cpu,state;
+    spinlock_t page_lock;
     uint8_t map[2048];
   };
   struct{
@@ -56,13 +58,11 @@ static void *kalloc(size_t size) {
 
 static void kfree(void *ptr) {
   buddy_free(ptr);
-  print_mem_tree();
 }
 
 #ifndef TEST
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
-  printf("%d\n",sizeof(apage_t));
   spinlock_init(&biglock);
   buddy_init((uintptr_t)heap.start,(uintptr_t)heap.end);
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
