@@ -109,6 +109,7 @@ void buddy_free(void* addr){
             while(tmp->next!=next_page)tmp=tmp->next;
             tmp->next=next_page->next;
         }
+        printf("1\n");
         //合并
         next_page->next=NULL;
         if(flag==1){//map first
