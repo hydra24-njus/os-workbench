@@ -41,7 +41,6 @@ static void *kalloc(size_t size) {
 
 static void kfree(void *ptr) {
   buddy_free(ptr);
-  print_mem_tree();
 }
 
 #ifndef TEST
