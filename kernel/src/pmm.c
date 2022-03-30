@@ -1,7 +1,6 @@
 #include <common.h>
 uintptr_t heapstart,heaptr;
-uintptr_t heapend;
-uintptr_t bigmemcnt=0;
+uintptr_t heapend,heapstop;
 spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192
@@ -26,16 +25,11 @@ typedef union{
     uint8_t map[896];
   }__attribute__((packed));
 }page_t;
-typedef struct bigmem{
-  uintptr_t start;
-  uintptr_t end;
-}mem_t;
-mem_t bigmem_last;
 //辅助函数
 void* sbrk(size_t size){
   uintptr_t tmp=heapstart;
   heapstart+=size;
-  if(heapstart>heapend)return NULL;
+  if(heapstart>=heapend)return NULL;
   return (void*)tmp;
 }
 size_t power2(size_t size){
@@ -125,15 +119,12 @@ static void *kalloc(size_t size) {
   size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
   if(size>4096){
     if(size>(16<<20))return NULL;
-    uintptr_t tmp=heapend;
-    tmp-=size;
-    tmp-=tmp%size;
-    if(tmp<=heapstart){unlock(&biglock);return NULL;}
-    bigmem_last.start=tmp;bigmem_last.end=heapend;
-    heapend=tmp;
-    unlock(&biglock);
-    debug("%x\t%d\n",tmp,size);
-    return (void*)tmp;
+      lock(&biglock);
+      uintptr_t tmp=heaptr;
+      heaptr+=size;
+      if(heapstart>=heapend)tmp=0;
+      unlock(&biglock);
+      return (void*)tmp;
   }
   page_t* ptr=buddy[cpu].type[bitsize][FREE];
   if(ptr==NULL){
@@ -165,13 +156,7 @@ static void kfree(void *ptr) {
   //printf("free,%x\n",ptr);
   if(ptr==NULL)return;
   uintptr_t addr=(uintptr_t)ptr;
-  if(addr>heapend)return;
-  if(addr==heapend){
-    lock(&biglock);
-    heapend=bigmem_last.end;
-    unlock(&biglock);
-    return;
-  }
+  if(addr>=heapend)return;
   page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
   addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
   //printf("addr=%x\n",addr);
@@ -185,8 +170,9 @@ static void kfree(void *ptr) {
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
   spinlock_init(&biglock);
-  heapstart=(uintptr_t)heap.start;heapend=(uintptr_t)heap.end;
-  heapend=(uintptr_t)heap.end;
+  heapstart=(uintptr_t)heap.start;if(heapstart%8192!=0)heapstart+=8192-(heapstart%8192);
+  heapstop=(uintptr_t)heap.end;if(heapstop%8192!=0)heapstart-=heapstart%8192;
+  heapend=heapstop-(16<<20);heaptr=heapend;
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
   printf("Got %d MiB heap: [%p, %p)\n", pmsize >> 20, heap.start, heap.end);
 }
