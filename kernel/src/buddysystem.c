@@ -91,7 +91,7 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-    for(int i=K6;i<3;i++){
+    for(int i=K6;i<6;i++){
         //找到next_page
         uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
         page_t* next_page=NULL;int flag=0;
