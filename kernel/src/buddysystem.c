@@ -104,12 +104,12 @@ void buddy_free(void* addr){
         if(next_page->state==1)break;
         //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
+        printf("%p\t%p\n",map,next_page);
         if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
         else{
             while(tmp->next!=next_page)tmp=tmp->next;
             tmp->next=next_page->next;
         }
-        printf("1\n");
         //合并
         next_page->next=NULL;
         if(flag==1){//map first
