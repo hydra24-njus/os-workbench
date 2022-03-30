@@ -67,6 +67,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
 }
 
 void* buddy_alloc(size_t size){
+    if(size>M16)return NULL;
     int i=0;while((1<<i)<size)i++;i-=16;
     if(tree_head->free_list[i]!=NULL){
         page_t* tmp=tree_head->free_list[i];
