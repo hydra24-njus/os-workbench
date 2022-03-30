@@ -1,9 +1,24 @@
 #include <common.h>
 #include <lock.h>
 #include <buddysystem.h>
+
+#define MAGIC_NUM 0x7355608
+
 spinlock_t biglock;
 
-
+typedef union{
+  struct{
+    int magic;
+    int type;
+    int max,now,cpu,state;
+    uint8_t map[2048];
+  };
+  struct{
+    uint8_t header[4096];
+    uint8_t data[(64<<10)-4096];
+  };
+  uint8_t page[64<<10];
+}apage_t;
 
 size_t power2(size_t size){
   size--;
@@ -46,6 +61,7 @@ static void kfree(void *ptr) {
 #ifndef TEST
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
+  printf("%d\n",sizeof(apage_t));
   spinlock_init(&biglock);
   buddy_init((uintptr_t)heap.start,(uintptr_t)heap.end);
   uintptr_t pmsize = ((uintptr_t)heap.end - (uintptr_t)heap.start);
