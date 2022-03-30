@@ -8,5 +8,5 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     tree_head=(tree*)heapstart;heapstart+=sizeof(tree);
     if(heapstart%M16!=0)heapstart=heapstart+M16-heapstart%M16;
     heapend=(heapend<<24)>>24;
-    printf("%x~%x,size= %d MB\n",heapstart,heapend,(heapend-heapstart)>>20);
+    printf("%x~%x,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
 }
