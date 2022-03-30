@@ -75,6 +75,7 @@ static void kfree(void *ptr) {
   else{
 
   }
+  print_mem_tree();
 }
 
 #ifndef TEST
