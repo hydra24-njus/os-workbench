@@ -91,7 +91,6 @@ void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
     for(int i=K6;i<MAX_ORDER-1;i++){
-        printf("i=%d\n",i);
         //找到next_page
         int num=(int)(map-tree_head->units);
         page_t* next_page=NULL;int flag=0;
@@ -104,8 +103,9 @@ void buddy_free(void* addr){
         //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
         printf("%p\t%p\n",map,next_page);
-        if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
+        if(tmp==next_page){printf("1\n");tree_head->free_list[map->size]=tmp->next;}
         else{
+            printf("2\n");
             while(tmp->next!=next_page)tmp=tmp->next;
             tmp->next=next_page->next;
         }
