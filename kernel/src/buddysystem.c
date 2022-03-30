@@ -2,7 +2,7 @@
 #include <buddysystem.h>
 #include <lock.h>
 #define M16 (1<<24)
-#define HEAPSTART heap_start
+
 uintptr_t heap_start=0;
 typedef struct{
     int size;
@@ -22,12 +22,12 @@ static tree* tree_head;
 
 uintptr_t map2addr(uintptr_t map){
     uintptr_t num=(map-(uintptr_t)tree_head->units)/sizeof(page_t);
-    num=HEAPSTART+num*(64<<10);
+    num=heap_start+num*(64<<10);
     return num;
 }
 uintptr_t addr2map(uintptr_t addr){
     printf("addr=%lx,heap_start=%lx\n",addr,heap_start);
-    uintptr_t num=(addr-HEAPSTART);
+    uintptr_t num=addr-heap_start;
     printf("num=%ld\n",num);
     num=num/(64<<10);
     printf("num=%ld\n",num);
