@@ -93,6 +93,7 @@ void buddy_free(void* addr){
     for(int i=K6;i<MAX_ORDER-1;i++){
         //找到next_page
         uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
+        printf("num=%d",num);
         page_t* next_page=NULL;int flag=0;
         if(num%(1<<(map->size+1))==0){
             printf("plus\n");
