@@ -26,13 +26,10 @@ uintptr_t map2addr(uintptr_t map){
     return num;
 }
 uintptr_t addr2map(uintptr_t addr){
-    printf("addr=%lx,heap_start=%lx\n",addr,heap_start);
+    addr=addr>>(16);
     uintptr_t num=addr-heap_start;
-    printf("num=%ld\n",num);
     num=num/(64<<10);
-    printf("num=%ld\n",num);
     num=num*sizeof(page_t)+(uintptr_t)tree_head->units;
-    printf("num=%ld\n",num);
     return num;
 }
 
