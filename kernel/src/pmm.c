@@ -32,11 +32,11 @@ static void *kalloc(size_t size) {
   if(size>(4<<10)){
     if(size<(64<<10))size=64<<10;
     lock(&biglock);
-    addr=buddy_alloc(size);
+    addr=(uintptr_t)buddy_alloc(size);
     unlock(&biglock);
     return (void*)addr;
   }
-  return addr;
+  return (void*)addr;
 }
 
 static void kfree(void *ptr) {
