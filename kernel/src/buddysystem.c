@@ -110,12 +110,12 @@ void buddy_free(void* addr){
         }
         next_page->next=NULL;
         if(flag==1){//map first
-            map->size=map->size<<1;
+            map->size=map->size+1;
             next_page->size=0;
         }
         else{//next_page first
             map->size=0;
-            next_page->size=next_page->size<<1;
+            next_page->size=next_page->size+1;
         }
 
     }
