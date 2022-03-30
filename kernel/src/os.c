@@ -1,6 +1,7 @@
 #include <common.h>
 
 void test1(int tid) {
+  printf("start1\n");
   for (int i = 1; i <= 2000; i++) {
     pmm->alloc(10000);
     // if (i % 5 == 0) pmm->free(loc);
