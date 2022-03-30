@@ -3,7 +3,8 @@
 void test1(int tid) {
   printf("start1\n");
   for (int i = 1; i <= 2000; i++) {
-    pmm->alloc(10000);
+    void* loc=pmm->alloc(10000);
+    printf("loc=%p\n",loc);
     // if (i % 5 == 0) pmm->free(loc);
   }
   printf("end1\n");
