@@ -37,7 +37,7 @@ void print_mem_tree(){
     printf("%d:",i);
     while(tmp!=NULL){
         uintptr_t num=map2addr((uintptr_t)tmp);
-        printf("%x->",num);
+        printf("%x(%d)->",num,(tmp->size)>>10);
         tmp=tmp->next;
     }
     printf("\n");
@@ -75,10 +75,16 @@ void* buddy_alloc(size_t size){
     }
     else{
         uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
-        uintptr_t tmp2=addr+size;
-        tmp2=addr2map(tmp2);
+        page_t* tmp=(page_t*)addr2map(addr);
+        page_t* tmp2=(page_t*)addr2map(addr+size);
+        tmp->size=size;tmp2->size=size;
         tree_head->free_list[i]=(void*)tmp2;
         return (void*)addr;
     }
     return NULL;
+}
+void buddy_free(void* addr){
+    //page_t* map=(page_t*)addr2map((uintptr_t)addr);
+    //int i=0;while((1<<i)<map->size)i++;i-=16;
+    
 }
