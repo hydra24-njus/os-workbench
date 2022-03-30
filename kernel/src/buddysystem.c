@@ -80,7 +80,7 @@ void* buddy_alloc(size_t size){
         tree_head->free_list[i]=tmp->next;
         tmp->next=NULL;
         uintptr_t num=map2addr((uintptr_t)tmp);
-        num=0x1000000+num*(64<<10);
+        num=heap_start+num*(64<<10);
         return (void*)num;
     }
     else{
