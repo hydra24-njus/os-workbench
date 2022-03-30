@@ -120,7 +120,9 @@ static void kfree(void *ptr) {
     uintptr_t addr=(uintptr_t)ptr;
     apage_t* header=(apage_t*)(addr&(~(PAGE_SIZE-1)));
     addr=addr%PAGE_SIZE;addr=(addr-HEAD_SIZE)/header->type;
+    printf("1\n");
     lock(&(header->page_lock));
+    printf("2\n");
     header->map[addr]=0;
     header->now--;
     lock(&(header->page_lock));
