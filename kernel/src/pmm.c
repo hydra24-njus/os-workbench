@@ -26,11 +26,17 @@ unsigned int bitpos(size_t size){
 
 
 static void *kalloc(size_t size) {
+  uintptr_t addr=0;
   size=power2(size);
   if(size>(16<<20))return NULL;
-  if(size<(64<<10))size=64<<10;
-  return buddy_alloc(size);
-  return NULL;
+  if(size>(4<<10)){
+    if(size<(64<<10))size=64<<10;
+    lock(&biglock);
+    addr=buddy_alloc(size);
+    unlock(&biglock);
+    return (void*)addr;
+  }
+  return addr;
 }
 
 static void kfree(void *ptr) {
