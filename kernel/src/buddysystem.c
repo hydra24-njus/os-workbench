@@ -2,7 +2,8 @@
 #include <buddysystem.h>
 #include <lock.h>
 #define M16 (1<<24)
-#define HEAPSTART 0x1000000
+#define HEAPSTART heap_start
+uintptr_t heap_start=0;
 typedef struct{
     int size;
     int state;
@@ -27,11 +28,11 @@ uintptr_t map2addr(uintptr_t map){
 uintptr_t addr2map(uintptr_t addr){
     printf("addr=%x\n",addr);
     uintptr_t num=(addr-HEAPSTART);
-    printf("num=%ld\n",num);
+    printf("num=%d\n",num);
     num=num/(64<<10);
-    printf("num=%ld\n",num);
+    printf("num=%d\n",num);
     num=num*sizeof(page_t)+(uintptr_t)tree_head->units;
-    printf("num=%ld\n",num);
+    printf("num=%d\n",num);
     return num;
 }
 
@@ -55,6 +56,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     tree_head=(tree*)heapstart;heapstart+=sizeof(tree);
     if(heapstart%M16!=0)heapstart=heapstart+M16-heapstart%M16;
     heapend=(heapend>>24)<<24;
+    heap_start=heapstart;
     printf("%x~%x,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
     memset(tree_head,0,sizeof(tree));
     int maxpage=((heapend-heapstart)>>20)/16;
