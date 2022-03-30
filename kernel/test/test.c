@@ -3,7 +3,7 @@
 
 static void test1(int tid) {
   void* loc;
-  for (int i = 1; i <= 200000; i++) {
+  for (int i = 1; i <= 2000000; i++) {
     loc = pmm->alloc(4000);
     // if (i % 5 == 0) pmm->free(loc);
   }
