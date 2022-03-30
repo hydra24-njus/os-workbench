@@ -2,7 +2,7 @@
 #include <thread.h>
 
 static void test0(int tid) {
-  pmm->alloc(64<<21);
+  pmm->alloc(64<<20);
   pmm->free(0);
 }
 
