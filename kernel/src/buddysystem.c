@@ -18,6 +18,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
         heapstart+=M16;
         i++;
     }
+    tmp->next=NULL;
     tmp=tree_head->free_list[M5];
     while(tmp->next!=NULL){
         printf("%x->",tmp);
