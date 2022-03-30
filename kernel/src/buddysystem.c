@@ -52,9 +52,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     tree_head=(tree*)heapstart;heapstart+=sizeof(tree);
     if(heapstart%M16!=0)heapstart=heapstart+M16-heapstart%M16;
     heapend=(heapend>>24)<<24;
-    printf("%lx\n",heapstart);
     heap_start=heapstart;
-    printf("%lx\n",heap_start);
     printf("%lx~%lx,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
     memset(tree_head,0,sizeof(tree));
     int maxpage=((heapend-heapstart)>>20)/16;
@@ -77,7 +75,6 @@ void* buddy_alloc(size_t size){
         tree_head->free_list[i]=tmp->next;
         tmp->next=NULL;
         uintptr_t num=map2addr((uintptr_t)tmp);
-        num=heap_start+num*(64<<10);
         return (void*)num;
     }
     else{
