@@ -90,24 +90,24 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-    //找到next_page
-    uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
-    page_t* next_page=NULL;int flag=0;
-    if(num%(1<<map->size)==0){
-        flag=1;
-        next_page=map+(1<<map->size);
-        printf("%lx,%lx\n",map,next_page);
-    }
-    else next_page=map-(1<<map->size);
-    //合并
-    if(next_page->state==0){
-        //从链表中释放next_page
+    for(int i=K6;i<MAX_ORDER;i++){
+        //找到next_page
+        uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
+        page_t* next_page=NULL;int flag=0;
+        if(num%(1<<map->size)==0){
+            flag=1;
+            next_page=map+(1<<map->size);
+        }
+        else next_page=map-(1<<map->size);
+        if(next_page->state==1)break;
+        //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
         if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
         else{
             while(tmp->next!=next_page)tmp=tmp->next;
             tmp->next=next_page->next;
         }
+        //合并
         next_page->next=NULL;
         if(flag==1){//map first
             map->size=map->size+1;
@@ -116,15 +116,10 @@ void buddy_free(void* addr){
         else{//next_page first
             map->size=0;
             next_page->size=next_page->size+1;
+            map=next_page;
         }
-
     }
-    if(flag==1){
-        map->next=tree_head->free_list[map->size];
-        tree_head->free_list[map->size]=map;
-    }
-    else{
-        next_page->next=tree_head->free_list[next_page->size];
-        tree_head->free_list[next_page->size]=next_page;
-    }
+    //重新加入链表
+    map->next=tree_head->free_list[map->size];
+    tree_head->free_list[map->size]=map;
 }
