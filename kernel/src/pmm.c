@@ -185,7 +185,7 @@ static void pmm_init() {
   heapstart = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
   heapstop   = (uintptr_t)ptr + HEAP_SIZE;heapstop-=heapstop%8192;
   heapend=heapstop-(16<<20);heapend=heapend&(~((16<<20)-1));heaptr=heapend;
-  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapstop);
+  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapend);
 }
 #endif
 
