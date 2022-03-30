@@ -125,7 +125,7 @@ static void kfree(void *ptr) {
     header->now--;
     lock(&(header->page_lock));
   }
-  //print_mem_tree();
+  print_mem_tree();
 }
 
 #ifndef TEST
