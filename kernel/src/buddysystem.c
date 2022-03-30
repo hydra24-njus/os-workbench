@@ -75,6 +75,7 @@ void* buddy_alloc(size_t size){
         tree_head->free_list[i]=tmp->next;
         tmp->next=NULL;
         uintptr_t num=map2addr((uintptr_t)tmp);
+        printf("num=%lx\n",num);
         return (void*)num;
     }
     else{
