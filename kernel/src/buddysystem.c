@@ -57,7 +57,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     heapend=(heapend>>24)<<24;
     printf("%lx\n",heapstart);
     heap_start=heapstart;
-    printf("%lx\n",heapstart);
+    printf("%lx\n",heap_start);
     printf("%lx~%lx,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
     memset(tree_head,0,sizeof(tree));
     int maxpage=((heapend-heapstart)>>20)/16;
