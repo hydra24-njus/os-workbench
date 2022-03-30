@@ -38,7 +38,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     page_t* tmp=tree_head->free_list[M5];
     while(tmp!=NULL){
         uintptr_t num=((uintptr_t)tmp-(uintptr_t)tree_head->units)/sizeof(page_t);
-
+        num=heapstart+num*M16;
         printf("%x->",num);
         tmp=tmp->next;
     }
