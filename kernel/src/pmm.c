@@ -27,6 +27,7 @@ unsigned int bitpos(size_t size){
 
 static void *kalloc(size_t size) {
   size=power2(size);
+  if(size>(16<<20))return NULL;
   return buddy_alloc(size);
   return NULL;
 }
