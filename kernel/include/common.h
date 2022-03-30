@@ -24,7 +24,6 @@ static inline int atomic_xchg(int *addr, int newval) {
 typedef struct {
   void *start, *end;
 } Area;
-Area heap;
 
 typedef unsigned long int uintptr_t;
 #define HEAP_SIZE (1 << 27)
