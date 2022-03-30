@@ -28,7 +28,7 @@ static void test3(int tid) {
 
 static void test4(int tid) {
   void* loc;
-  for (int i = 1; i <= 10000; i++) {
+  for (int i = 1; i <= 10000000; i++) {
     size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
     loc = pmm->alloc(a);
     if (i % 2 == 0) pmm->free(loc);
@@ -37,7 +37,7 @@ static void test4(int tid) {
 
 static void test5(int tid) {
   void* loc;
-  for (int i = 1; i <= 100000000; i++) {
+  for (int i = 1; i <= 10000; i++) {
     size_t a = rand() % 128 + 5;
     loc = pmm->alloc(a);
     if (i % 5 == 0) pmm->free(loc);
