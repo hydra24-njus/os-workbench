@@ -124,6 +124,7 @@ static void *kalloc(size_t size) {
       heaptr+=size;
       if(heapstart>=heapend)tmp=0;
       unlock(&biglock);
+      debug("%x %d\n",tmp,size);
       return (void*)tmp;
   }
   page_t* ptr=buddy[cpu].type[bitsize][FREE];
