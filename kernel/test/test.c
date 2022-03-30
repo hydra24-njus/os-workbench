@@ -2,9 +2,8 @@
 #include <thread.h>
 
 static void test0(int tid) {
-  pmm->alloc(16<<12);pmm->alloc(16<<12);pmm->alloc(16<<12);
-  printf("alloc pass\n");
-  pmm->free(0);
+  void* loc=pmm->alloc(16<<10);
+  pmm->free(loc);
 }
 
 static void test1(int tid) {
