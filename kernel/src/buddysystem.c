@@ -90,16 +90,14 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-    printf("%p\t%p\n",&tree_head->units[0],&tree_head->units[1]);
     //找到next_page
     uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
-    printf("num=%d\n",num);
     page_t* next_page=NULL;int flag=0;
-    if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);
-    printf("%lx\t",sizeof(page_t)*(1<<map->size));
-    printf("%lx\n",map+sizeof(page_t)*(1<<map->size));}
+    if(num%(1<<map->size)==0){
+        flag=1;
+        next_page=map+0x10;
+    }
     else next_page=map-sizeof(page_t)*(1<<map->size);
-    printf("%p\t%p\n",map,next_page);
     //合并
     if(next_page->state==0){
         //从链表中释放next_page
