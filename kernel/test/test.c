@@ -4,8 +4,7 @@
 static void test0(int tid) {
   void* loc=pmm->alloc(16<<10);
   void* loc2=pmm->alloc(16<<10);
-  printf("finished\n");
-  pmm->free(loc2);printf("finished\n");
+  pmm->free(loc2);
   pmm->free(loc);
 }
 
@@ -56,7 +55,7 @@ int main() {
   clock_t start_time, end_time;
   // start_time = clock();
   pmm->init();
-  create(test0);
+  create(test3);
   join();
   end_time = clock();  // 结束时间
   /* 计算得出程序运行时间, 并将其输出到屏幕 */
