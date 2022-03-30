@@ -95,6 +95,7 @@ void buddy_free(void* addr){
 printf("free1\n");
     //找到next_page
     uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
+    printf("num=%d\n",num);
     page_t* next_page=NULL;int flag=0;
     if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);}
     else next_page=map-sizeof(page_t)*(1<<map->size);
