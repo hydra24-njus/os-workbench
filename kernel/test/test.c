@@ -31,7 +31,6 @@ static void test3(int tid) {
   void* loc;
   for (int i = 1; i <= 10000; i++) {
     loc = pmm->alloc(5000 + (i * 1000) % 5000);
-    printf("loc=%p\n",loc);
     pmm->free(loc);
   }
 }
@@ -57,7 +56,7 @@ int main() {
   clock_t start_time, end_time;
   // start_time = clock();
   pmm->init();
-  create(test2);
+  create(test3);
   join();
   end_time = clock();  // 结束时间
   /* 计算得出程序运行时间, 并将其输出到屏幕 */
