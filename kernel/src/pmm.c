@@ -33,7 +33,7 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  //print_mem_tree();
+  print_mem_tree();
 }
 
 #ifndef TEST
