@@ -95,7 +95,7 @@ void buddy_free(void* addr){
     page_t* next_page=NULL;int flag=0;
     if(num%(1<<map->size)==0){
         flag=1;
-        next_page=map+sizeof(page_t)*(1<<map->size);
+        next_page=map+0x10;
         printf("%lx,%lx\n",map,next_page);
     }
     else next_page=map-sizeof(page_t)*(1<<map->size);
