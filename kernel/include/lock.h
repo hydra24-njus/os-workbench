@@ -1,4 +1,3 @@
-//以下内容参考xv6实现
 typedef struct{
   int locked;
 }spinlock_t;
