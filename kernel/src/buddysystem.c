@@ -35,11 +35,13 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
         tree_head->units[i*256].next=&tree_head->units[(i+1)*256];
     }
     tree_head->units[(maxpage-1)*256].next=NULL;
-    page_t* tmp=tree_head->free_list[M5];
+    for(int i=0;i<MAX_ORDER;i++){
+    page_t* tmp=tree_head->free_list[i];
     while(tmp!=NULL){
         uintptr_t num=((uintptr_t)tmp-(uintptr_t)tree_head->units)/sizeof(page_t);
         num=heapstart+num*(64<<10);
         printf("%x->",num);
         tmp=tmp->next;
+    }
     }
 }
