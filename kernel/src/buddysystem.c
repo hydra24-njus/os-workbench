@@ -23,10 +23,11 @@ static tree* tree_head;
 uintptr_t map2addr(uintptr_t map){
     uintptr_t num=(map-(uintptr_t)tree_head->units)/sizeof(page_t);
     num=heap_start+num*(64<<10);
+    num=num<<16;
     return num;
 }
 uintptr_t addr2map(uintptr_t addr){
-    addr=addr>>(16);
+    addr=addr>>16;
     uintptr_t num=addr-heap_start;
     num=num/(64<<10);
     num=num*sizeof(page_t)+(uintptr_t)tree_head->units;
