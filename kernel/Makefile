@@ -1,6 +1,7 @@
 NAME           := kernel
 SRCS           := framework/main.c $(shell find -L ./src/ -name "*.c")
 INC_PATH       := include/ framework/
+CFLAGS += -DLOCAL_MACHINE
 export MODULE := L1
 export AM_HOME := $(PWD)/../abstract-machine
 ifeq ($(ARCH),)
@@ -10,3 +11,10 @@ endif
 include $(AM_HOME)/Makefile
 include ../Makefile.lab
 image: git
+
+test: git
+	@gcc $(shell find src/ -name "*.c")  \
+		$(shell find test/ -name "*.c") \
+		-Iframework -Itest -DLOCAL_MACHINE -DTEST -lpthread \
+		-o build/test
+	@build/test

@@ -52,76 +52,11 @@ unsigned int bitpos(size_t size){
 
 
 static void *kalloc(size_t size) {
-  uintptr_t addr=0;
-  size=power2(size);size_t bitsize=bitpos(size);bitsize-=3;int cpu=cpu_current();
-  if(size>4096){
-    if(size>(16<<20))return NULL;
-      lock(&biglock);
-      uintptr_t tmp=heaptr;
-      if(tmp%size!=0)tmp=tmp+size-tmp%size;
-      if(tmp+size>=heapstop)tmp=0;
-      else heaptr=tmp+size;
-      unlock(&biglock);
-      debug("%x %d\n",tmp,size);
-      return (void*)tmp;
-  }
-  page_t* ptr=buddy[cpu].type[bitsize][FREE];int flag=0;
-  if(ptr==NULL){
-    lock(&biglock);
-    ptr=sbrk(8192);
-    unlock(&biglock);
-    if(ptr==NULL)return NULL;
-    buddy[cpu].type[bitsize][FREE]=ptr;
-    ptr->next=NULL;ptr->state=FREE;
-    ptr->type=size;ptr->bitype=bitsize;
-    ptr->max=DATA_SIZE/size;ptr->now=0;
-    ptr->cpu=cpu;flag=1;
-  }
-  if(flag==0){
-    while(ptr->next!=NULL){
-      if(ptr->max>ptr->now){
-        flag=1;
-        break;
-      }
-      ptr=ptr->next;
-    }
-  }
-  if(flag==0){
-    lock(&biglock);
-    ptr=sbrk(8192);
-    unlock(&biglock);
-    if(ptr==NULL)return NULL;
-    ptr->next=buddy[cpu].type[bitsize][FREE];
-    buddy[cpu].type[bitsize][FREE]=ptr;
-    ptr->state=FREE;
-    ptr->type=size;ptr->bitype=bitsize;
-    ptr->max=DATA_SIZE/size;ptr->now=0;
-    ptr->cpu=cpu;flag=1;
-  }
-  for(int i=0;i<ptr->max;i++){
-    if(ptr->map[i]==0){
-      ptr->map[i]=1;ptr->now++;
-      addr=(uintptr_t)ptr+1024+size*i;
-      if(size==2048)addr+=1024;
-      else if(size==4096)addr+=3072;
-      break;
-    }
-  }
-  debug("%x %d %d %d\n",addr,ptr->type,ptr->now,ptr->max);
-  return (void*)addr;
+
 }
 
 static void kfree(void *ptr) {
-  //printf("free,%x\n",ptr);
-  if(ptr==NULL)return;
-  uintptr_t addr=(uintptr_t)ptr;
-  if(addr>=heapend)return;
-  page_t* header=(page_t*)(addr&(~(PAGE_SIZE-1)));
-  addr=(addr%PAGE_SIZE);addr=(addr-HEAD_SIZE)/header->type;
-  //printf("addr=%x\n",addr);
-  header->map[addr]=0;
-  header->now--;
-  return;
+
 }
 
 #ifndef TEST
