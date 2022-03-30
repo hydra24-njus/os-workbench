@@ -79,7 +79,7 @@ void* buddy_alloc(size_t size){
         uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
         printf("addr=%x\n",addr);
         page_t* tmp=(page_t*)addr2map(addr);
-        printf("pageNo=%d",addr2map(addr));
+        printf("pageNo=%d\n",addr2map(addr));
         printf("tmp->size=%d\n",tmp->size);
         page_t* tmp2=(page_t*)addr2map(addr+size);
         tree_head->free_list[i]=(void*)tmp2;
