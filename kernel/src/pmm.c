@@ -1,5 +1,6 @@
 #include <common.h>
 #include <lock.h>
+#include <buddysystem.h>
 spinlock_t biglock;
 #define HEAD_SIZE 1024
 #define PAGE_SIZE 8192

@@ -9,6 +9,4 @@ enum{
 
 
 
-void buddy_init(uintptr_t heapstart,uintptr_t heapend){
-    
-}
+void buddy_init(uintptr_t heapstart,uintptr_t heapend);
