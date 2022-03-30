@@ -83,6 +83,7 @@ void* buddy_alloc(size_t size){
         tmp->size=i;tmp2->size=i;
         printf("tmp2->size=%d\n",tmp2->size);
         tree_head->free_list[i]=(void*)tmp2;
+        printf("tmp2->size=%d\n",tmp2->size);
         return (void*)addr;
     }
     return NULL;
