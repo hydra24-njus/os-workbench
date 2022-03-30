@@ -55,6 +55,10 @@ static void os_run() {
     //putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   test1(1);
+  test2(1);
+  test3(1);
+  test4(1);
+  test5(1);
   while (1) ;
 }
 
