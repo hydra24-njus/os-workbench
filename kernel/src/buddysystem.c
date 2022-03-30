@@ -26,7 +26,9 @@ uintptr_t map2addr(uintptr_t map){
 }
 uintptr_t addr2map(uintptr_t addr){
     uintptr_t num=(addr-HEAPSTART)/(64<<10);
+    printf("num=%d\n",num);
     num=num*sizeof(page_t)+(uintptr_t)tree_head->units;
+    printf("num=%d\n",num);
     return num;
 }
 
