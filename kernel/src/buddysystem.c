@@ -25,6 +25,7 @@ uintptr_t map2addr(uintptr_t map){
     return num;
 }
 uintptr_t addr2map(uintptr_t addr){
+    printf("addr=%x",addr);
     uintptr_t num=(addr-HEAPSTART)/(64<<10);
     printf("num=%d\n",num);
     num=num*sizeof(page_t)+(uintptr_t)tree_head->units;
@@ -79,14 +80,14 @@ void* buddy_alloc(size_t size){
     }
     else{
         uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
-        printf("addr=%x\n",addr);
+        //printf("addr=%x\n",addr);
         page_t* tmp=(page_t*)addr2map(addr);
-        printf("pageNo=%d\n",addr2map(addr));
-        printf("tmp->size=%d\n",tmp->size);
+        //printf("pageNo=%d\n",addr2map(addr));
+        //printf("tmp->size=%d\n",tmp->size);
         page_t* tmp2=(page_t*)addr2map(addr+size);
         tree_head->free_list[i]=(void*)tmp2;
         tmp->size=i;tmp2->size=i;
-        printf("tmp2->size=%d\n",tmp2->size);
+        //printf("tmp2->size=%d\n",tmp2->size);
         return (void*)addr;
     }
     return NULL;
