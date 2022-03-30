@@ -22,7 +22,7 @@ static void test2(int tid) {
     size_t a = (rand() % 2) ? rand() % 2000 + 1000 : rand() % 100 + 50;
     loc = pmm->alloc(a);
     printf("loc=%p\n",loc);
-    //if(loc==NULL)assert(0);
+    if(loc==NULL)assert(0);
     if (i % 5 == 0) pmm->free(loc);
   }
 }
