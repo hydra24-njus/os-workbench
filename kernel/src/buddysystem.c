@@ -64,17 +64,21 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
 }
 
 void* buddy_alloc(size_t size){
-    int i=0;while((1<<i)<size)i++;
+    int i=0;while((1<<i)<size)i++;i-=16;
     if(tree_head->free_list[i]!=NULL){
         page_t* tmp=tree_head->free_list[i];
         tree_head->free_list[i]=tmp->next;
         tmp->next=NULL;
-        uintptr_t num=((uintptr_t)tmp-(uintptr_t)tree_head->units)/sizeof(page_t);
+        uintptr_t num=map2addr((uintptr_t)tmp);
         num=0x1000000+num*(64<<10);
         return (void*)num;
     }
     else{
-        buddy_alloc(size<<1);
+        uintptr_t addr=(uintptr_t)buddy_alloc(size<<1);
+        uintptr_t tmp2=addr+size;
+        tmp2=addr2map(tmp2);
+        tree_head->free_list[i]=(void*)tmp2;
+        return (void*)addr;
     }
     return NULL;
 }
