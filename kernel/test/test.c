@@ -2,7 +2,8 @@
 #include <thread.h>
 
 static void test0(int tid) {
-  printf("alloc=%lx\n",pmm->alloc(16<<18));
+  printf("alloc=%lx\n",pmm->alloc(16<<20));
+  printf("alloc pass\n");
   pmm->free(0);
 }
 
