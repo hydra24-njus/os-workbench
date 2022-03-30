@@ -16,7 +16,7 @@ void test2(int tid) {
     loc = pmm->alloc(a);
     printf("loc=%p\n",loc);
     if(loc==NULL)assert(0);
-    //if (i % 5 == 0) pmm->free(loc);
+    if (i % 5 == 0) pmm->free(loc);
   }
   printf("end2\n");
 }
@@ -66,7 +66,8 @@ static void os_run() {
   test2(1);
   test3(1);
   test4(1);
-  //test5(1);
+  test5(1);
+  printf("end\n");
   while (1) ;
 }
 
