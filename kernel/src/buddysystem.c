@@ -52,12 +52,12 @@ void print_mem_tree(){
 
 
 void buddy_init(uintptr_t heapstart,uintptr_t heapend){
-    printf("%lx\n",heapstart);
     tree_head=(tree*)heapstart;heapstart+=sizeof(tree);
     if(heapstart%M16!=0)heapstart=heapstart+M16-heapstart%M16;
-    printf("%lx\n",heapstart);
     heapend=(heapend>>24)<<24;
+    printf("%lx\n",heapstart);
     heap_start=heapstart;
+    printf("%lx\n",heapstart);
     printf("%lx~%lx,size= %u MB\n",heapstart,heapend,(heapend-heapstart)>>20);
     memset(tree_head,0,sizeof(tree));
     int maxpage=((heapend-heapstart)>>20)/16;
