@@ -100,7 +100,6 @@ void buddy_free(void* addr){
             next_page=map+(1<<map->size);
         }
         else next_page=map-(1<<map->size);
-        printf("%p\t%p\n",map,next_page);
         if(next_page->state==1)break;
         //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
