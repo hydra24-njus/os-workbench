@@ -2,12 +2,8 @@
 #include <thread.h>
 
 static void test0(int tid) {
-  void* loc;
-  for (int i = 1; i <= 100; i++) {
-    size_t a = 2047;
-    loc = pmm->alloc(a);
-    if (i % 5 == 0) pmm->free(loc);
-  }
+  pmm->alloc(16<<19);
+  pmm->free(0);
 }
 
 static void test1(int tid) {
@@ -57,7 +53,7 @@ int main() {
   clock_t start_time, end_time;
   // start_time = clock();
   pmm->init();
-  create(test5);
+  create(test0);
   join();
   end_time = clock();  // 结束时间
   /* 计算得出程序运行时间, 并将其输出到屏幕 */
