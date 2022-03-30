@@ -4,6 +4,8 @@
 
 #define MAGIC_NUM 0x7355608
 #define PAGE_SIZE (64<<10)
+#define HEAD_SIZE 4096
+#define DATA_SIZE 61440
 spinlock_t biglock;
 
 enum{
@@ -15,7 +17,7 @@ typedef union{
     int magic;
     void* next;
     int type;
-    int max,now,cpu,state;
+    int max,now,cpu;
     spinlock_t page_lock;
     uint8_t map[2048];
   };
@@ -27,7 +29,8 @@ typedef union{
 }apage_t;
 struct cpu_t{
   void* link_head[MAX_SIZE];
-}cpu[8];
+  spinlock_t cpu_lock[MAX_SIZE];
+}percpu[8];
 
 
 
@@ -49,18 +52,59 @@ unsigned int bitpos(size_t size){
 }
 
 
-
-
 static void *kalloc(size_t size) {
-  uintptr_t addr=0;size_t bitsize=bitpos(size);bitsize-=4;//int cpu=cpu_current();
+  uintptr_t addr=0;size_t bitsize=bitpos(size);bitsize-=4;int cpu=cpu_current();
   size=power2(size);
   if(size>(16<<20))return NULL;
+  //big memory
   if(size>(4<<10)){
     if(size<(64<<10))size=64<<10;
     lock(&biglock);
     addr=(uintptr_t)buddy_alloc(size);
     unlock(&biglock);
     return (void*)addr;
+  }
+  //fast path
+  apage_t* ptr=percpu[cpu].link_head[bitsize];
+  if(ptr==NULL){
+    lock(&biglock);
+    ptr=buddy_alloc(PAGE_SIZE);
+    unlock(&biglock);
+    if(ptr==NULL)return NULL;//没有空闲空间
+    lock(&(percpu[cpu].cpu_lock[bitsize]));
+    percpu[cpu].link_head[bitsize]=ptr;
+    ptr->magic=MAGIC_NUM;ptr->next=NULL;ptr->type=size;
+    ptr->max=DATA_SIZE/size;ptr->now=0;ptr->cpu=cpu;
+    spinlock_init(&(ptr->page_lock));
+    unlock(&(percpu[cpu].cpu_lock[bitsize]));
+  }
+  else{
+    while(ptr!=NULL){
+      if(ptr->max>ptr->now)break;
+      ptr=ptr->next;
+    }
+    if(ptr==NULL){
+      lock(&biglock);
+      ptr=buddy_alloc(PAGE_SIZE);
+      unlock(&biglock);
+      if(ptr==NULL)return NULL;//没有空闲空间
+      lock(&(percpu[cpu].cpu_lock[bitsize]));
+      ptr->next=percpu[cpu].link_head[bitsize];
+      percpu[cpu].link_head[bitsize]=ptr;
+      ptr->magic=MAGIC_NUM;ptr->type=size;
+      ptr->max=DATA_SIZE/size;ptr->now=0;ptr->cpu=cpu;
+      spinlock_init(&(ptr->page_lock));
+      unlock(&(percpu[cpu].cpu_lock[bitsize]));
+    }
+  }
+  for(int i=0;i<ptr->max;i++){
+    if(ptr->map[i]==0){
+      lock(&(ptr->page_lock));
+      ptr->map[i]=1;ptr->now++;
+      unlock(&(ptr->page_lock));
+      addr=(uintptr_t)ptr+4096+size*i;
+      break;
+    }
   }
   return (void*)addr;
 }
@@ -73,9 +117,15 @@ static void kfree(void *ptr) {
     unlock(&biglock);
   }
   else{
-
+    uintptr_t addr=(uintptr_t)ptr;
+    apage_t* header=(apage_t*)(addr&(~(PAGE_SIZE-1)));
+    addr=addr%PAGE_SIZE;addr=(addr-HEAD_SIZE)/header->type;
+    lock(&(header->page_lock));
+    header->map[addr]=0;
+    header->now--;
+    lock(&(header->page_lock));
   }
-  print_mem_tree();
+  //print_mem_tree();
 }
 
 #ifndef TEST
