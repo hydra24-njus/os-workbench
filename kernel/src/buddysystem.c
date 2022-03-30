@@ -15,6 +15,7 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
     heapstart+=M16;
     while(heapstart<heapend){
         tmp->next=heapstart;
+        heapstart+=M16;
         i++;
     }
     tmp=tree_head->free_list[M5];
