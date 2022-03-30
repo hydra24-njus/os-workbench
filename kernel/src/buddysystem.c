@@ -92,16 +92,16 @@ void buddy_free(void* addr){
     map->state=0;
     for(int i=K6;i<MAX_ORDER-1;i++){
         //找到next_page
-        uintptr_t num=(uintptr_t)(map-tree_head->units);
-        printf("num=%d\n",num);
+        int num=(int)(map-tree_head->units);
+        //printf("num=%d\n",num);
         page_t* next_page=NULL;int flag=0;
         if(num%(1<<(map->size+1))==0){
-            printf("plus\n");
+            //printf("plus\n");
             flag=1;
             next_page=map+(1<<map->size);
         }
         else next_page=map-(1<<map->size);
-        printf("%p\t%p\n",map,next_page);
+        //printf("%p\t%p\n",map,next_page);
         if(next_page->state==1)break;
         //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
