@@ -43,7 +43,7 @@ void print_mem_tree(){
     printf("%d:",i);
     while(tmp!=NULL){
         uintptr_t num=map2addr((uintptr_t)tmp);
-        printf("%x(%d)->",num,tmp->size);
+        printf("%lx(%d)->",num,tmp->size);
         tmp=tmp->next;
     }
     printf("\n");
