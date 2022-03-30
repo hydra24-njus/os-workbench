@@ -96,8 +96,8 @@ void buddy_free(void* addr){
     uintptr_t num=(uintptr_t)(map-tree_head->units)/sizeof(page_t);
     printf("num=%d\n",num);
     page_t* next_page=NULL;int flag=0;
-    if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);}
-    printf("%p\t%p\n",map,next_page);
+    if(num%(1<<map->size)==0){flag=1;next_page=map+sizeof(page_t)*(1<<map->size);
+    printf("%p\t%p\n",map,next_page);}
     else next_page=map-sizeof(page_t)*(1<<map->size);
     printf("%p\t%p\n",map,next_page);
     //合并
