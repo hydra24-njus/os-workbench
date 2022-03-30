@@ -9,10 +9,13 @@ typedef struct pagecontrol{
     void* next;
 }page_t;
 
-typedef struct{
-    void* free_list[MAX_ORDER];
-    page_t units[8192];
-}tree;
+typedef union{
+    struct{
+        void* free_list[MAX_ORDER];
+        page_t units[8192];
+    };
+    uint8_t data[1<<18];
+}tree;//2^18 Byte
 
 
 
