@@ -121,8 +121,9 @@ static void *kalloc(size_t size) {
     if(size>(16<<20))return NULL;
       lock(&biglock);
       uintptr_t tmp=heaptr;
-      heaptr+=size;
-      if(heapstart>=heapend)tmp=0;
+      if(tmp%size!=0)tmp=tmp+size-tmp%size;
+      if(tmp+size>=heapstop)tmp=0;
+      else heaptr=tmp+size;
       unlock(&biglock);
       debug("%x %d\n",tmp,size);
       return (void*)tmp;
@@ -182,8 +183,9 @@ static void pmm_init() {
 static void pmm_init() {
   char *ptr  = malloc(HEAP_SIZE);
   heapstart = ((uintptr_t)ptr&(~(PAGE_SIZE-1)));
-  heapend   = (uintptr_t)ptr + HEAP_SIZE;
-  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapend);
+  heapstop   = (uintptr_t)ptr + HEAP_SIZE;heapstop-=heapstop%8192;
+  heapend=heapstop-(16<<20);heapend=heapend&(~((16<<20)-1));heaptr=heapend;
+  printf("Got %d MiB heap: [%p, %p)\n", HEAP_SIZE >> 20, heapstart, heapstop);
 }
 #endif
 
