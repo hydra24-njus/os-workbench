@@ -5,6 +5,7 @@ void test1(int tid) {
     pmm->alloc(5000 + (i * 1000) % 5000);
     // if (i % 5 == 0) pmm->free(loc);
   }
+  printf("end\n");
 }
 
 void test2(int tid) {
