@@ -90,7 +90,6 @@ void* buddy_alloc(size_t size){
 void buddy_free(void* addr){
     page_t* map=(page_t*)addr2map((uintptr_t)addr);
     map->state=0;
-    printf("size=%d\n",map->size);
     for(int i=map->size;i<MAX_ORDER-1;i++){
         //找到next_page
         int num=(int)(map-tree_head->units);
@@ -110,7 +109,6 @@ void buddy_free(void* addr){
             while(tmp->next!=next_page)tmp=tmp->next;
             tmp->next=next_page->next;
         }
-        printf("%p\t%p\n",map,next_page);
         //合并
         next_page->next=NULL;
         if(flag==1){//map first
@@ -123,7 +121,6 @@ void buddy_free(void* addr){
             map=next_page;
         }
     }
-    printf("2\n\n");
     //重新加入链表
     map->next=tree_head->free_list[map->size];
     tree_head->free_list[map->size]=map;
