@@ -19,9 +19,9 @@ struct cpu_t{
 typedef union{
   uint8_t size[PAGE_SIZE];
   struct{
-    void* prev;void* next;
+    void* next;
     int type,bitype;
-    int max,now,cur,cpu,state;
+    int max,now,cpu,state;
     uint8_t map[896];
   }__attribute__((packed));
 }page_t;
@@ -48,70 +48,7 @@ unsigned int bitpos(size_t size){
   while((1<<i)<size)i++;
   return i;
 }
-void add2full(page_t* ptr){
-  if(ptr->state==FULL)return;
-  //debug("add to free(%x):\nfull:",ptr);
-  size_t bitype=ptr->bitype,cpu=ptr->cpu;
-  page_t* tmp=buddy[cpu].type[bitype][FREE];
-  if(tmp==ptr){
-    buddy[cpu].type[bitype][FREE]=ptr->next;
-    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=NULL;
-  }
-  else{
-    while(tmp->next!=ptr)tmp=tmp->next;
-    tmp->next=ptr->next;
-    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=tmp;
-  }
 
-  tmp=buddy[cpu].type[bitype][FULL];
-  if(tmp==NULL){
-    buddy[cpu].type[bitype][FULL]=ptr;
-    ptr->next=NULL;ptr->prev=NULL;
-  }
-  else{
-    while(tmp->next!=NULL)tmp=tmp->next;
-    tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
-  }
-  ptr->state=FULL;/*
-  page_t* cont=buddy[cpu].type[bitype][FULL];
-  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\nfree:");
-  cont=buddy[cpu].type[bitype][FREE];
-  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");*/
-}
-void add2free(page_t* ptr){
-  if(ptr->state==FREE)return;
-  //debug("add to free(%x):\nfull:",ptr);
-  size_t bitype=ptr->bitype,cpu=ptr->cpu;
-  page_t* tmp=buddy[cpu].type[bitype][FULL];
-  if(tmp==ptr){
-    buddy[cpu].type[bitype][FULL]=ptr->next;
-    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=NULL;
-  }
-  else{
-    while(tmp->next!=ptr)tmp=tmp->next;
-    tmp->next=ptr->next;
-    if(ptr->next!=NULL)((page_t*)ptr->next)->prev=tmp;
-  }
-
-  tmp=buddy[cpu].type[bitype][FREE];
-  if(tmp==NULL){
-    buddy[cpu].type[bitype][FREE]=ptr;
-    ptr->next=NULL;ptr->prev=NULL;
-  }
-  else{
-    while(tmp->next!=NULL)tmp=tmp->next;
-    tmp->next=ptr;ptr->prev=tmp;ptr->next=NULL;
-  }
-  ptr->state=FREE;/*
-  page_t* cont=buddy[cpu].type[bitype][FULL];
-  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\nfree:");
-  cont=buddy[cpu].type[bitype][FREE];
-  while(cont!=NULL){debug("%x->",cont);cont=cont->next;}
-  debug("\n");*/
-}
 
 
 static void *kalloc(size_t size) {
@@ -128,17 +65,38 @@ static void *kalloc(size_t size) {
       debug("%x %d\n",tmp,size);
       return (void*)tmp;
   }
-  page_t* ptr=buddy[cpu].type[bitsize][FREE];
+  page_t* ptr=buddy[cpu].type[bitsize][FREE];int flag=0;
   if(ptr==NULL){
     lock(&biglock);
     ptr=sbrk(8192);
     unlock(&biglock);
     if(ptr==NULL)return NULL;
     buddy[cpu].type[bitsize][FREE]=ptr;
-    ptr->prev=NULL;ptr->next=NULL;ptr->state=FREE;
+    ptr->next=NULL;ptr->state=FREE;
     ptr->type=size;ptr->bitype=bitsize;
     ptr->max=DATA_SIZE/size;ptr->now=0;
-    ptr->cpu=cpu;ptr->cur=0;
+    ptr->cpu=cpu;flag=1;
+  }
+  if(flag==0){
+    while(ptr->next!=NULL){
+      if(ptr->max>ptr->now){
+        flag=1;
+        break;
+      }
+      ptr=ptr->next;
+    }
+  }
+  if(flag==0){
+    lock(&biglock);
+    ptr=sbrk(8192);
+    unlock(&biglock);
+    if(ptr==NULL)return NULL;
+    ptr->next=buddy[cpu].type[bitsize][FREE];
+    buddy[cpu].type[bitsize][FREE]=ptr;
+    ptr->state=FREE;
+    ptr->type=size;ptr->bitype=bitsize;
+    ptr->max=DATA_SIZE/size;ptr->now=0;
+    ptr->cpu=cpu;flag=1;
   }
   for(int i=0;i<ptr->max;i++){
     if(ptr->map[i]==0){
@@ -150,7 +108,6 @@ static void *kalloc(size_t size) {
     }
   }
   debug("%x %d %d %d\n",addr,ptr->type,ptr->now,ptr->max);
-  if(ptr->now==ptr->max)add2full(ptr);
   return (void*)addr;
 }
 
@@ -164,7 +121,6 @@ static void kfree(void *ptr) {
   //printf("addr=%x\n",addr);
   header->map[addr]=0;
   header->now--;
-  add2free(header);
   return;
 }
 
