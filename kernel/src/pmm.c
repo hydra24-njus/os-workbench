@@ -6,6 +6,10 @@
 #define PAGE_SIZE (64<<10)
 spinlock_t biglock;
 
+enum{
+  p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096,MAX_SIZE
+};
+
 typedef union{
   struct{
     int magic;
@@ -21,6 +25,11 @@ typedef union{
   };
   uint8_t page[64<<10];
 }apage_t;
+struct cpu_t{
+  void* link_head[MAX_SIZE];
+}cpu[8];
+
+
 
 size_t power2(size_t size){
   size--;
@@ -34,7 +43,7 @@ size_t power2(size_t size){
   return size;
 }
 unsigned int bitpos(size_t size){
-  int i=2;
+  int i=3;
   while((1<<i)<size)i++;
   return i;
 }
@@ -43,7 +52,7 @@ unsigned int bitpos(size_t size){
 
 
 static void *kalloc(size_t size) {
-  uintptr_t addr=0;
+  uintptr_t addr=0;size_t bitsize=bitpos(size);bitsize-=4;//int cpu=cpu_current();
   size=power2(size);
   if(size>(16<<20))return NULL;
   if(size>(4<<10)){
@@ -57,7 +66,15 @@ static void *kalloc(size_t size) {
 }
 
 static void kfree(void *ptr) {
-  buddy_free(ptr);
+  apage_t* tmp= (apage_t*)((uintptr_t)ptr&(~(PAGE_SIZE-1)));
+  if(tmp->magic!=MAGIC_NUM){
+    lock(&biglock);
+    buddy_free(ptr);
+    unlock(&biglock);
+  }
+  else{
+
+  }
 }
 
 #ifndef TEST
