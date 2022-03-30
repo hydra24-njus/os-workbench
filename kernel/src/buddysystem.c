@@ -59,6 +59,8 @@ void buddy_init(uintptr_t heapstart,uintptr_t heapend){
         tree_head->units[i*256].state=0;
         tree_head->units[i*256].next=&tree_head->units[(i+1)*256];
     }
+    tree_head->units[(maxpage-1)*256].size=M5;
+    tree_head->units[(maxpage-1)*256].state=0;
     tree_head->units[(maxpage-1)*256].next=NULL;
     print_mem_tree();
 }
