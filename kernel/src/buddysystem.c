@@ -99,9 +99,8 @@ void buddy_free(void* addr){
             next_page=map+(1<<map->size);
         }
         else next_page=map-(1<<map->size);
-        printf("1\n\n");
+        printf("%p\t%p\n",map,next_page);
         if(next_page->state==1)break;
-        printf("2\n\n");
         //释放next_page
         page_t* tmp=tree_head->free_list[map->size];
         if(tmp==next_page)tree_head->free_list[map->size]=tmp->next;
@@ -122,7 +121,6 @@ void buddy_free(void* addr){
         }
     }
     //重新加入链表
-printf("3\n\n");
     map->next=tree_head->free_list[map->size];
     tree_head->free_list[map->size]=map;
 }
