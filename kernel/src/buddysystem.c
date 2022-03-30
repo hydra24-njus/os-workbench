@@ -95,10 +95,10 @@ void buddy_free(void* addr){
     page_t* next_page=NULL;int flag=0;
     if(num%(1<<map->size)==0){
         flag=1;
-        next_page=map+sizeof(page_t)*num;
+        next_page=map+(1<<map->size);
         printf("%lx,%lx\n",map,next_page);
     }
-    else next_page=map-sizeof(page_t)*num;
+    else next_page=map-(1<<map->size);
     //合并
     if(next_page->state==0){
         //从链表中释放next_page
