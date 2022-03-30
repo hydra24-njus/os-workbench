@@ -6,9 +6,6 @@ static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     //putch(*s == '*' ? '0' + cpu_current() : *s);
   }
-  void* loc=pmm->alloc(16<<20);
-  printf("loc=%p\n",loc);
-  pmm->free(loc);
   while (1) ;
 }
 
