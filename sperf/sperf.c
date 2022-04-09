@@ -7,7 +7,7 @@
 #include <regex.h>
 #include <dirent.h>
 #include <time.h>
-
+#define FONT_COLOR_GREEN "\033[0;32m"
 regex_t strace_time;
 regex_t strace_name;
 
@@ -43,7 +43,8 @@ char* findpath(){
 void display(){
   qsort(list,list_cnt,sizeof(struct syscall),cmp);
   for(int i=0;i<5;i++){
-    printf("%s\t(%lf%%)\n",list[i].name,list[i].time*100/total_time);
+    printf("%s\t",list[i].name);
+    printf("(%lf%%)\n",list[i].time*100/total_time);
   }
   printf("================================\n");
   for(int i=0;i<80;i++)printf("%c",'\0');
