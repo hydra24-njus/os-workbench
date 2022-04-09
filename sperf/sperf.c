@@ -7,6 +7,7 @@
 #include <regex.h>
 #include <dirent.h>
 #include <time.h>
+
 regex_t strace_time;
 regex_t strace_name;
 
