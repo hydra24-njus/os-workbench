@@ -4,9 +4,9 @@ struct task {
   // TODO
 };
 
-struct spinlock {
+/*struct spinlock {
   // TODO
-};
+};*/
 
 struct semaphore {
   // TODO
