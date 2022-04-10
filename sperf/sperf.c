@@ -28,6 +28,10 @@ char* findpath(){
   struct dirent* entry;
   while(path){
     dir=opendir(path);
+    if(!dir){
+      path=strtok(NULL,":");
+      continue;
+    }
     while((entry=readdir(dir))!=NULL){
       if(strcmp(entry->d_name,"strace")==0){
         closedir(dir);
