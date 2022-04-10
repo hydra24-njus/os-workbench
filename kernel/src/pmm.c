@@ -1,4 +1,4 @@
-#include <common.h>
+#include <os.h>
 #include <lock.h>
 #include <buddysystem.h>
 

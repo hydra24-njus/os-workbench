@@ -1,4 +1,4 @@
-#include <common.h>
+#include <os.h>
 #include <buddysystem.h>
 #include <lock.h>
 #define M16 (1<<24)
