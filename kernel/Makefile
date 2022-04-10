@@ -15,6 +15,6 @@ image: git
 test: git
 	@gcc $(shell find src/ -name "*.c")  \
 		$(shell find test/ -name "*.c") \
-		-Iframework -Itest -DLOCAL_MACHINE -DTEST -lpthread \
+		-Iframework -Itest -Iinclude -DLOCAL_MACHINE -DTEST -lpthread \
 		-o build/test
 	@build/test
