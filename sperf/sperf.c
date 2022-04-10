@@ -58,9 +58,11 @@ void display(){
 int main(int argc, char *argv[]) {
   char* exec_argv[argc+2];
   char** exec_env=__environ;
+
+
   exec_argv[0]="strace";
   exec_argv[1]="-T";
-  memcpy(exec_argv+2,argv+1,(argc-1)*sizeof(char*));
+  memcpy(exec_argv+2,argv+1,(argc)*sizeof(char*));
 
   regcomp(&strace_name,"([a-zA-Z0-9]+_*)+\\(",REG_EXTENDED);
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
@@ -70,6 +72,13 @@ int main(int argc, char *argv[]) {
   char strace_path[256];char* str="strace";
   sprintf(strace_path,"%s/%s",spath,str);
 
+  char cmd_path[256];
+  strcpy(__PATH,getenv("PATH"));
+  if(strstr(argv[1],"/")==NULL){     
+    char *_cmd_path=findpath(argv[1]);       
+    sprintf(cmd_path,"%s/%s",_cmd_path,argv[1]);
+    exec_argv[2]=cmd_path;
+  }
 
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
