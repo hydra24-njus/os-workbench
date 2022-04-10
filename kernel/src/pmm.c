@@ -1,4 +1,4 @@
-#include <os.h>
+#include <common.h>
 #include <lock.h>
 #include <buddysystem.h>
 
@@ -6,7 +6,7 @@
 #define PAGE_SIZE (64<<10)
 #define HEAD_SIZE 4096
 #define DATA_SIZE 61440
-spinlock_t biglock;
+pmm_spinlock_t biglock;
 
 enum{
   p16=0,p32,p64,p128,p256,p512,p1024,p2048,p4096,MAX_SIZE
@@ -18,7 +18,7 @@ typedef union{
     void* next;
     int type;
     int max,now,cpu;
-    spinlock_t page_lock;
+    pmm_spinlock_t page_lock;
     uint8_t map[2048];
   };
   struct{
@@ -29,7 +29,7 @@ typedef union{
 }apage_t;
 struct cpu_t{
   void* link_head[MAX_SIZE];
-  spinlock_t cpu_lock[MAX_SIZE];
+  pmm_spinlock_t cpu_lock[MAX_SIZE];
 }percpu[8];
 
 
