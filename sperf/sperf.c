@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
     dup2(fildes[1],STDERR_FILENO);
     execve(strace_path, exec_argv, exec_env);
     printf("should not reach here.\n");
-    assert(0);
+    exit(1);
   }
   else{
     close(fildes[1]);
