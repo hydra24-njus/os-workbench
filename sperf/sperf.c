@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   char* exec_argv[argc+2];
   char** exec_env=__environ;
   exec_argv[0]="strace";
-  exec_argv[1]="-Txx";
+  exec_argv[1]="-T";
   memcpy(exec_argv+2,argv+1,(argc-1)*sizeof(char*));
 
   regcomp(&strace_name,"([a-zA-Z0-9]+_*)+\\(",REG_EXTENDED);
@@ -69,12 +69,7 @@ int main(int argc, char *argv[]) {
   char* spath=findpath("strace");
   char strace_path[256];char* str="strace";
   sprintf(strace_path,"%s/%s",spath,str);
-  char* subproc_name=argv[1];
-  strcpy(__PATH,getenv("PATH"));
-  char* subproc_path=findpath(subproc_name);
-  char  sub_path[256];
-  sprintf(sub_path,"%s/%s",subproc_path,subproc_name);
-  exec_argv[2]=sub_path;
+
 
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
