@@ -73,6 +73,7 @@ void my_format(void *putp, putcf putf, const char *fmt, va_list va) {
 			putf(putp, ch);
 		} else {
 			ch = *(fmt++);
+			if(ch=='l')ch=*(fmt++);
 			switch (ch) {
 				case 'd':
 					p.base = 10;
