@@ -62,8 +62,9 @@ int main(int argc, char *argv[]) {
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
 
   strcpy(__PATH,getenv("PATH"));
-  char* strace_path=findpath();
-  sprintf(strace_path,"%s/strace",strace_path);
+  char* spath=findpath();
+  char strace_path[256];
+  sprintf(strace_path,"%s/strace",spath);
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
