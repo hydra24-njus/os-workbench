@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
   regcomp(&strace_name,"([a-zA-Z0-9]+_*)+\\(",REG_EXTENDED);
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
 
+assert(0);
   strcpy(__PATH,getenv("PATH"));
   char* spath=findpath();
   char strace_path[256];
@@ -68,7 +69,6 @@ int main(int argc, char *argv[]) {
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
-  assert(0);
   if(pid==0){
     //TODO():连接管道
     close(fildes[0]);
