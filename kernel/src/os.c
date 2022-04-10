@@ -12,7 +12,7 @@ static void os_run() {
   while (1) ;
 }
 Context *os_trap(Event ev, Context *context){
-  return NULL;
+  return context;
 }
 void os_on_irq(int seq, int event, handler_t handler){
   return;
