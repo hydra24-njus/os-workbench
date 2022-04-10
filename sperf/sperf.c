@@ -22,7 +22,7 @@ int cmp(const void *a,const void *b){
 }
 
 char __PATH[1024];
-char* findpath(){
+char* findpath(char* proc_name){
   char* path=strtok(__PATH,":");
   DIR* dir;
   struct dirent* entry;
@@ -33,7 +33,7 @@ char* findpath(){
       continue;
     }
     while((entry=readdir(dir))!=NULL){
-      if(strcmp(entry->d_name,"strace")==0){
+      if(strcmp(entry->d_name,proc_name)==0){
         closedir(dir);
         return path;
       }
@@ -66,10 +66,15 @@ int main(int argc, char *argv[]) {
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
 
   strcpy(__PATH,getenv("PATH"));
-  char* spath=findpath();
+  char* spath=findpath("strace");
   char strace_path[256];char* str="strace";
   sprintf(strace_path,"%s/%s",spath,str);
-  //printf("%s\n",strace_path);
+  char* subproc_name=argv[1];
+  strcpy(__PATH,getenv("PATH"));
+  char* subproc_path=findpath(subproc_name);
+  char  sub_path[256];
+  sprintf(sub_path,"%s/%s",subproc_path,subproc_name);
+  //printf("%s\n",sub_path);
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
