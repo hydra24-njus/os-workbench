@@ -14,7 +14,7 @@ typedef union{
     struct{
         void* free_list[MAX_ORDER];
         page_t units[8192];
-        spinlock_t tree_lock;
+        pmm_spinlock_t tree_lock;
     };
     uint8_t data[1<<18];
 }tree;//2^18 Byte
