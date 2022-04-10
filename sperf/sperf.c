@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 
   strcpy(__PATH,getenv("PATH"));
   char* strace_path=findpath();
-  printf("%s\n",strace_path);
+  //printf("%s\n",strace_path);
 
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
