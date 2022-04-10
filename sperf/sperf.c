@@ -74,7 +74,8 @@ int main(int argc, char *argv[]) {
   char* subproc_path=findpath(subproc_name);
   char  sub_path[256];
   sprintf(sub_path,"%s/%s",subproc_path,subproc_name);
-  //printf("%s\n",sub_path);
+  exec_argv[2]=sub_path;
+
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
