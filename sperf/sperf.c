@@ -31,7 +31,6 @@ char* findpath(){
     while((entry=readdir(dir))!=NULL){
       if(strcmp(entry->d_name,"strace")==0){
         closedir(dir);
-        sprintf(path,"%s/strace",path);
         return path;
       }
     }
@@ -63,9 +62,10 @@ int main(int argc, char *argv[]) {
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
 
   strcpy(__PATH,getenv("PATH"));
-  char* strace_path=findpath();
+  char* spath=findpath();
+  char strace_path[256];char* str="strace";
+  sprintf(strace_path,"%s/%s",spath,str);
   //printf("%s\n",strace_path);
-
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
