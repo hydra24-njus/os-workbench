@@ -61,11 +61,11 @@ int main(int argc, char *argv[]) {
   regcomp(&strace_name,"([a-zA-Z0-9]+_*)+\\(",REG_EXTENDED);
   regcomp(&strace_time,"<[0-9].[0-9]*>",REG_EXTENDED);
 
-assert(0);
   strcpy(__PATH,getenv("PATH"));
   char* spath=findpath();
-  char strace_path[256];
+  char strace_path[sizeof(spath)+20];
   sprintf(strace_path,"%s/strace",spath);
+  //printf("%s\n",strace_path);
   int fildes[2];
   if(pipe(fildes)!=0)assert(0);
   int pid=fork();
