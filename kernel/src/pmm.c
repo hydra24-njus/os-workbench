@@ -128,6 +128,21 @@ static void kfree(void *ptr) {
   //print_mem_tree();
 }
 
+static void *kalloc_safe(size_t size){
+  bool i=ienabled();
+  iset(false);
+  void *ret=kalloc(size);
+  if(i)iset(true);
+  return ret;
+}
+
+static void kfree_safe(void *ptr){
+  int i=ienabled();
+  iset(false);
+  kfree(ptr);
+  if(i)iset(true);
+}
+
 #ifndef TEST
 // 框架代码中的 pmm_init (在 AbstractMachine 中运行)
 static void pmm_init() {
@@ -151,6 +166,6 @@ static void pmm_init() {
 
 MODULE_DEF(pmm) = {
   .init  = pmm_init,
-  .alloc = kalloc,
-  .free  = kfree,
+  .alloc = kalloc_safe,
+  .free  = kfree_safe,
 };
