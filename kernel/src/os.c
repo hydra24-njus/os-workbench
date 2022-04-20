@@ -55,7 +55,9 @@ void os_on_irq(int seq, int event, handler_t handler){
   }
   prev->next=h;
   h->next=p;
-  debug("%d\t%d\n",-1,seq);
+  debug("%d\t",prev->seq);
+  debug("%d\n",seq);
+  if(p!=NULL)debug("%d\n",p->seq);
 }
 MODULE_DEF(os) = {
   .init = os_init,
