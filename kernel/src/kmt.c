@@ -4,6 +4,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
+    debug("schedule\n");
   return context;
 }
 void kmt_init(){
