@@ -46,6 +46,7 @@ void debug_handler(){
     debug("%x->",tmp->seq);
     tmp=tmp->next;
   }
+  debug("\n");
 }
 void os_on_irq(int seq, int event, handler_t handler){
   debug("os_on_irq\n");
