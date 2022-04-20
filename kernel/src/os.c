@@ -48,6 +48,7 @@ void os_on_irq(int seq, int event, handler_t handler){
   h->handler=handler;
   h->next=NULL;
   irq_handler_t* prev=&irq_guard;irq_handler_t* p=irq_guard.next;
+  debug("irq2\n");
   while(p!=NULL){
     if(p->seq>seq)break;
     prev=p;
