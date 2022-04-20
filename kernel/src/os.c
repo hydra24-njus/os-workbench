@@ -18,9 +18,7 @@ static irq_handler_t irq_guard={
 
 static void os_init() {
   pmm->init();
-  debug("1\n");
   kmt->init();
-  debug("2\n");
   dev->init();
 }
 static void os_run() {
