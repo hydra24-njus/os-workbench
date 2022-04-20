@@ -41,6 +41,7 @@ Context *os_trap(Event ev, Context *context){
   return next;
 }
 void os_on_irq(int seq, int event, handler_t handler){
+  debug("os_on_irq\n");
   irq_handler_t *h=pmm->alloc(sizeof(irq_handler_t));
   h->event=event;
   h->seq=seq;
