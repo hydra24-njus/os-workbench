@@ -40,6 +40,13 @@ Context *os_trap(Event ev, Context *context){
   //panic_on(sane_context(next),"returning to invalid context");
   return next;
 }
+void debug_handler(){
+  irq_handler_t *tmp=&irq_guard;
+  while(tmp!=NULL){
+    debug("%x->",tmp->seq);
+    tmp=tmp->next;
+  }
+}
 void os_on_irq(int seq, int event, handler_t handler){
   debug("os_on_irq\n");
   irq_handler_t *h=pmm->alloc(sizeof(irq_handler_t));
@@ -55,9 +62,7 @@ void os_on_irq(int seq, int event, handler_t handler){
   }
   prev->next=h;
   h->next=p;
-  debug("%d\t",prev->seq);
-  debug("%d\n",seq);
-  if(p!=NULL)debug("%d\n",p->seq);
+  debug_handler();
 }
 MODULE_DEF(os) = {
   .init = os_init,
