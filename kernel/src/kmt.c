@@ -1,9 +1,11 @@
 #include <os.h>
 
 static Context *kmt_context_save(Event ev,Context *context){
+  //TODO():save context
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
+  //TODO():线程调度。
   //debug("schedule\n");
   return context;
 }

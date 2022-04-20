@@ -63,7 +63,7 @@ void os_on_irq(int seq, int event, handler_t handler){
   }
   prev->next=h;
   h->next=p;
-  debug_handler();
+  //debug_handler();
 }
 MODULE_DEF(os) = {
   .init = os_init,

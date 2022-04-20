@@ -31,6 +31,7 @@ static void _printf_putc(void *p, char c) {
 static void putchw(void *putp, putcf putf, struct param *p) {
 	char ch;
 	char *bf = p->bf;
+	if(p->sign=='-')putf(putp,'-');
 	while((ch = *bf++)) 
 		putf(putp, ch);
 }
@@ -54,6 +55,7 @@ static void ui2a(unsigned int num, struct param *p) {
 	*bf = 0;
 }
 static void i2a (int num, struct param *p) {
+	p->sign='+';
 	if (num < 0) {
 		num = -num;
 		p->sign = '-';
