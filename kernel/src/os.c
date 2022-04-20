@@ -43,7 +43,7 @@ Context *os_trap(Event ev, Context *context){
 void debug_handler(){
   irq_handler_t *tmp=&irq_guard;
   while(tmp!=NULL){
-    debug("%x->",tmp->seq);
+    debug("%d->",tmp->seq);
     tmp=tmp->next;
   }
   debug("\n");
