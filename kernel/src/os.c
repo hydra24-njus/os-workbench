@@ -28,7 +28,7 @@ static void os_run() {
   while (1) ;
 }
 Context *os_trap(Event ev, Context *context){
-  printf("%s\n",ev.msg);
+  printf("msg=%s\n",ev.msg);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
