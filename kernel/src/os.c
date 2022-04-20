@@ -36,7 +36,7 @@ Context *os_trap(Event ev, Context *context){
       if(r)next=r;
     }
   }
-  panic_on(!next,"returning NULL context");
+  //panic_on(!next,"returning NULL context");
   //panic_on(sane_context(next),"returning to invalid context");
   return next;
 }
