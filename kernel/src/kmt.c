@@ -2,6 +2,7 @@
 
 static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
+  
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
@@ -10,6 +11,8 @@ static Context *kmt_schedule(Event ev,Context *context){
   return context;
 }
 void kmt_init(){
+  //int x=cpu_count();
+
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   return;
