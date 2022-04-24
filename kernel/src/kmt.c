@@ -68,7 +68,7 @@ static void teardown(task_t *task){
 }
 
 static void sem_init(sem_t *sem,const char *name,int value){
-  debug("sem_init\n");
+  debug("sem_init,%s\n",name);
   strcpy(sem->name,name);
   sem->value=value;
   spin_init(&sem->lock,name);
