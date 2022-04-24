@@ -67,13 +67,13 @@ static void teardown(task_t *task){
 }
 
 static void sem_init(sem_t *sem,const char *name,int value){
-
+  debug("sem_init\n");
 }
 static void sem_wait(sem_t *sem){
-
+  debug("sem_wait\n");
 }
 static void sem_signal(sem_t *sem){
-
+  debug("sem_signal\n");
 }
 MODULE_DEF(kmt) = {
  // TODO
