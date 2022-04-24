@@ -19,7 +19,7 @@ static irq_handler_t irq_guard={
 static void os_init() {
   pmm->init();
   kmt->init();
-  dev->init();
+  //dev->init();
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {

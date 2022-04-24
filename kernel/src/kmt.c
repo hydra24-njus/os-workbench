@@ -48,8 +48,6 @@ void kmt_init(){
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  int i=ienabled();
-  iset(false);
   debug("create\n");
   task->status=0;
   task->name=name;
@@ -64,10 +62,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p->next=task;
   }
   task_t *p=header;
-  debug("\n\n");
   while(p!=NULL)debug("%x->",p);
-  debug("\n");
-  if(i)iset(true);
   return 0;
 }
 static void teardown(task_t *task){
