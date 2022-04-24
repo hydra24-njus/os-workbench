@@ -1,7 +1,27 @@
 #include <os.h>
 task_t *cpu_currents[8];
 task_t *header=NULL;
+spinlock_t kmt_lock;
 #define current cpu_currents[cpu_current()]
+
+static void spin_init(spinlock_t *lk,const char *name){
+  strcpy(lk->name,name);
+  lk->locked=0;
+  lk->intr=0;
+  lk->cpu=-1;
+}
+static void spin_lock(spinlock_t *lk){
+  int i=ienabled();
+  iset(false);
+  while(atomic_xchg(&(lk->locked),1));
+  lk->intr=i;
+  lk->cpu=cpu_current();
+}
+static void spin_unlock(spinlock_t *lk){
+  int i=lk->intr;
+  atomic_xchg(&(lk->locked),0);
+  if(i)iset(true);
+}
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save\n");
   //TODO():save context
@@ -22,11 +42,13 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   header=NULL;
+  spin_init(&kmt_lock,"kmt_lock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+  spin_lock(&kmt_lock);
   debug("create\n");
   task->status=0;
   task->name=name;
@@ -43,29 +65,13 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task_t *p=header;
   while(p!=NULL)debug("%x->",p);
   debug("\n");
+  spin_unlock(&kmt_lock);
   return 0;
 }
 static void teardown(task_t *task){
   return;
 }
-static void spin_init(spinlock_t *lk,const char *name){
-  strcpy(lk->name,name);
-  lk->locked=0;
-  lk->intr=0;
-  lk->cpu=-1;
-}
-static void spin_lock(spinlock_t *lk){
-  int i=ienabled();
-  iset(false);
-  while(atomic_xchg(&(lk->locked),1));
-  lk->intr=i;
-  lk->cpu=cpu_current();
-}
-static void spin_unlock(spinlock_t *lk){
-  int i=lk->intr;
-  atomic_xchg(&(lk->locked),0);
-  if(i)iset(true);
-}
+
 static void sem_init(sem_t *sem,const char *name,int value){
 
 }
