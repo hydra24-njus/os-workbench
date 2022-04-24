@@ -3,15 +3,18 @@ task_t *cpu_currents[8];
 task_t *header=NULL;
 #define current cpu_currents[cpu_current()]
 static Context *kmt_context_save(Event ev,Context *context){
+  debug("save\n");
   //TODO():save context
   if(!current)current=header;
   else current->context=context;
   if(current->next!=NULL)current=current->next;
+  debug("save finished\n");
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   //debug("schedule\n");
+  debug("schedule\n");
   return current->context;
 }
 
