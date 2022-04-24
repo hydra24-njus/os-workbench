@@ -7,6 +7,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
   if(!current)current=header;
   else current->context=context;
+  panic_on(current,"current==NULL");
   if(current->next!=NULL)current=current->next;
   debug("save finished\n");
   return NULL;
