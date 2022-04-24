@@ -1,5 +1,6 @@
 #include <os.h>
-
+task_t *cpu_currents[8];
+#define current cpu_currents[cpu_current()]
 static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
   
@@ -24,31 +25,31 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
 static void teardown(task_t *task){
   return;
 }
-void spin_init(spinlock_t *lk,const char *name){
+static void spin_init(spinlock_t *lk,const char *name){
   strcpy(lk->name,name);
   lk->locked=0;
   lk->intr=0;
   lk->cpu=-1;
 }
-void spin_lock(spinlock_t *lk){
+static void spin_lock(spinlock_t *lk){
   int i=ienabled();
   iset(false);
   while(atomic_xchg(&(lk->locked),1));
   lk->intr=i;
   lk->cpu=cpu_current();
 }
-void spin_unlock(spinlock_t *lk){
+static void spin_unlock(spinlock_t *lk){
   int i=lk->intr;
   atomic_xchg(&(lk->locked),0);
   if(i)iset(true);
 }
-void sem_init(sem_t *sem,const char *name,int value){
+static void sem_init(sem_t *sem,const char *name,int value){
 
 }
-void sem_wait(sem_t *sem){
+static void sem_wait(sem_t *sem){
 
 }
-void sem_signal(sem_t *sem){
+static void sem_signal(sem_t *sem){
 
 }
 MODULE_DEF(kmt) = {
