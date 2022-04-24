@@ -50,6 +50,7 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
+  debug("smp=%d\n",cpu_count());
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
