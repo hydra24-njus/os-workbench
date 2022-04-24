@@ -58,7 +58,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     task->next=header->next;
     header->next=task;
   }
-  Area stack={&task->context+1,&task+sizeof(task_t)};
+  Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
 }
@@ -69,12 +69,28 @@ static void teardown(task_t *task){
 
 static void sem_init(sem_t *sem,const char *name,int value){
   debug("sem_init\n");
+  strcpy(sem->name,name);
+  sem->value=value;
+  spin_init(&sem->lock,name);
 }
 static void sem_wait(sem_t *sem){
   debug("sem_wait\n");
+  spin_lock(&sem->lock);
+  bool flag=false;
+  if(sem->value<=0){
+    //sleep;
+    flag=true;
+    current->status=1;//stand for sleep.
+  }
+  sem->value--;
+  spin_unlock(&sem->lock);
+  if(flag)yield();
 }
 static void sem_signal(sem_t *sem){
   debug("sem_signal\n");
+  spin_lock(&sem->lock);
+  sem->value++;
+  spin_unlock(&sem->lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
