@@ -1,23 +1,40 @@
 #include <os.h>
-
+task_t *cpu_currents[8];
+task_t *header=NULL;
+#define current cpu_currents[cpu_current()]
 static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
-  
+  if(!current)current=header;
+  else current->context=context;
+  if(current->next!=NULL)current=current->next;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   //debug("schedule\n");
-  return context;
+  return current->context;
 }
 
 void kmt_init(){
   //int x=cpu_count();
+  header=NULL;
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+  task->status=0;
+  task->name=name;
+  task->entry=entry;
+  task->next=NULL;
+  Area stack={&task->context+1,&task+sizeof(task)-sizeof(uint32_t)};
+  task->context=kcontext(stack,entry,arg);
+  if(header==NULL)header=task;
+  else{
+    task_t *p=header;
+    while(p->next)p=p->next;
+    p->next=task;
+  }
   return 0;
 }
 static void teardown(task_t *task){

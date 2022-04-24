@@ -7,6 +7,7 @@ struct task {
     int status;
     const char *name;
     struct task *next;
+    void (*entry)(void*);
     Context   *context;
   };
   uint8_t stack[4096-sizeof(uint32_t)];
