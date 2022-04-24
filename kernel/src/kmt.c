@@ -51,10 +51,11 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->status=0;
   task->name=name;
   task->entry=entry;
+  task->next=NULL;
   if(header==NULL)header=task;
   else {
-    header->next=task;
     task->next=header->next;
+    header->next=task;
   }
   task_t *p=header;
   while(p!=NULL){debug("%x->",p);p=p->next;}
