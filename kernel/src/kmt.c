@@ -48,11 +48,11 @@ void kmt_init(){
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  debug("create1\n");
-  task->status=0;debug("create2\n");
-  task->name=name;debug("create3\n");
-  task->entry=entry;debug("create4\n");
-  task->next=NULL;debug("create5\n");
+  debug("create\n");
+  task->status=0;
+  task->name=name;
+  task->entry=entry;
+  task->next=NULL;
   //Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};debug("create6\n");
   //task->context=kcontext(stack,entry,arg);debug("create7\n");
   if(header==NULL)header=task;
@@ -61,8 +61,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     while(p->next)p=p->next;
     p->next=task;
   }
-  task_t *p=header;
-  while(p!=NULL){debug("%x->",p);p=p->next;}
   return 0;
 }
 static void teardown(task_t *task){
