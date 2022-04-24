@@ -22,6 +22,7 @@ static void os_init() {
   pmm->init();
   kmt->init();
   dev->init();
+  debug("init finished.\n");
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
