@@ -16,8 +16,8 @@ void kmt_init(){
   //int x=cpu_count();
   for(int i=0;i<cpu_count();i++){
     task_t *task=&cpu_currents[i];
-    Area stack =(Area){&task->context+1,task+1};
-    task->context=kcontext(stack,NULL,(void*)task->name);
+    Area stack =(Area){&task->context+1,&task+sizeof(task_t)};
+    task->context=kcontext(stack,NULL,NULL);
     task->next=NULL;
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
