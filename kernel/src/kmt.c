@@ -18,9 +18,9 @@ void kmt_init(){
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   return;
 }
-static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+/*static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   return 0;
-}
+}*/
 static void teardown(task_t *task){
   return;
 }
@@ -54,7 +54,7 @@ void sem_signal(sem_t *sem){
 MODULE_DEF(kmt) = {
  // TODO
  .init=kmt_init,
- .create=create,
+ //.create=create,
  .teardown=teardown,
  .spin_init=spin_init,
  .spin_lock=spin_lock,
