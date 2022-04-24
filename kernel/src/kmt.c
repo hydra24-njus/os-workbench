@@ -40,6 +40,9 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     while(p->next)p=p->next;
     p->next=task;
   }
+  task_t *p=header;
+  while(p!=NULL)debug("%x->",p);
+  debug("\n");
   return 0;
 }
 static void teardown(task_t *task){
