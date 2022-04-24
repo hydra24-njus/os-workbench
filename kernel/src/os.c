@@ -15,10 +15,13 @@ static irq_handler_t irq_guard={
   .handler=(handler_t)irq_guard_fun,
   .next=NULL
 };
-
+void test_kmt(){
+  debug("xxx\n");
+}
 static void os_init() {
   pmm->init();
   kmt->init();
+  kmt->create(pmm->alloc(4096),"test",test_kmt,NULL);
   //dev->init();
 }
 static void os_run() {
