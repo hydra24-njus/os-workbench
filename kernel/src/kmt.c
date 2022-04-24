@@ -42,6 +42,7 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
+  header=NULL;
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
