@@ -53,14 +53,14 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->name=name;
   task->entry=entry;
   task->next=NULL;
-  //Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};debug("create6\n");
-  //task->context=kcontext(stack,entry,arg);debug("create7\n");
   if(header==NULL)header=task;
   else{
     task_t *p=header;
     while(p->next)p=p->next;
     p->next=task;
   }
+  Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};debug("create6\n");
+  task->context=kcontext(stack,entry,arg);debug("create7\n");
   return 0;
 }
 static void teardown(task_t *task){
