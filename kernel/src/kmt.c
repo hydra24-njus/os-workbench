@@ -29,6 +29,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   else current->context=context;
   panic_on(current==NULL,"current==NULL");
   if(current->next!=NULL)current=current->next;
+  else current=header;
   debug("save finished\n");
   return NULL;
 }
