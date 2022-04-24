@@ -41,6 +41,9 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
+  task_t* task=&header;
+  Area stack={&task->context,&task+sizeof(task_t)-sizeof(uint32_t)};
+  task->context=kcontext(stack,NULL,NULL);
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
@@ -52,7 +55,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->entry=entry;
   task->next=header.next;
   header.next=task;
-  Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};
+  Area stack={&task->context,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
 }
