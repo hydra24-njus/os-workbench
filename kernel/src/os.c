@@ -21,8 +21,7 @@ void test_kmt(){
 static void os_init() {
   pmm->init();
   kmt->init();
-  kmt->create(pmm->alloc(4096),"test",test_kmt,NULL);
-  //dev->init();
+  dev->init();
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
