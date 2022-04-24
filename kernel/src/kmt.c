@@ -64,6 +64,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p->next=task;
   }
   task_t *p=header;
+  debug("\n\n");
   while(p!=NULL)debug("%x->",p);
   debug("\n");
   if(i)iset(true);
