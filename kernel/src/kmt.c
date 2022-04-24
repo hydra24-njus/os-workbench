@@ -63,6 +63,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   return 0;
 }
 static void teardown(task_t *task){
+  debug("teardown\n");
   return;
 }
 
