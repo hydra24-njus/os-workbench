@@ -57,7 +57,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     header->next=task;
     task->next=header->next;
   }
-  Area stack={&task->context,&task+sizeof(task_t)};
+  Area stack={&task->context+1,&task+sizeof(task_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
 }
