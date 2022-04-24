@@ -10,6 +10,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   //debug("schedule\n");
   return context;
 }
+
 void kmt_init(){
   //int x=cpu_count();
 
@@ -17,10 +18,10 @@ void kmt_init(){
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   return;
 }
-int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   return 0;
 }
-void teardown(task_t *task){
+static void teardown(task_t *task){
   return;
 }
 void spin_init(spinlock_t *lk,const char *name){

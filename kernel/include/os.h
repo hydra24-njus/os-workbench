@@ -1,5 +1,5 @@
 #include <common.h>
-
+#define MAGIC 0x114514
 struct task {
   // TODO
   union{
@@ -9,7 +9,8 @@ struct task {
     struct task *next;
     Context   *context;
   };
-  uint8_t stack[4096];
+  uint8_t stack[4096-sizeof(uint32_t)];
+  uint8_t canary[4];
   };
 };
 
