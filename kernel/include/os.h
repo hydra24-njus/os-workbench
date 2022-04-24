@@ -1,5 +1,8 @@
 #include <common.h>
 #define MAGIC 0x114514
+enum{
+  READY=0,SLEEPING=1,IDLE=2
+};
 struct task {
   // TODO
   union{

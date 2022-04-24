@@ -1,8 +1,12 @@
 #include <os.h>
 task_t *cpu_currents[8];
-task_t *header;
+task_t *cpu_header[8];
 spinlock_t kmt_lock;
 #define current cpu_currents[cpu_current()]
+#define header cpu_header[cpu_current()]
+/*------------------------------------------------
+*cpu_currents[i] = idle -> proc0 -> proc1...
+  ------------------------------------------------*/
 
 static void spin_init(spinlock_t *lk,const char *name){
   strcpy(lk->name,name);
@@ -25,11 +29,7 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save\n");
   //TODO():save context
-  if(!current)current=header;
-  else current->context=context;
-  panic_on(current==NULL,"current==NULL");
-  if(current->next!=NULL)current=current->next;
-  else current=header;
+  current->context=context;
   debug("save finished\n");
   return NULL;
 }
@@ -37,27 +37,41 @@ static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   //debug("schedule\n");
   debug("schedule.current=%x\n",current);
-  return current->context;
+  if(header->next==NULL)return header->context;
+  task_t *p=header->next;
+  Context *next=p->context;
+  header->next=p->next;
+  p->next=NULL;
+  task_t *pp=header;
+  while(pp->next!=NULL)pp=pp->next;
+  pp->next=p;
+  return next;
 }
 
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
-  header=NULL;
+  for(int i=0;i<cpu_count();i++){
+    task_t *task=pmm->alloc(sizeof(task_t));
+    task->status=IDLE;
+    task->name="idle";
+    task->entry=NULL;
+    task->next=NULL;
+    cpu_header[i]=task;
+    current=cpu_header[i];
+    Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
+    task->context=kcontext(stack,NULL,NULL);
+  }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   debug("create\n");
-  task->status=0;
+  task->status=READY;
   task->name=name;
   task->entry=entry;
-  task->next=NULL;
-  if(header==NULL)header=task;
-  else {
-    task->next=header->next;
-    header->next=task;
-  }
+  task->next=cpu_header[cpu_current()]->next;
+  cpu_header[cpu_current()]->next=task;
   Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
