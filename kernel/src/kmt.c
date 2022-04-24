@@ -25,7 +25,7 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save\n");
   //TODO():save context
-  if(!current)current=&header;
+  if(!current)current=header.next;
   else current->context=context;
   panic_on(current==NULL,"current==NULL");
   if(current->next!=NULL)current=current->next;
@@ -57,7 +57,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   header.next=task;
   Area stack={&task->context,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
-  debug("1\n");
   return 0;
 }
 static void teardown(task_t *task){
