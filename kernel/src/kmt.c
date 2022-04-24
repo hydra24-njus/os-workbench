@@ -27,7 +27,6 @@ static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
   if(!current)current=header;
   else current->context=context;
-  debug("%x\n",current);
   panic_on(current==NULL,"current==NULL");
   if(current->next!=NULL)current=current->next;
   debug("save finished\n");
@@ -36,7 +35,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   //debug("schedule\n");
-  debug("schedule\n");
+  debug("schedule.current=%x\n",current);
   return current->context;
 }
 
@@ -59,8 +58,8 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     while(p->next)p=p->next;
     p->next=task;
   }
-  Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};debug("create6\n");
-  task->context=kcontext(stack,entry,arg);debug("create7\n");
+  Area stack={&task->context,&task+sizeof(task)-sizeof(uint32_t)};
+  task->context=kcontext(stack,entry,arg);
   return 0;
 }
 static void teardown(task_t *task){
