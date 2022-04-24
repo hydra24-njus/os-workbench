@@ -48,10 +48,10 @@ void kmt_init(){
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  debug("create\n");
-  task->status=0;
-  task->name=name;
-  task->entry=entry;
+  debug("create1\n");
+  task->status=0;debug("create2\n");
+  task->name=name;debug("create3\n");
+  task->entry=entry;debug("create4\n");
   task->next=NULL;
   Area stack={&task->context+1,&task+sizeof(task)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
