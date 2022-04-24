@@ -19,19 +19,28 @@ void kmt_init(){
   return;
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  return -1;
+  return 0;
 }
 static void teardown(task_t *task){
   return;
 }
 void spin_init(spinlock_t *lk,const char *name){
-  return;
+  strcpy(lk->name,name);
+  lk->locked=0;
+  lk->intr=0;
+  lk->cpu=-1;
 }
 void spin_lock(spinlock_t *lk){
-
+  int i=ienabled();
+  iset(false);
+  while(atomic_xchg(&(lk->locked),1));
+  lk->intr=i;
+  lk->cpu=cpu_current();
 }
 void spin_unlock(spinlock_t *lk){
-
+  int i=lk->intr;
+  atomic_xchg(&(lk->locked),0);
+  if(i)iset(true);
 }
 void sem_init(sem_t *sem,const char *name,int value){
 
