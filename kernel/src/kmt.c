@@ -1,5 +1,5 @@
 #include <os.h>
-task_t *cpu_currents[8];
+task_t cpu_currents[8];
 #define current cpu_currents[cpu_current()]
 static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
@@ -14,7 +14,12 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   //int x=cpu_count();
-
+  for(int i=0;i<cpu_count();i++){
+    task_t *task=&cpu_currents[i];
+    Area stack =(Area){&task->context+1,task+1};
+    task->context=kcontext(stack,NULL,(void*)task->name);
+    task->next=NULL;
+  }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   return;
