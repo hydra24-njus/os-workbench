@@ -19,7 +19,7 @@ void kmt_init(){
   return;
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  return 0;
+  return -1;
 }
 static void teardown(task_t *task){
   return;
