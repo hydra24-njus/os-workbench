@@ -55,7 +55,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->entry=entry;
   task->next=NULL;
   Area stack={&task->context+1,&task+sizeof(task)-sizeof(uint32_t)};
-  task->context=kcontext(stack,entry,arg);
+  task->context=kcontext(stack,entry,arg);debug("create2\n");
   if(header==NULL)header=task;
   else{
     task_t *p=header;
