@@ -60,7 +60,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   }
   Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
-  yield();
   return 0;
 }
 static void teardown(task_t *task){
