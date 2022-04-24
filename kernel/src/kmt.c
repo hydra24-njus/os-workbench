@@ -1,6 +1,6 @@
 #include <os.h>
 task_t *cpu_currents[8];
-task_t header;
+task_t *header;
 spinlock_t kmt_lock;
 #define current cpu_currents[cpu_current()]
 
@@ -25,7 +25,7 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save\n");
   //TODO():save context
-  if(!current)current=header.next;
+  if(!current)current=header->next;
   else current->context=context;
   panic_on(current==NULL,"current==NULL");
   if(current->next!=NULL)current=current->next;
@@ -50,8 +50,8 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->status=0;
   task->name=name;
   task->entry=entry;
-  task->next=header.next;
-  header.next=task;
+  task->next=header->next;
+  header->next=task;
   Area stack={&task->context,&task+sizeof(task_t)-sizeof(uint32_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
