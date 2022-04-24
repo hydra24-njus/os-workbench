@@ -6,7 +6,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
   if(!current)current=header;
   else current->context=context;
-  if(current->next!=NULL)current=current->next;
+  //if(current->next!=NULL)current=current->next;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
