@@ -25,7 +25,7 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save\n");
   //TODO():save context
-  if(!current)current=header->next;
+  if(!current)current=header;
   else current->context=context;
   panic_on(current==NULL,"current==NULL");
   if(current->next!=NULL)current=current->next;
