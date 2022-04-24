@@ -58,9 +58,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     task->next=header->next;
     header->next=task;
   }
-  task_t *p=header;
-  while(p!=NULL){debug("%x->",p);p=p->next;}
-  debug("\n");
   Area stack={&task->context+1,&task+sizeof(task_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
