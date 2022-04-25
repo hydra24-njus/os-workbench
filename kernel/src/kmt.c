@@ -66,6 +66,10 @@ void kmt_init(){
     Area stack={&task->context+1,task+1};
     task->context=kcontext(stack,NULL,NULL);
   }
+  task_t *p=cpu_header[0];
+  while(p!=NULL)printf("%s->",p->name);
+  printf("\n");
+  printf("\n");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
   debug("kmt_init finished.\n");
@@ -80,12 +84,12 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   Area stack={&task->context+1,task+1};
   task->context=kcontext(stack,entry,arg);
 
-  for(int i=0;i<cpu_count();i++){
+  /*for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
     while(p!=NULL)printf("%s->",p->name);
     printf("\n");
   }
-  printf("\n");
+  printf("\n");*/
 
   return 0;
 }
