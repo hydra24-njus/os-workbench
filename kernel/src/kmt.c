@@ -60,6 +60,11 @@ static Context *kmt_schedule(Event ev,Context *context){
       if(p->status==READY)break;
       p=p->next;
     }
+    if(p==NULL)p=cpu_header;
+    while(p!=NULL){
+      if(p->status==READY)break;
+      p=p->next;
+    }
     if(p==NULL)current=idle;
     else{
       p->status=RUNNING;
