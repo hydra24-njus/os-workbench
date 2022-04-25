@@ -62,6 +62,7 @@ static void os_run() {
 }
 Context *os_trap(Event ev, Context *context){
   kmt->spin_lock(&kmt_lock);
+  printf("iset=%d",ienabled());
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
