@@ -26,9 +26,9 @@ void fun2(){
 static void os_init() {
   pmm->init();
   kmt->init();
-  //kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun1,NULL);
-  //kmt->create(pmm->alloc(sizeof(task_t)),"fun2",fun2,NULL);
-  dev->init();
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun1,NULL);
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun2",fun2,NULL);
+  //dev->init();
   debug("init finished.\n");
 }
 static void os_run() {
