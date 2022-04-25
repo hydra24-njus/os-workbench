@@ -52,7 +52,7 @@ void kmt_init(){
     task->next=NULL;
     cpu_header[i]=task;
     current=cpu_header[i];
-    Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
+    Area stack={&task->context+1,&task+sizeof(task_t)};
     task->context=kcontext(stack,NULL,NULL);
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
@@ -66,7 +66,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->entry=entry;
   task->next=cpu_header[cpu_current()]->next;
   cpu_header[cpu_current()]->next=task;
-  Area stack={&task->context+1,&task+sizeof(task_t)-sizeof(uint32_t)};
+  Area stack={&task->context+1,&task+sizeof(task_t)};
   task->context=kcontext(stack,entry,arg);
   return 0;
 }
