@@ -1,5 +1,4 @@
-#include <common.h>
-
+#include <os.h>
 typedef struct irq_handler{
   int seq;int event;
   handler_t handler;
@@ -18,9 +17,17 @@ static irq_handler_t irq_guard={
 void test_kmt(){
   debug("xxx\n");
 }
+void fun1(){
+  while(1)debug("1\n");
+}
+void fun2(){
+  while(1)debug("2\n");
+}
 static void os_init() {
   pmm->init();
   kmt->init();
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun1,NULL);
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun2,NULL);
   //dev->init();
   debug("init finished.\n");
 }
