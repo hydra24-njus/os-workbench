@@ -47,6 +47,7 @@ static Context *kmt_schedule(Event ev,Context *context){
 
   if(now==header){
     //do nothing.
+    debug("now==header\n");
   }
   else{
     task_t *prev=header;
