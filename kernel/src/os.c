@@ -19,12 +19,16 @@ void test_kmt(){
 }
 static int x=0;
 void fun1(){
-  for(int i=0;i<1000000000;i++)x+=1;
-  while(1);
+    while (1) {
+    printf("Thread-%s on CPU #%d\n", "func1", cpu_current());
+    for (int volatile i = 0; i < 100000; i++) ;
+  }
 }
 void fun2(){
-  for(int i=0;i<1000000000;i++)x+=1;
-  while(1);
+    while (1) {
+    printf("Thread-%s on CPU #%d\n", "func2", cpu_current());
+    for (int volatile i = 0; i < 100000; i++) ;
+  }
 }
 static void os_init() {
   pmm->init();
