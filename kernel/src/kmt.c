@@ -42,12 +42,12 @@ static Context *kmt_schedule(Event ev,Context *context){
     else current=header->next;
   }
   else current=next;
-  for(int i=0;i<cpu_count();i++){
+  /*for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
     while(p!=NULL)printf("%s->",p->name);
     printf("\n");
   }
-  printf("\n");
+  printf("\n");*/
   spin_unlock(&kmt_lock);
   return current->context;
 }
