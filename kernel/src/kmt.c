@@ -54,7 +54,7 @@ void kmt_init(){
     cpu_header[i]=task;
     current=cpu_header[i];
     Area stack={&task->context+1,(&task)+sizeof(task_t)};
-    debug("Areasize=%d\n",stack.end-stack.start);
+    debug("Area=%d~%d\n",stack.start,stack.end);
     task->context=kcontext(stack,NULL,NULL);
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
