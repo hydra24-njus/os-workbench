@@ -17,11 +17,14 @@ static irq_handler_t irq_guard={
 void test_kmt(){
   debug("xxx\n");
 }
+static int x=0;
 void fun1(){
-  while(1)debug("1\n");
+  for(int i=0;i<100;i++)x++;
+  while(1);
 }
 void fun2(){
-  while(1)debug("2\n");
+  for(int i=0;i<100;i++)x++;
+  while(1);
 }
 static void os_init() {
   pmm->init();
