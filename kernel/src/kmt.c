@@ -52,7 +52,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     p->next=now->next;
     int xcpu=(cpu_current()+1)%cpu_count();
     now->next=cpu_header[xcpu]->next;
-    cpu_header[xcpu]->next=now->next;
+    cpu_header[xcpu]->next=now;
   }
   spin_unlock(&kmt_lock);
   for(int i=0;i<cpu_count();i++){
