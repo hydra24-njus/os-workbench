@@ -50,12 +50,10 @@ static Context *kmt_schedule(Event ev,Context *context){
   spin_unlock(&kmt_lock);
   return current->context;
 }
-char* name[8];
+const char* name[8]={"idle-0","idle-1","idle-2","idle-3","idle-4","idle-5","idle-6","idle-7"};
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
   //debug("smp=%d\n",cpu_count());
-
-  for(int i=0;i<8;i++)sprintf(name[i],"idle-%d",i);
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
