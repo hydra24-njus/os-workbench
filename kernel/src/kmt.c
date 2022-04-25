@@ -48,7 +48,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
-  debug("schedule from CPU(%d)\n",cpu_current());
+  debug("schedule from CPU(%d),current=%s\n",cpu_current(),current->name);
   task_t *next=current->next;
   if(next==NULL){
     if(header->next==NULL)current=header;
