@@ -71,7 +71,7 @@ void kmt_init(){
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  printf("create,%s\n",name);
+  debug("create,%s\n",name);
   task->status=READY;
   task->name=name;
   task->entry=entry;
