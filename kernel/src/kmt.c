@@ -59,7 +59,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     while(p!=NULL)printf("%s->",p->name);
     printf("\n");
   }
-    spin_unlock(&kmt_lock);
+  spin_unlock(&kmt_lock);
   return current->context;
 }
 
