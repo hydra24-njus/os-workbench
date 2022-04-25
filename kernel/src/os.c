@@ -17,7 +17,6 @@ static irq_handler_t irq_guard={
 void test_kmt(){
   debug("xxx\n");
 }
-static int x=0;
 void fun1(){
     while (1) {
     printf("Thread-%s on CPU #%d\n", "func1", cpu_current());
@@ -43,7 +42,7 @@ static void os_run() {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   iset(true);
-  while (1) debug("%d\n",x);
+  while (1) ;
 }
 Context *os_trap(Event ev, Context *context){
   Context *next=NULL;
