@@ -85,10 +85,14 @@ static void sem_init(sem_t *sem,const char *name,int value){
   spin_init(&sem->lock,name);
 }
 static void sem_wait(sem_t *sem){
+  spin_lock(&sem->lock);
   debug("sem_wait\n");
+  spin_unlock(&sem->lock);
 }
 static void sem_signal(sem_t *sem){
+  spin_lock(&sem->lock);
   debug("sem_signal\n");
+  spin_unlock(&sem->lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
