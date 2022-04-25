@@ -79,6 +79,14 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   cpu_header[cpu_current()]->next=task;
   Area stack={&task->context+1,task+1};
   task->context=kcontext(stack,entry,arg);
+
+  for(int i=0;i<cpu_count();i++){
+    task_t *p=cpu_header[i];
+    while(p!=NULL)printf("%s->",p->name);
+    printf("\n");
+  }
+  printf("\n");
+
   return 0;
 }
 static void teardown(task_t *task){
