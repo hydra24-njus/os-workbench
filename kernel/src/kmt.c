@@ -68,7 +68,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   spin_unlock(&kmt_lock);
   return current->context;
 }
-const char* name[8]={"idle-0","idle-1","idle-2","idle-3","idle-4","idle-5","idle-6","idle-7"};
+const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
   //debug("smp=%d\n",cpu_count());
