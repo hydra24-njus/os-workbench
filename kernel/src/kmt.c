@@ -49,29 +49,12 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   debug("schedule from CPU(%d)\n",cpu_current());
-  task_t *now=current;
   task_t *next=current->next;
-  int cpu_next=(cpu_current()+1)%cpu_count();
   if(next==NULL){
     if(header->next==NULL)current=header;
     else current=header->next;
   }
   else current=next;
-
-  if(now==header){
-    //do nothing.
-  }
-  else{
-    task_t *prev=header;
-    while(prev->next!=now&&prev!=NULL)prev=prev->next;
-    panic_on(prev==NULL,"prev==NULL");
-    prev->next=now->next;//delete from current list.
-    //add to next cpu list.
-    now->next=NULL;
-    task_t *p=cpu_header[cpu_next];
-    while(p->next!=NULL)p=p->next;
-    p->next=now;
-  }
 
   for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
