@@ -4,6 +4,7 @@ typedef struct irq_handler{
   handler_t handler;
   struct irq_handler* next;
 }irq_handler_t;
+spinlock_t kmt_lock;
 void irq_guard_fun(){
   debug("should not reach here.\n");
   assert(0);
@@ -32,6 +33,7 @@ void fun2(){
 static void os_init() {
   pmm->init();
   kmt->init();
+  kmt->spin_init(&kmt_lock,"中断处理");
   kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun1,NULL);
   kmt->create(pmm->alloc(sizeof(task_t)),"fun2",fun2,NULL);
   //dev->init();
@@ -45,6 +47,7 @@ static void os_run() {
   while (1) ;
 }
 Context *os_trap(Event ev, Context *context){
+  kmt->spin_lock(&kmt_lock);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
@@ -55,6 +58,7 @@ Context *os_trap(Event ev, Context *context){
   }
   panic_on(!next,"returning NULL context");
   //panic_on(sane_context(next),"returning to invalid context");
+  kmt->spin_unlock(&kmt_lock);
   return next;
 }
 void debug_handler(){
