@@ -36,14 +36,14 @@ static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   spin_lock(&kmt_lock);
   debug("schedule from CPU(%d).",cpu_current());
-  //task_t *now=current;
+  task_t *now=current;
   task_t *next=current->next;
   if(next==NULL){
     if(header->next==NULL)current=header;
     else current=header->next;
   }
   else current=next;
-  /*if(header==now){
+  if(header==now){
     //do nothing.
   }
   else{
@@ -58,7 +58,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     task_t *p=cpu_header[i];
     while(p!=NULL)printf("%s->",p->name);
     printf("\n");
-  }*/
+  }
     spin_unlock(&kmt_lock);
   return current->context;
 }
@@ -70,7 +70,6 @@ void kmt_init(){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
     sprintf((char*)task->name,"idle-%d",i);
-    printf("%s\n",task->name);
     task->entry=NULL;
     task->next=NULL;
     cpu_header[i]=task;
