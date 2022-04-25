@@ -22,9 +22,9 @@ static void spin_lock(spinlock_t *lk){
   lk->cpu=cpu_current();
 }
 static void spin_unlock(spinlock_t *lk){
-  //int i=lk->intr;
+  int i=lk->intr;
   atomic_xchg(&(lk->locked),0);
-  //if(i)iset(true);
+  if(i)iset(true);
 }
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save from CPU(%d)\n",cpu_current());
@@ -34,8 +34,9 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
-  printf("ready for schedule.\n");
   spin_lock(&kmt_lock);
+  int ii=ienabled();
+  iset(false);
   debug("schedule from CPU(%d)\n",cpu_current());
   task_t *now=current;
   task_t *next=current->next;
@@ -66,6 +67,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
   }
+  if(ii)iset(true);
   spin_unlock(&kmt_lock);
   return current->context;
 }
