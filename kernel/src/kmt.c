@@ -42,11 +42,11 @@ static Context *kmt_schedule(Event ev,Context *context){
     else current=header->next;
   }
   else current=next;
-  for(int i=0;i<cpu_count();i++){
+  /*for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
     while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
-  }
+  }*/
   spin_unlock(&kmt_lock);
   return current->context;
 }
@@ -58,6 +58,7 @@ void kmt_init(){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
     sprintf((char*)task->name,"idle-%d",i);
+    debug("%s\n",task->name);
     task->entry=NULL;
     task->next=NULL;
     cpu_header[i]=task;
