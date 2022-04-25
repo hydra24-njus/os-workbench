@@ -34,6 +34,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
+  printf("ready for schedule.\n");
   spin_lock(&kmt_lock);
   debug("schedule from CPU(%d)\n",cpu_current());
   task_t *now=current;
