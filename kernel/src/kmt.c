@@ -47,7 +47,6 @@ static Context *kmt_schedule(Event ev,Context *context){
     while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
   }
-  printf("\n");
   spin_unlock(&kmt_lock);
   return current->context;
 }
