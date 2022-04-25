@@ -22,9 +22,9 @@ static void spin_lock(spinlock_t *lk){
   lk->cpu=cpu_current();
 }
 static void spin_unlock(spinlock_t *lk){
-  int i=lk->intr;
+  //int i=lk->intr;
   atomic_xchg(&(lk->locked),0);
-  if(i)iset(true);
+  //if(i)iset(true);
 }
 static Context *kmt_context_save(Event ev,Context *context){
   debug("save from CPU(%d)\n",cpu_current());
