@@ -13,8 +13,7 @@ struct task {
     void (*entry)(void*);
     Context   *context;
   };
-  uint8_t stack[4096-sizeof(uint32_t)];
-  uint8_t canary[4];
+  uint8_t stack[4096];
   };
 };
 
