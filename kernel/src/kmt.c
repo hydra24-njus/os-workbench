@@ -53,7 +53,7 @@ void kmt_init(){
     task->next=NULL;
     cpu_header[i]=task;
     current=cpu_header[i];
-    Area stack={&task->context+1,(&task)+sizeof(task_t)};
+    Area stack={&task->context+1,(task)+sizeof(task_t)};
     debug("Area=%x~%x\n",stack.start,stack.end);
     task->context=kcontext(stack,NULL,NULL);
   }
