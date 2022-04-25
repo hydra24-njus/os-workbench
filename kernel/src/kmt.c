@@ -52,27 +52,12 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   debug("schedule from CPU(%d),current=%s\n",cpu_current(),current->name);
-  task_t *next=cpu_header->next;
-  if(next==NULL)current=idle;
-  else{
-    panic_on(current==NULL,"current==NULL");
-    task_t *p=current->next;
-    if(current==idle)p=cpu_header->next;
-    while(p!=NULL){
-      if(p->status==READY)break;
-      p=p->next;
-    }
-    if(p==NULL)p=cpu_header;
-    while(p!=NULL){
-      if(p->status==READY)break;
-      p=p->next;
-    }
-    if(p==NULL)current=idle;
-    else{
-      p->status=RUNNING;
-      current=p;
-    }
+  if(current==idle)current=cpu_header;
+  while(current!=NULL){
+    if(current->status==READY)break;
+    current=current->next;
   }
+  current->status=RUNNING;
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
@@ -98,8 +83,11 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->status=READY;
   task->name=name;
   task->entry=entry;
-  task->next=cpu_header->next;
-  cpu_header->next=task;
+  if(cpu_header==NULL)cpu_header=task;
+  else{
+    task->next=cpu_header->next;
+    cpu_header->next=task;
+  }
   Area stack={&task->context+1,task+1};
   task->context=kcontext(stack,entry,arg);
 
