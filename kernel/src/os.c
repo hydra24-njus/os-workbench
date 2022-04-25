@@ -39,7 +39,7 @@ static void os_run() {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
   iset(true);
-  while (1) ;
+  while (1) debug("%d\n",x);
 }
 Context *os_trap(Event ev, Context *context){
   Context *next=NULL;
