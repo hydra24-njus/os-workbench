@@ -45,7 +45,7 @@ static Context *kmt_schedule(Event ev,Context *context){
 
 void kmt_init(){
   spin_init(&kmt_lock,"kmt_lock");
-  debug("smp=%d\n",cpu_count());
+  //debug("smp=%d\n",cpu_count());
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
@@ -54,8 +54,7 @@ void kmt_init(){
     task->next=NULL;
     cpu_header[i]=task;
     current=cpu_header[i];
-    Area stack={&task->context+1,(task)+1};
-    debug("Area=%x~%x,%d\n",stack.start,stack.end,stack.end-stack.start);
+    Area stack={&task->context+1,task+1};
     task->context=kcontext(stack,NULL,NULL);
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
@@ -70,7 +69,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->next=cpu_header[cpu_current()]->next;
   cpu_header[cpu_current()]->next=task;
   Area stack={&task->context+1,task+1};
-  debug("Area=%x~%x,%d\n",stack.start,stack.end,stack.end-stack.start);
   task->context=kcontext(stack,entry,arg);
   return 0;
 }
