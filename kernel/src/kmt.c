@@ -76,7 +76,6 @@ void kmt_init(){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
     task->name=name[i];
-    debug("%s\n",task->name);
     task->entry=NULL;
     task->next=NULL;
     cpu_header[i]=task;
