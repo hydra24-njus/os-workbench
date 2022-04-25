@@ -85,7 +85,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
 
   for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
-    while(p!=NULL)printf("%s->",p->name);
+    while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
   }
   printf("\n");
