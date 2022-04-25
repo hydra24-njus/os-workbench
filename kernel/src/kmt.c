@@ -36,24 +36,12 @@ static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   spin_lock(&kmt_lock);
   debug("schedule from CPU(%d).",cpu_current());
-  task_t *now=current;
   task_t *next=current->next;
   if(next==NULL){
     if(header->next==NULL)current=header;
     else current=header->next;
   }
   else current=next;
-  if(header==now){
-    //do nothing.
-  }
-  else{
-    task_t *p=header;
-    while(p->next!=now)p=p->next;
-    p->next=now->next;
-    int xcpu=(cpu_current()+1)%cpu_count();
-    now->next=cpu_header[xcpu]->next;
-    cpu_header[xcpu]->next=now;
-  }
   for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
     while(p!=NULL)printf("%s->",p->name);
