@@ -57,7 +57,15 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(current->status==READY)break;
     current=current->next;
   }
-  current->status=RUNNING;
+  if(current==NULL){
+    current=cpu_header;
+    while(current!=NULL){
+      if(current->status==READY)break;
+      current=current->next;
+    }
+    if(current==NULL)current=idle;
+  }
+  if(current!=idle)current->status=RUNNING;
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
