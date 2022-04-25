@@ -17,8 +17,8 @@ static void spin_init(spinlock_t *lk,const char *name){
 static void spin_lock(spinlock_t *lk){
   int i=ienabled();
   iset(false);
-  while(atomic_xchg(&(lk->locked),1));
   lk->intr=i;
+  while(atomic_xchg(&(lk->locked),1));
   lk->cpu=cpu_current();
 }
 static void spin_unlock(spinlock_t *lk){
