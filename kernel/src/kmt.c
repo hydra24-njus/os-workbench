@@ -83,19 +83,9 @@ static void sem_init(sem_t *sem,const char *name,int value){
 }
 static void sem_wait(sem_t *sem){
   debug("sem_wait\n");
-  spin_lock(&sem->lock);
-  if(sem->value<=0){
-    //sleep;
-    current->status=1;//stand for sleep.
-  }
-  sem->value--;
-  spin_unlock(&sem->lock);
 }
 static void sem_signal(sem_t *sem){
   debug("sem_signal\n");
-  spin_lock(&sem->lock);
-  sem->value++;
-  spin_unlock(&sem->lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
