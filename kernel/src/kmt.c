@@ -52,9 +52,12 @@ static Context *kmt_schedule(Event ev,Context *context){
     task_t *prev=header;
     while(prev->next!=now&&prev!=NULL)prev=prev->next;
     panic_on(prev==NULL,"prev==NULL");
-    prev->next=now->next;
-    now->next=cpu_header[cpu_next]->next;
-    cpu_header[cpu_next]->next=now;
+    prev->next=now->next;//delete from current list.
+    //add to next cpu list.
+    now->next=NULL;
+    task_t *p=cpu_header[cpu_next];
+    while(p->next!=NULL)p=p->next;
+    p->next=now;
   }
 
   for(int i=0;i<cpu_count();i++){
