@@ -27,7 +27,7 @@ static void spin_unlock(spinlock_t *lk){
   if(i)iset(true);
 }
 static Context *kmt_context_save(Event ev,Context *context){
-  debug("save,%d\n",cpu_current());
+  debug("save from CPU(%d)\n",cpu_current());
   //TODO():save context
   current->context=context;
   return NULL;
@@ -35,7 +35,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   spin_lock(&kmt_lock);
-  debug("schedule,");
+  debug("schedule from CPU(%d).",cpu_current());
   current=current->next;
   if(current==NULL)current=header;
   debug("%s\n",current->name);
