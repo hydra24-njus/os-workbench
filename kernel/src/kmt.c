@@ -39,7 +39,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   current=current->next;
   if(current==NULL)current=header;
   debug("%s\n",current->name);
-  return current->context+1;
+  return current->context;
 }
 
 void kmt_init(){
@@ -61,7 +61,7 @@ void kmt_init(){
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  debug("create\n");
+  debug("create,%s\n",name);
   task->status=READY;
   task->name=name;
   task->entry=entry;
