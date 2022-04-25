@@ -67,7 +67,7 @@ void kmt_init(){
     task->context=kcontext(stack,NULL,NULL);
   }
   task_t *p=cpu_header[0];
-  while(p!=NULL)printf("%s->",p->name);
+  while(p!=NULL){printf("%s->",p->name);p=p->next;}
   printf("\n");
   printf("\n");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
