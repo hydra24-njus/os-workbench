@@ -84,15 +84,12 @@ static void sem_init(sem_t *sem,const char *name,int value){
 static void sem_wait(sem_t *sem){
   debug("sem_wait\n");
   spin_lock(&sem->lock);
-  bool flag=false;
   if(sem->value<=0){
     //sleep;
-    flag=true;
     current->status=1;//stand for sleep.
   }
   sem->value--;
   spin_unlock(&sem->lock);
-  if(flag)yield();
 }
 static void sem_signal(sem_t *sem){
   debug("sem_signal\n");
