@@ -57,7 +57,9 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(current->status==READY)break;
     current=current->next;
   }
+
   if(current==NULL){
+    debug("NULL simple.");
     current=cpu_header;
     while(current!=NULL){
       if(current->status==READY)break;
