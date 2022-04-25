@@ -34,10 +34,16 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
+  //spin_lock(&kmt_lock);
   debug("schedule from CPU(%d).",cpu_current());
-  current=current->next;
-  if(current==NULL)current=header;
-  debug("%s\n",current->name);
+  //task_t *now=current;
+  task_t *next=current->next;
+  if(next==NULL){
+    if(header->next==NULL)current=header;
+    else current=header->next;
+  }
+  else current=next;
+  //spin_unlock(&kmt_lock);
   return current->context;
 }
 
