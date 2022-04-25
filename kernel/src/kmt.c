@@ -34,6 +34,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
+  spin_lock(&kmt_lock);
   debug("schedule from CPU(%d)\n",cpu_current());
   task_t *now=current;
   task_t *next=current->next;
@@ -64,6 +65,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
   }
+  spin_unlock(&kmt_lock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
