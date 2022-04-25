@@ -52,7 +52,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   debug("schedule from CPU(%d),current=%s.",cpu_current(),current->name);
-  if(current==idle)current=cpu_header;
+  if(current==idle){debug("idle simple.");current=cpu_header;}
   while(current!=NULL){
     if(current->status==READY)break;
     current=current->next;
