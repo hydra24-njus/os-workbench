@@ -89,11 +89,12 @@ void kmt_init(){
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   debug("create,%s\n",name);
+  int x=rand()%cpu_count();
   task->status=READY;
   task->name=name;
   task->entry=entry;
-  task->next=cpu_header[cpu_current()]->next;
-  cpu_header[cpu_current()]->next=task;
+  task->next=cpu_header[x]->next;
+  cpu_header[x]->next=task;
   Area stack={&task->context+1,task+1};
   task->context=kcontext(stack,entry,arg);
 
