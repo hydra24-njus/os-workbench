@@ -98,7 +98,12 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   }
   Area stack={&task->context+1,task+1};
   task->context=kcontext(stack,entry,arg);
-
+  task_t *p=cpu_header;
+  while(p!=NULL){
+    debug("%s->",p->name);
+    p=p->next;
+  }
+  debug("\n");
   return 0;
 }
 static void teardown(task_t *task){

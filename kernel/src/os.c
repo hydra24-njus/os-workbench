@@ -20,13 +20,13 @@ void test_kmt(){
 }
 void fun1(){
     while (1) {
-    printf("Thread-%s on CPU #%d\n", "func1", cpu_current());
+    //printf("Thread-%s on CPU #%d\n", "func1", cpu_current());
     for (int volatile i = 0; i < 100000; i++) ;
   }
 }
 void fun2(){
     while (1) {
-    printf("Thread-%s on CPU #%d\n", "func2", cpu_current());
+    //printf("Thread-%s on CPU #%d\n", "func2", cpu_current());
     for (int volatile i = 0; i < 100000; i++) ;
   }
 }
