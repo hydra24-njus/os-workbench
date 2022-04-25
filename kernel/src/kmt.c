@@ -42,11 +42,11 @@ static Context *kmt_schedule(Event ev,Context *context){
     else current=header->next;
   }
   else current=next;
-  /*for(int i=0;i<cpu_count();i++){
+  for(int i=0;i<cpu_count();i++){
     task_t *p=cpu_header[i];
     while(p!=NULL){printf("%s->",p->name);p=p->next;}
     printf("\n");
-  }*/
+  }
   spin_unlock(&kmt_lock);
   return current->context;
 }
@@ -68,11 +68,6 @@ void kmt_init(){
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
-  for(int i=0;i<cpu_count();i++){
-    task_t *p=cpu_header[i];
-    while(p!=NULL){printf("%s->",p->name);p=p->next;}
-    printf("\n");
-  }
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
