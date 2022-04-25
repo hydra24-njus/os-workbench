@@ -8,6 +8,14 @@ spinlock_t kmt_lock;
 *cpu_currents[i] = idle -> proc0 -> proc1...
   ------------------------------------------------*/
 
+int holding(struct spinlock *lock){
+  int r = 0;
+  int i = ienabled();
+  iset(false);
+  r  = (lock->locked) && (lock->cpu == cpu_current());
+  if(i == 1) iset(true);
+  return r;
+}
 static void spin_init(spinlock_t *lk,const char *name){
   strcpy(lk->name,name);
   lk->locked=0;
@@ -17,11 +25,18 @@ static void spin_init(spinlock_t *lk,const char *name){
 static void spin_lock(spinlock_t *lk){
   int i=ienabled();
   iset(false);
-  lk->intr=i;
+  panic_on(holding(lk), "lock tried to acquire itself while holding.\n");
   while(atomic_xchg(&(lk->locked),1));
+  __sync_synchronize();
+  lk->intr=i;
   lk->cpu=cpu_current();
+  panic_on(ienabled() != 0, "cli() failed in kmt_lock!\n");
+  panic_on(lk->locked != 1, "lock failed!\n");
 }
 static void spin_unlock(spinlock_t *lk){
+  panic_on(!holding(lk), "lock tried to release itself without holding.\n");
+  lk->cpu = -1;
+
   int i=lk->intr;
   atomic_xchg(&(lk->locked),0);
   if(i)iset(true);
