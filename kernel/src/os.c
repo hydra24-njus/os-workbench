@@ -19,11 +19,11 @@ void test_kmt(){
 }
 static int x=0;
 void fun1(){
-  for(int i=0;i<100000000;i++)x++;
+  for(int i=0;i<100000000;i++)x+=1;
   while(1);
 }
 void fun2(){
-  for(int i=0;i<100000000;i++)x++;
+  for(int i=0;i<100000000;i++)x+=1;
   while(1);
 }
 static void os_init() {
