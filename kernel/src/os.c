@@ -30,12 +30,26 @@ void fun2(){
     for (int volatile i = 0; i < 100000; i++) ;
   }
 }
+void fun3(){
+    while (1) {
+    printf("Thread-%s on CPU #%d\n", "func3", cpu_current());
+    for (int volatile i = 0; i < 100000; i++) ;
+  }
+}
+void fun4(){
+    while (1) {
+    printf("Thread-%s on CPU #%d\n", "func4", cpu_current());
+    for (int volatile i = 0; i < 100000; i++) ;
+  }
+}
 static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
   kmt->create(pmm->alloc(sizeof(task_t)),"fun1",fun1,NULL);
   kmt->create(pmm->alloc(sizeof(task_t)),"fun2",fun2,NULL);
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun3",fun3,NULL);
+  kmt->create(pmm->alloc(sizeof(task_t)),"fun4",fun4,NULL);
   //dev->init();
   debug("init finished.\n");
 }
