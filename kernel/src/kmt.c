@@ -38,6 +38,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   //debug("schedule\n");
   current=current->next;
   if(current==NULL)current=header;
+  debug("%s\n",current->name);
   return current->context;
 }
 
