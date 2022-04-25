@@ -39,7 +39,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   current=current->next;
   if(current==NULL)current=header;
   debug("%s\n",current->name);
-  return current->context;
+  return current->context+1;
 }
 
 void kmt_init(){
