@@ -34,7 +34,7 @@ static void spin_lock(spinlock_t *lk){
   panic_on(lk->locked != 1, "lock failed!\n");
 }
 static void spin_unlock(spinlock_t *lk){
-  panic_on(!holding(lk), "lock tried to release itself without holding.\n");
+  r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
   lk->cpu = -1;
 
   int i=lk->intr;
