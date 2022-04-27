@@ -8,6 +8,7 @@ struct task {
   union{
     struct {
     int status;
+    struct semaphore *sem;
     const char *name;
     struct task *next;
     void (*entry)(void*);
