@@ -66,7 +66,6 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p!=NULL)current=p;
   }
   if(p==NULL)current=idle;
-  printf("%d\n",p->status);
   panic_on(p->status!=READY&&p->status!=IDLE,"schedule error");
   if(p!=idle)current->status=RUNNING;
   return current->context;
