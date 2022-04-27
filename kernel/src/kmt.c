@@ -143,7 +143,7 @@ static void sem_signal(sem_t *sem){
     if(p->sem == sem){
       p->status = READY;
       p->sem = NULL;
-      break;
+      //break;
     }
     p = p->next;
   }
