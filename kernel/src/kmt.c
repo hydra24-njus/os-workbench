@@ -7,6 +7,10 @@ task_t *cpu_header;
 /*------------------------------------------------
 *cpu_currents[i] = idle -> proc0 -> proc1...
   ------------------------------------------------*/
+#ifdef LOCAL_MACHINE
+  spinlock_t infolock;
+#endif
+
 
 int holding(struct spinlock *lock){
   int r = 0;
