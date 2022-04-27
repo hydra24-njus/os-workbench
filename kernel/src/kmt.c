@@ -41,7 +41,7 @@ static void spin_unlock(spinlock_t *lk){
   if(i)iset(true);
 }
 static Context *kmt_context_save(Event ev,Context *context){
-  debug("save from CPU(%d)\n",cpu_current());
+  //debug("save from CPU(%d)\n",cpu_current());
   //TODO():save context
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
