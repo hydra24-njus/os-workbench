@@ -106,6 +106,7 @@ static int input_init(device_t *dev) {
 
 static int input_read(device_t *dev, int offset, void *buf, int count) {
   struct input_event ev = pop_event(dev->ptr);
+  panic_on(is_empty(dev->ptr), "input queue empty");
   if (count >= sizeof(ev)) {
     memcpy(buf, &ev, sizeof(ev));
     return sizeof(ev);
