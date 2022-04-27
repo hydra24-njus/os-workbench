@@ -29,7 +29,7 @@ static void push_event(input_t *in, struct input_event ev) {
 static struct input_event pop_event(input_t *in) {
   kmt->sem_wait(&in->event_sem);
   kmt->spin_lock(&in->lock);
-  panic_on(is_empty(in), "input queue empty");
+  //panic_on(is_empty(in), "input queue empty");
   int idx = in->front;
   in->front = (in->front + 1) % NEVENTS;
   struct input_event ret = in->events[idx];
