@@ -35,7 +35,7 @@ static void spin_lock(spinlock_t *lk){
   lk->intr=i;
   lk->cpu=cpu_current();
   panic_on(ienabled() != 0, "cli() failed in kmt_lock!\n");
-  panic_on(lk->locked != 1, "lock failed!\n");
+  r_panic_on(lk->locked != 1, "lock(%s) failed!\n",lk->name);
 }
 static void spin_unlock(spinlock_t *lk){
   r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
