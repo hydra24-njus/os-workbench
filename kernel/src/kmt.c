@@ -120,6 +120,7 @@ static void sem_init(sem_t *sem,const char *name,int value){
 }
 static void sem_wait(sem_t *sem){
   spin_lock(&sem->lock);
+  debug("sem_wait\n");
   bool flag =false;
   if(sem->count <= 0){
     flag = true;
@@ -132,6 +133,7 @@ static void sem_wait(sem_t *sem){
 }
 static void sem_signal(sem_t *sem){
   spin_lock(&sem->lock);
+  debug("sem_signal\n");
   sem->count++;
   //panic_on(sem->count>sem->value,"sem error");
   task_t *p = cpu_header;
