@@ -127,12 +127,12 @@ static void sem_init(sem_t *sem,const char *name,int value){
 static void sem_wait(sem_t *sem){
   spin_lock(&sem->lock);
   bool flag =false;
-  if(sem->count <= 0){
+  sem->count--;
+  if(sem->count < 0){
     flag = true;
     current->sem=sem;
     current->status = SLEEPING; 
   }
-  sem->count--;
   spin_unlock(&sem->lock);
   if(flag)yield();
 }
