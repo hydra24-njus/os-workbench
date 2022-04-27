@@ -43,7 +43,6 @@ typedef unsigned long int uintptr_t;
   #define r_panic_on(cond, ...) \
     c_panic_on(RED, cond, __VA_ARGS__);
 
-
   #define c_panic_on(color, cond, ...) \
   do{ \
     if(cond) {\
