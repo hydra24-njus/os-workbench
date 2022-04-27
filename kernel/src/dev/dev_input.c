@@ -18,7 +18,7 @@ static int is_empty(input_t *in) {
 }
 
 static void push_event(input_t *in, struct input_event ev) {
-  debug("push\n");
+  debug("push\n\n");
   kmt->spin_lock(&in->lock);
   in->events[in->rear] = ev;
   in->rear = (in->rear + 1) % NEVENTS;
