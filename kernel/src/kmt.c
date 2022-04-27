@@ -115,26 +115,25 @@ static void teardown(task_t *task){
 static void sem_init(sem_t *sem,const char *name,int value){
   debug("sem_init,%s\n",name);
   strcpy(sem->name,name);
-  sem->value=value;
+  sem->value=value;sem->count=value;
   spin_init(&sem->lock,name);
 }
 static void sem_wait(sem_t *sem){
   spin_lock(&sem->lock);
-  debug("sem_wait\n");
   bool flag =false;
-  if(sem->value <= 0){
+  if(sem->count <= 0){
     flag = true;
     current->sem=sem;
     current->status = SLEEPING; 
   }
-  sem->value--;
+  sem->count--;
   spin_unlock(&sem->lock);
   if(flag)yield();
 }
 static void sem_signal(sem_t *sem){
   spin_lock(&sem->lock);
   debug("sem_signal\n");
-  sem->value++;
+  sem->count++;
   task_t *p = cpu_header;
   while(p) {
     if(p->sem == sem){

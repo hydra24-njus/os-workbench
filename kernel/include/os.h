@@ -28,7 +28,7 @@ struct spinlock {
 
 struct semaphore {
   // TODO
-  int value;
+  int value;int count;
   struct spinlock lock;
   char *name;
   int cpu;
