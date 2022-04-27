@@ -46,7 +46,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   //TODO():save context
   panic_on(current==NULL,"current==NULL");
   current->context=context;
-  if(current->status!=IDLE)current->status=READY;
+  if(current->status==RUNNING)current->status=READY;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
@@ -124,7 +124,7 @@ static void sem_wait(sem_t *sem){
 
 }
 static void sem_signal(sem_t *sem){
-  
+
 }
 MODULE_DEF(kmt) = {
  // TODO
