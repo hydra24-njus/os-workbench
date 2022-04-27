@@ -18,7 +18,7 @@ static int is_empty(input_t *in) {
 }
 
 static void push_event(input_t *in, struct input_event ev) {
-  debug("push");
+  debug("push\n");
   kmt->spin_lock(&in->lock);
   in->events[in->rear] = ev;
   in->rear = (in->rear + 1) % NEVENTS;
@@ -28,7 +28,7 @@ static void push_event(input_t *in, struct input_event ev) {
 }
 
 static struct input_event pop_event(input_t *in) {
-  debug("pop");
+  debug("pop\n");
   kmt->sem_wait(&in->event_sem);
   kmt->spin_lock(&in->lock);
   panic_on(is_empty(in), "input queue empty");
