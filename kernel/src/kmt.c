@@ -125,7 +125,7 @@ static void sem_wait(sem_t *sem){
   spin_lock(&sem->lock);
   debug("sem_wait\n");
   bool flag =false;
-  if(sem->value <= 0){
+  if(sem->value < 0){
     flag = true;
     current->sem=sem;
     current->status = SLEEPING; 

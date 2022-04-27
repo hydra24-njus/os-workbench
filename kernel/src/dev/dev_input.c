@@ -105,7 +105,6 @@ static int input_init(device_t *dev) {
 }
 
 static int input_read(device_t *dev, int offset, void *buf, int count) {
-  printf("read\n");
   struct input_event ev = pop_event(dev->ptr);
   if (count >= sizeof(ev)) {
     memcpy(buf, &ev, sizeof(ev));
