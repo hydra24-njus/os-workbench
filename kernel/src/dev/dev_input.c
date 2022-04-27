@@ -59,8 +59,11 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
           int alt   = in->alt_down[0]   || in->alt_down[1];
 
           if (ctrl || alt) {
+            int i=in->rear;
             push_event(in, event(ctrl, alt, ch));
+            assert(i==in->rear);
           } else {
+            int i=in->rear;
             if (ch >= 'a' && ch <= 'z') {
               shift ^= in->capslock;
             }
@@ -69,6 +72,7 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
             } else {
               push_event(in, event(0, 0, ch));
             }
+            assert(i==in->rear);
           }
         }
     }
@@ -106,7 +110,6 @@ static int input_init(device_t *dev) {
 
 static int input_read(device_t *dev, int offset, void *buf, int count) {
   struct input_event ev = pop_event(dev->ptr);
-  panic_on(is_empty(dev->ptr), "input queue empty");
   if (count >= sizeof(ev)) {
     memcpy(buf, &ev, sizeof(ev));
     return sizeof(ev);
