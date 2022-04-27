@@ -66,7 +66,8 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p!=NULL)current=p;
   }
   if(p==NULL)current=idle;
-  else current->status=RUNNING;
+  panic_on(p->status!=RUNNING&&p->status!=IDLE,"schedule error");
+  if(p!=idle)current->status=RUNNING;
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
