@@ -18,6 +18,7 @@ static int is_empty(input_t *in) {
 }
 
 static void push_event(input_t *in, struct input_event ev) {
+  debug("push");
   kmt->spin_lock(&in->lock);
   in->events[in->rear] = ev;
   in->rear = (in->rear + 1) % NEVENTS;
@@ -27,6 +28,7 @@ static void push_event(input_t *in, struct input_event ev) {
 }
 
 static struct input_event pop_event(input_t *in) {
+  debug("pop");
   kmt->sem_wait(&in->event_sem);
   kmt->spin_lock(&in->lock);
   panic_on(is_empty(in), "input queue empty");
@@ -100,7 +102,7 @@ static int input_init(device_t *dev) {
   kmt->sem_init(&sem_kbdirq, "keyboard-interrupt", 0);
 
   os->on_irq(0, EVENT_IRQ_IODEV, input_notify);
-  //os->on_irq(0, EVENT_IRQ_TIMER, input_notify);
+  os->on_irq(0, EVENT_IRQ_TIMER, input_notify);
   return 0;
 }
 
