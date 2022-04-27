@@ -89,6 +89,9 @@ void kmt_init(){
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
+  #ifdef LOCAL_MACHINE
+  spin_init(&infolock,"infolock");
+  #endif
   debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
