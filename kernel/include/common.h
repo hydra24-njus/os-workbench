@@ -56,5 +56,6 @@ typedef unsigned long int uintptr_t;
 
 #else
   #define debug(...)
+  #define r_panic_on(...)
 #endif
 
