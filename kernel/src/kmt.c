@@ -25,7 +25,7 @@ static void spin_init(spinlock_t *lk,const char *name){
 static void spin_lock(spinlock_t *lk){
   int i=ienabled();
   iset(false);
-  r_panic_on(holding(lk), "lock(%s) tried to acquire itself while holding.\n",lk->name);
+  //r_panic_on(holding(lk), "lock(%s) tried to acquire itself while holding.\n",lk->name);
   while(atomic_xchg(&(lk->locked),1));
   __sync_synchronize();
   lk->intr=i;
@@ -34,7 +34,7 @@ static void spin_lock(spinlock_t *lk){
   panic_on(lk->locked != 1, "lock failed!\n");
 }
 static void spin_unlock(spinlock_t *lk){
-  r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
+  //r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
   lk->cpu = -1;
 
   int i=lk->intr;
