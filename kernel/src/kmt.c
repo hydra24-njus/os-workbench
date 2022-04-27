@@ -121,31 +121,10 @@ static void sem_init(sem_t *sem,const char *name,int value){
   spin_init(&sem->lock,name);
 }
 static void sem_wait(sem_t *sem){
-  spin_lock(&sem->lock);
-  bool flag =false;
-  if(sem->count <= 0){
-    flag = true;
-    current->sem=sem;
-    current->status = SLEEPING; 
-  }
-  sem->count--;
-  spin_unlock(&sem->lock);
-  if(flag)yield();
+
 }
 static void sem_signal(sem_t *sem){
-  spin_lock(&sem->lock);
-  sem->count++;
-  panic_on(sem->count>sem->value,"sem error");
-  task_t *p = cpu_header;
-  while(p) {
-    if(p->sem == sem){
-      p->status = READY;
-      p->sem = NULL;
-      break;
-    }
-    p = p->next;
-  }
-  spin_unlock(&sem->lock);
+  
 }
 MODULE_DEF(kmt) = {
  // TODO
