@@ -31,7 +31,30 @@ typedef unsigned long int uintptr_t;
 #endif
 
 #ifdef LOCAL_MACHINE
+#define RED 31
+#define GREEN 32
+#define YELLOW 33
+#define BLUE 34
+#define PURPLE 35
+#define CYAN 36
+#define WHITE 37
+
   #define debug(...) printf(__VA_ARGS__)
+  #define r_panic_on(cond, ...) \
+    c_panic_on(RED, cond, __VA_ARGS__);
+
+
+  #define c_panic_on(color, cond, ...) \
+  do{ \
+    if(cond) {\
+        printf("\033[36m[cpu(%d)]:\033[0m", cpu_current());\
+        printf("\033[%dm", color); \
+        printf(__VA_ARGS__); \
+        printf("\033[0m"); \
+        halt(1);\
+    }\
+  }while(0); \
+
 #else
   #define debug(...)
 #endif
