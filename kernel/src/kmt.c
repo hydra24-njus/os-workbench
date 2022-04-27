@@ -134,7 +134,7 @@ static void sem_wait(sem_t *sem){
 static void sem_signal(sem_t *sem){
   spin_lock(&sem->lock);
   sem->count++;
-  panic_on(sem->count>sem->value,"sem error");
+  //panic_on(sem->count>sem->value,"sem error");
   task_t *p = cpu_header;
   while(p) {
     if(p->sem == sem){
