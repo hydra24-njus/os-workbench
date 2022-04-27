@@ -59,11 +59,8 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
           int alt   = in->alt_down[0]   || in->alt_down[1];
 
           if (ctrl || alt) {
-            int i=in->rear;
             push_event(in, event(ctrl, alt, ch));
-            panic_on(i!=in->rear,"iii");
           } else {
-            int i=in->rear;
             if (ch >= 'a' && ch <= 'z') {
               shift ^= in->capslock;
             }
@@ -72,7 +69,6 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
             } else {
               push_event(in, event(0, 0, ch));
             }
-            panic_on(i!=in->rear,"iii");
           }
         }
     }
