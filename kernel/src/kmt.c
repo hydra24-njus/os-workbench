@@ -25,7 +25,7 @@ static void spin_init(spinlock_t *lk,const char *name){
 static void spin_lock(spinlock_t *lk){
   int i=ienabled();
   iset(false);
-  panic_on(holding(lk), "lock tried to acquire itself while holding.\n");
+  panic_on(holding(lk),lk->name);
   while(atomic_xchg(&(lk->locked),1));
   __sync_synchronize();
   lk->intr=i;
