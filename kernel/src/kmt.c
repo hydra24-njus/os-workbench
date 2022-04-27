@@ -138,7 +138,7 @@ static void sem_signal(sem_t *sem){
   spin_lock(&sem->lock);
   debug("sem_signal\n");
   sem->value++;
-  task_t *p = cpu_header->next;
+  task_t *p = cpu_header;
   while(p) {
     if(p->sem == sem){
       p->status = READY;
