@@ -61,7 +61,7 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
           if (ctrl || alt) {
             int i=in->rear;
             push_event(in, event(ctrl, alt, ch));
-            assert(i==in->rear);
+            panic_on(i==in->rear,"iii");
           } else {
             int i=in->rear;
             if (ch >= 'a' && ch <= 'z') {
@@ -72,7 +72,7 @@ static void input_keydown(device_t *dev, AM_INPUT_KEYBRD_T key) {
             } else {
               push_event(in, event(0, 0, ch));
             }
-            assert(i==in->rear);
+            panic_on(i==in->rear,"iii");
           }
         }
     }
