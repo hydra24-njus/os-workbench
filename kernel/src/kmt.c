@@ -127,7 +127,7 @@ static void sem_wait(sem_t *sem){
     current->sem=sem;
     current->status = SLEEPING; 
   }
-  else sem->count--;
+  sem->count--;
   spin_unlock(&sem->lock);
   if(flag)yield();
 }
