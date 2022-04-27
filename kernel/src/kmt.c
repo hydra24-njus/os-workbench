@@ -51,24 +51,22 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
-  debug("schedule from CPU(%d),current=%s.",cpu_current(),current->name);
-  if(current==idle){debug("idle simple.");current=cpu_header;}
-  else current=current->next;
-  while(current!=NULL){
-    if(current->status==READY)break;
-    current=current->next;
+  task_t *p=current;
+  while(p!=NULL){
+    p=p->next;
+    if(p->status==READY)break;
   }
-  if(current==NULL){
-    debug("NULL simple.");
-    current=cpu_header;
-    while(current!=NULL){
-      if(current->status==READY)break;
-      current=current->next;
+  if(p!=NULL)current=p;
+  else{
+    p=cpu_header;
+    while(p!=NULL){
+      p=p->next;
+      if(p->status==READY)break;
     }
-    if(current==NULL)current=idle;
+    if(p!=NULL)current=p;
   }
-  if(current!=idle)current->status=RUNNING;
-  debug("new schedule=%s\n",current->name);
+  if(p==NULL)current=idle;
+  else current->status=RUNNING;
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
