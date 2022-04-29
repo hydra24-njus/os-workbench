@@ -1,12 +1,14 @@
 #include <common.h>
 #include <klib.h>
 
-int main() {
+void test(){
   task_t *p=NULL;
-  if(p)printf("1\n");
+  if(p==NULL)printf("1\n");
+}
+int main() {
   ioe_init();
   cte_init(os->trap);
   os->init();
-  mpe_init(os->run);
+  mpe_init(test);
   return 1;
 }
