@@ -29,7 +29,6 @@ typedef unsigned long int uintptr_t;
 #define HEAP_SIZE (1 << 27)
 #define cpu_current() 1
 #endif
-
 #ifdef LOCAL_MACHINE
 #define RED 31
 #define GREEN 32

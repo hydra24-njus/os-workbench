@@ -1,4 +1,4 @@
-#include <os.h>
+#include<common.h>
 #include <lock.h>
 //以下内容参考xv6实现
 void pmm_spinlock_init(pmm_spinlock_t *lk){
