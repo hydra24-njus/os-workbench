@@ -4,9 +4,9 @@
 int main() {
   ioe_init();
   cte_init(os->trap);
-  os->init();
-  task_t *p=NULL;
+    task_t *p=NULL;
   if(p)printf("1\n");
+  os->init();
   mpe_init(os->run);
   return 1;
 }
