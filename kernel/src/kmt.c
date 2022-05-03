@@ -73,7 +73,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p==NULL)p=idle;
   }
   current=p;
-  debug("schedule:%s\n",current->name);
+  debug("(%d)schedule:%s\n",cpu_current(),current->name);
   spin_unlock(&tasklock);
   return current->context;
 }
@@ -132,7 +132,7 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-  debug("sem_wait\n");
+  debug("(%d)sem_wait\n",cpu_current());
   spin_lock(&tasklock);
   spin_lock(&sem->lock);
   int flag=0;
@@ -149,7 +149,7 @@ static void sem_wait(sem_t *sem){
   }
 }
 static void sem_signal(sem_t *sem){
-  debug("sem_signal\n");
+  debug("(%d)sem_signal\n",cpu_current());
   spin_lock(&tasklock);
   spin_lock(&sem->lock);
   sem->value++;
