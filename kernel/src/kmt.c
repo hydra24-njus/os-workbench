@@ -54,13 +54,16 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("kmt_context_save\n");
   r_panic_on(current==NULL,"current==NULL");
+  spin_lock(&task_lock);
   current->context=context;
   if(current->status==RUNNING)current->status=READY;
+  spin_unlock(&task_lock);
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   debug("kmt_schedule:");
   //TODO():线程调度。
+  spin_lock(&task_lock);
   task_t *p=cpu_header;
   while(p!=NULL){
     if(p->status==READY)break;
@@ -93,6 +96,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
 
   }
+  spin_unlock(&task_lock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
