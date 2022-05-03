@@ -15,33 +15,14 @@ static irq_handler_t irq_guard={
   .handler=(handler_t)irq_guard_fun,
   .next=NULL
 };
-void test_kmt(){
-  debug("xxx\n");
-}
-#define P kmt->sem_wait
-#define V kmt->sem_signal
-sem_t empty,fill;
-void producer(void *arg) { while (1) { P(&empty); printf("%d",arg); V(&fill);  } }
-void consumer(void *arg) { while (1) { P(&fill);  printf("%d",arg); V(&empty); } }
-void* task_alloc(){
-  return pmm->alloc(sizeof(task_t));
-}
 
 static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
+  dev->init();
   //for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
   
-  #ifdef LOCAL_MACHINE
-  dev->init();
-  kmt->sem_init(&empty, "empty", 2);  // 缓冲区大小为 5
-  kmt->sem_init(&fill,  "fill",  0);
-  for (uintptr_t i = 0; i < 8; i++) // 4 个生产者
-    kmt->create(task_alloc(), "producer", producer, (void*)i);
-  for (uintptr_t i = 8; i < 9; i++) // 5 个消费者
-    kmt->create(task_alloc(), "consumer", consumer, (void*)i);
-  #endif
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
