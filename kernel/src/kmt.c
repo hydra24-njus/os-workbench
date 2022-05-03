@@ -61,7 +61,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
-  debug("kmt_schedule\n");
+  debug("kmt_schedule:");
   //TODO():线程调度。
   task_t *p=cpu_header;
   while(p->status!=READY){
@@ -69,6 +69,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   }
   if(p==NULL)p=idle;
   current=p;
+  debug("%s\n",current->name);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
