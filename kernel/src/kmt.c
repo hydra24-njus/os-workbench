@@ -144,7 +144,7 @@ static void sem_wait(sem_t *sem){
   }
   spin_unlock(&kmtlock);
   spin_unlock(&sem->lock);
-  if(flag==0){
+  if(flag==1){
     yield();
   }
 }
