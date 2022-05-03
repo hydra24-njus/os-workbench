@@ -56,6 +56,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   spin_lock(&tasklock);
+  debug("schedule\n");
   task_t *p=current->next;
   if(current==idle){
     p=cpu_header;
