@@ -32,9 +32,9 @@ static void os_init() {
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
   //for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
-  dev->init();
   
   #ifdef LOCAL_MACHINE
+  dev->init();
   kmt->sem_init(&empty, "empty", 2);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
   for (uintptr_t i = 0; i < 8; i++) // 4 个生产者
