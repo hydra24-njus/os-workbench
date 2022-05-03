@@ -29,7 +29,7 @@ static void os_init() {
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
   //dev->init();
-  for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
+  kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)0);
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
