@@ -147,7 +147,6 @@ static void sem_wait(sem_t *sem){
   kmt->spin_unlock(&kmtlock);
   if(flag){
     yield();
-    //while(current->status!=READY);
   }
 }
 static void sem_signal(sem_t *sem){
