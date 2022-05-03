@@ -45,12 +45,10 @@ typedef unsigned long int uintptr_t;
   #define c_panic_on(color, cond, ...) \
   do{ \
     if(cond) {\
-        kmt->spin_lock(&infolock);\
         printf("\033[36m[cpu(%d)]:\033[0m", cpu_current());\
         printf("\033[%dm", color); \
         printf(__VA_ARGS__); \
         printf("\033[0m"); \
-        kmt->spin_unlock(&infolock); \
         halt(1);\
     }\
   }while(0); \

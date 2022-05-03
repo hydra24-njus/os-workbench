@@ -7,9 +7,6 @@ task_t *cpu_header;
 /*------------------------------------------------
 *cpu_currents[i] = idle -> proc0 -> proc1...
   ------------------------------------------------*/
-#ifdef LOCAL_MACHINE
-  spinlock_t infolock;
-#endif
 
 static int ncli[8]={0};
 static int intena[8]={0};
@@ -55,8 +52,6 @@ static void spin_unlock(spinlock_t *lk){
   popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
-  //debug("save from CPU(%d)\n",cpu_current());
-  //TODO():save context
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
   if(current->status==RUNNING)current->status=READY;
@@ -80,7 +75,6 @@ static Context *kmt_schedule(Event ev,Context *context){
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
-  //debug("smp=%d\n",cpu_count());
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
@@ -88,19 +82,14 @@ void kmt_init(){
     task->entry=NULL;
     task->next=NULL;
     cpu_idle[i]=task;
-    cpu_currents[i]=cpu_idle[i];
+    cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
     task->context=kcontext(stack,NULL,NULL);
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
-  #ifdef LOCAL_MACHINE
-  spin_init(&infolock,"infolock");
-  #endif
-  debug("kmt_init finished.\n");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  debug("create,%s\n",name);
   task->status=READY;
   task->name=name;
   task->entry=entry;

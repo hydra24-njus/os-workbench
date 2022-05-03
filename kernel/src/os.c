@@ -39,7 +39,7 @@ static void os_init() {
   kmt->spin_init(&kmt_lock,"中断处理");
   //for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
   //dev->init();
-  /*
+  
   #ifdef LOCAL_MACHINE
   kmt->sem_init(&empty, "empty", 2);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
@@ -47,7 +47,7 @@ static void os_init() {
     kmt->create(task_alloc(), "producer", producer, NULL);
   for (int i = 0; i < 5; i++) // 5 个消费者
     kmt->create(task_alloc(), "consumer", consumer, NULL);
-  #endif*/
+  #endif
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
