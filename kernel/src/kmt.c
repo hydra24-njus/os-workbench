@@ -136,14 +136,16 @@ static void sem_init(sem_t *sem,const char *name,int value){
 static void sem_wait(sem_t *sem){
   kmt->spin_lock(&kmtlock);
   spin_lock(&sem->lock);
+  int flag=0;
   sem->value--;
   if(sem->value<0){
+    flag=1;
     enqueue(sem,current);
     current->status=SLEEPING;
   }
   spin_unlock(&sem->lock);
   kmt->spin_unlock(&kmtlock);
-  if(sem->value<0){
+  if(flag){
     yield();
     while(current->status!=READY);
   }
