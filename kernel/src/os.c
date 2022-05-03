@@ -36,7 +36,7 @@ static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmtlock,"中断处理");
-  for (uintptr_t i = 0; i < 4; i++) // 4 个生产者
+  for (uintptr_t i = 0; i < 10; i++) // 4 个生产者
     kmt->create(task_alloc(), "func", fun, (void *)i);
   /*kmt->sem_init(&empty, "empty", 3);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
