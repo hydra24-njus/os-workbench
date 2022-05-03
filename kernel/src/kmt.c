@@ -2,7 +2,7 @@
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
 task_t *cpu_header;
-extern spinlock_t kmtlock;
+spinlock_t kmtlock;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};

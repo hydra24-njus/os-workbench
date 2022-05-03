@@ -4,7 +4,6 @@ typedef struct irq_handler{
   handler_t handler;
   struct irq_handler* next;
 }irq_handler_t;
-spinlock_t kmtlock;
 void irq_guard_fun(){
   debug("should not reach here.\n");
   assert(0);
@@ -35,7 +34,6 @@ void consumer(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
 static void os_init() {
   pmm->init();
   kmt->init();
-  kmt->spin_init(&kmtlock,"中断处理");
   for (uintptr_t i = 0; i < 10; i++) // 4 个生产者
     kmt->create(task_alloc(), "func", fun, (void *)i);
   /*kmt->sem_init(&empty, "empty", 3);  // 缓冲区大小为 5
@@ -50,7 +48,6 @@ static void os_run() {
   while (1);
 }
 Context *os_trap(Event ev, Context *context){
-  kmt->spin_lock(&kmtlock);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
@@ -60,7 +57,6 @@ Context *os_trap(Event ev, Context *context){
     }
   }
   panic_on(!next,"returning NULL context");
-  kmt->spin_unlock(&kmtlock);
   return next;
 }
 void os_on_irq(int seq, int event, handler_t handler){
