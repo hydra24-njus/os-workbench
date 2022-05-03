@@ -15,13 +15,15 @@ static irq_handler_t irq_guard={
   .handler=(handler_t)irq_guard_fun,
   .next=NULL
 };
-
+void fun(void *i){
+  printf("%d\n",i);
+}
 static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
-  dev->init();
-  //for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
+  //dev->init();
+  for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
   
 }
 static void os_run() {
