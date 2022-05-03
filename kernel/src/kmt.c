@@ -71,6 +71,30 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(p==NULL)p=idle;
   current=p;
   debug("%s\n",current->name);
+  if(p!=idle){
+    if(p==cpu_header){
+      cpu_header=p->next;
+      task_t *tail=cpu_header;
+      while(tail->next!=NULL)tail=tail->next;
+      tail->next=p;
+      p->next=NULL;
+    }
+    else{
+      task_t *tail=cpu_header;
+      while(tail->next!=NULL)tail=tail->next;
+      if(tail==p){
+        //do nothing.
+      }
+      else{
+        task_t *prev=cpu_header;
+        while(prev->next!=p)prev=prev->next;
+        prev->next=p->next;
+        p->next=NULL;
+        tail->next=p;
+      }
+    }
+
+  }
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
