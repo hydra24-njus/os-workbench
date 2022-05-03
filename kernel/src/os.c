@@ -53,7 +53,7 @@ static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
     putch(*s == '*' ? '0' + cpu_current() : *s);
   }
-  while (1) yield();
+  while (1);
 }
 Context *os_trap(Event ev, Context *context){
   kmt->spin_lock(&kmt_lock);
