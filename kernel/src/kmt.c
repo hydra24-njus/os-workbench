@@ -68,6 +68,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   }
   if(p==NULL)p=idle;
   current=p;
+  debug("%s\n",current->name);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
