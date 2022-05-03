@@ -139,7 +139,6 @@ static void sem_wait(sem_t *sem){
   spin_unlock(&sem->lock);
   if(sem->value<0){
     yield();
-    while(current->status!=READY);
   }
 }
 static void sem_signal(sem_t *sem){
