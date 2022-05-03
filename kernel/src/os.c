@@ -21,8 +21,8 @@ void test_kmt(){
 #define P kmt->sem_wait
 #define V kmt->sem_signal
 sem_t empty,fill;
-void producer(void *arg) { while (1) { P(&empty); printf("%d",arg); V(&fill);  } }
-void consumer(void *arg) { while (1) { P(&fill);  printf("%d",arg); V(&empty); } }
+void producer(void *arg) { while (1) { P(&empty); putch('('); V(&fill);  } }
+void consumer(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
 void* task_alloc(){
   return pmm->alloc(sizeof(task_t));
 }
@@ -37,10 +37,10 @@ static void os_init() {
   #ifdef LOCAL_MACHINE
   kmt->sem_init(&empty, "empty", 5);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
-  for (uintptr_t i = 0; i < 4; i++) // 4 个生产者
-    kmt->create(task_alloc(), "producer", producer, (void *)i);
-  for (uintptr_t i = 4; i < 9; i++) // 5 个消费者
-    kmt->create(task_alloc(), "consumer", consumer, (void *)i);
+  for (int i = 0; i < 4; i++) // 4 个生产者
+    kmt->create(task_alloc(), "producer", producer, NULL);
+  for (int i = 0; i < 5; i++) // 5 个消费者
+    kmt->create(task_alloc(), "consumer", consumer, NULL);
   #endif
 }
 static void os_run() {
@@ -51,6 +51,7 @@ static void os_run() {
   while (1);
 }
 Context *os_trap(Event ev, Context *context){
+  kmt->spin_lock(&kmt_lock);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
@@ -61,6 +62,7 @@ Context *os_trap(Event ev, Context *context){
   }
   panic_on(!next,"returning NULL context");
   //panic_on(sane_context(next),"returning to invalid context");
+  kmt->spin_unlock(&kmt_lock);
   return next;
 }
 void debug_handler(){
