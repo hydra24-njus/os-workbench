@@ -92,7 +92,6 @@ void kmt_init(){
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  kmt->spin_lock(&kmtlock);
   task->status=READY;
   task->name=name;
   task->entry=entry;
@@ -109,7 +108,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p=p->next;
   }
   debug("\n");
-  kmt->spin_unlock(&kmtlock);
   return 0;
 }
 static void teardown(task_t *task){
@@ -135,7 +133,6 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-  kmt->spin_lock(&kmtlock);
   spin_lock(&sem->lock);
   int flag=0;
   sem->value--;
@@ -145,13 +142,11 @@ static void sem_wait(sem_t *sem){
     current->status=SLEEPING;
   }
   spin_unlock(&sem->lock);
-  kmt->spin_unlock(&kmtlock);
   if(flag){
     yield();
   }
 }
 static void sem_signal(sem_t *sem){
-  kmt->spin_lock(&kmtlock);
   spin_lock(&sem->lock);
   sem->value++;
   if(sem->value<=0){
@@ -159,7 +154,6 @@ static void sem_signal(sem_t *sem){
     task->status=READY;
   }
   spin_unlock(&sem->lock);
-  kmt->spin_unlock(&kmtlock);
 }
 MODULE_DEF(kmt) = {
  // TODO
