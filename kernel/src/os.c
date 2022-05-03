@@ -16,9 +16,8 @@ static irq_handler_t irq_guard={
   .next=NULL
 };
 void fun(void *i){
-  spinlock_t lk1,lk2;
+  spinlock_t lk1;
   kmt->spin_init(&lk1,"lk1");
-  kmt->spin_init(&lk2,"lk2");
   kmt->spin_lock(&lk1);
   while(1){
     printf("test lk1\n");
