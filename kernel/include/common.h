@@ -79,7 +79,6 @@ struct task {
 struct spinlock {
   // TODO
   int locked;
-  int intr;//cli/sti
   char* name;
   int cpu;
 };

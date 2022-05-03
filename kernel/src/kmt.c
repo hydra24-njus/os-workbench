@@ -32,7 +32,6 @@ void popcli(){
 static void spin_init(spinlock_t *lk,const char *name){
   strcpy(lk->name,name);
   lk->locked=0;
-  lk->intr=0;
   lk->cpu=-1;
 }
 static void spin_lock(spinlock_t *lk){
