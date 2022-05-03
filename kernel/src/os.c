@@ -17,6 +17,7 @@ static irq_handler_t irq_guard={
 };
 void fun(void *i){
   printf("%d\n",i);
+  while(1);
 }
 static void os_init() {
   pmm->init();
