@@ -2,7 +2,7 @@
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
 task_t *cpu_header;
-spinlock_t kmtlock;
+spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};
@@ -55,6 +55,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
+  spin_lock(&tasklock);
   task_t *p=current->next;
   if(current==idle){
     p=cpu_header;
@@ -72,6 +73,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p==NULL)p=idle;
   }
   current=p;
+  spin_unlock(&tasklock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
@@ -87,11 +89,12 @@ void kmt_init(){
     Area stack={&task->context+1,task+1};
     task->context=kcontext(stack,NULL,NULL);
   }
-  spin_init(&kmtlock,"kmtlock");
+  spin_init(&tasklock,"kmtlock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+  spin_lock(&tasklock);
   task->status=READY;
   task->name=name;
   task->entry=entry;
@@ -108,6 +111,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p=p->next;
   }
   debug("\n");
+  spin_unlock(&tasklock);
   return 0;
 }
 static void teardown(task_t *task){
