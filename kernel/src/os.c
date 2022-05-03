@@ -23,6 +23,7 @@ void fun(void *i){
     printf("test lk1%d\n",i);
   }
   kmt->spin_unlock(&lk1);
+  while(1);
 }
 static void os_init() {
   pmm->init();
