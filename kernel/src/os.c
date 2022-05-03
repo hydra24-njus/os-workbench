@@ -16,14 +16,7 @@ static irq_handler_t irq_guard={
   .next=NULL
 };
 void fun(void *i){
-  spinlock_t lk1;
-  kmt->spin_init(&lk1,"lk1");
-  kmt->spin_lock(&lk1);
-  for(int k=0;k<10;k++){
-    printf("%d",i);
-  }
-  kmt->spin_unlock(&lk1);
-  while(1)yield();
+  while(1)printf("%d",i);
 }
 static inline task_t *task_alloc() {
   return pmm->alloc(sizeof(task_t));
