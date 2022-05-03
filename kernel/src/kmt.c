@@ -4,9 +4,7 @@ task_t *cpu_idle[8];
 task_t *cpu_header;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
-/*------------------------------------------------
-*cpu_currents[i] = idle -> proc0 -> proc1...
-  ------------------------------------------------*/
+spinlock_t task_lock;
 
 static int ncli[8]={0};
 static int intena[8]={0};
@@ -112,9 +110,11 @@ void kmt_init(){
   }
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
+  spin_init(&task_lock,"task_lock");
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   debug("create\n");
+  spin_lock(&task_lock);
   task->status=READY;
   task->name=name;
   task->entry=entry;
@@ -131,6 +131,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p=p->next;
   }
   debug("\n");
+  spin_unlock(&task_lock);
   return 0;
 }
 static void teardown(task_t *task){
@@ -157,6 +158,7 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
+  spin_lock(&task_lock);
   debug("sem_wait\n");
   spin_lock(&sem->lock);
   sem->value--;
@@ -165,11 +167,13 @@ static void sem_wait(sem_t *sem){
     current->status=SLEEPING;
   }
   spin_unlock(&sem->lock);
+  spin_unlock(&task_lock);
   if(sem->value<0){
     yield();
   }
 }
 static void sem_signal(sem_t *sem){
+  spin_lock(&task_lock);
   debug("sem_signal\n");
   spin_lock(&sem->lock);
   sem->value++;
@@ -178,6 +182,7 @@ static void sem_signal(sem_t *sem){
     task->status=READY;
   }
   spin_unlock(&sem->lock);
+  spin_unlock(&task_lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
