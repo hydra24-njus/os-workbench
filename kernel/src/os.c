@@ -16,7 +16,10 @@ static irq_handler_t irq_guard={
   .next=NULL
 };
 void fun(void *i){
-  while(1)printf("%d",i);
+  while(1){
+    printf("%d",i);
+    for(int i=0;i<10000;i++);
+  }
 }
 static inline task_t *task_alloc() {
   return pmm->alloc(sizeof(task_t));
