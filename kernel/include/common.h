@@ -86,8 +86,9 @@ struct spinlock {
 
 struct semaphore {
   // TODO
-  int value;int count;
+  int value;
   struct spinlock lock;
   char *name;
-  int cpu;
+  int head,tail,qlen;
+  struct task *queue[64];
 };

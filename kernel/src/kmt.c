@@ -114,16 +114,43 @@ static void teardown(task_t *task){
   return;
 }
 
+void enqueue(sem_t *sem,task_t *task){
+  sem->queue[sem->tail++]=task;
+  if(sem->tail>=sem->qlen)sem->tail-=sem->qlen;
+}
+task_t* dequeue(sem_t *sem){
+  task_t *ret=sem->queue[sem->head++];
+  if(sem->head>=sem->qlen)sem->head-=sem->qlen;
+  return ret;
+}
 static void sem_init(sem_t *sem,const char *name,int value){
   strcpy(sem->name,name);
-  sem->value=value;sem->count=value;
+  sem->value=value;
   spin_init(&sem->lock,name);
+  sem->qlen=sizeof(sem->queue)/sizeof(task_t*);
+  sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-
+  spin_lock(&sem->lock);
+  sem->value--;
+  if(sem->value<0){
+    enqueue(sem,current);
+    current->status=SLEEPING;
+  }
+  spin_unlock(&sem->lock);
+  if(sem->value<0){
+    yield();
+    while(current->status!=READY);
+  }
 }
 static void sem_signal(sem_t *sem){
-
+  spin_lock(&sem->lock);
+  sem->value++;
+  if(sem->value<=0){
+    task_t *task=dequeue(sem);
+    task->status=READY;
+  }
+  spin_unlock(&sem->lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
