@@ -19,7 +19,7 @@ void fun(void *i){
   spinlock_t lk1;
   kmt->spin_init(&lk1,"lk1");
   kmt->spin_lock(&lk1);
-  for(int k=0;k<100000;k++){
+  for(int k=0;k<10;k++){
     printf("%d",i);
   }
   kmt->spin_unlock(&lk1);
