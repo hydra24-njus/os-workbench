@@ -2,7 +2,6 @@
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
 task_t *cpu_header;
-extern spinlock_t kmt_lock;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 /*------------------------------------------------
@@ -60,7 +59,6 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
-  kmt->spin_lock(&kmt_lock);
   task_t *p=current->next;
   if(current==idle){
     p=cpu_header;
@@ -73,7 +71,6 @@ static Context *kmt_schedule(Event ev,Context *context){
     p=idle;
   }
   current=p;
-  kmt->spin_unlock(&kmt_lock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
@@ -93,7 +90,6 @@ void kmt_init(){
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  kmt->spin_lock(&kmt_lock);
   task->status=READY;
   task->name=name;
   task->entry=entry;
@@ -110,7 +106,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p=p->next;
   }
   debug("\n");
-  kmt->spin_unlock(&kmt_lock);
   return 0;
 }
 static void teardown(task_t *task){
@@ -136,7 +131,6 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-  kmt->spin_lock(&kmt_lock);
   spin_lock(&sem->lock);
   sem->value--;
   if(sem->value<0){
@@ -144,14 +138,12 @@ static void sem_wait(sem_t *sem){
     current->status=SLEEPING;
   }
   spin_unlock(&sem->lock);
-  kmt->spin_unlock(&kmt_lock);
   if(sem->value<0){
     yield();
     while(current->status!=READY);
   }
 }
 static void sem_signal(sem_t *sem){
-  kmt->spin_lock(&kmt_lock);
   spin_lock(&sem->lock);
   sem->value++;
   if(sem->value<=0){
@@ -159,7 +151,6 @@ static void sem_signal(sem_t *sem){
     task->status=READY;
   }
   spin_unlock(&sem->lock);
-  kmt->spin_unlock(&kmt_lock);
 }
 MODULE_DEF(kmt) = {
  // TODO
