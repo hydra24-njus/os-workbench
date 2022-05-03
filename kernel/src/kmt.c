@@ -4,7 +4,7 @@ task_t *cpu_idle[8];
 task_t *cpu_header;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
-
+extern spinlock_t kmtlock;
 static int ncli[8]={0};
 static int intena[8]={0};
 int holding(struct spinlock *lock){
@@ -132,6 +132,7 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
+  spin_lock(&kmtlock);
   debug("sem_wait\n");
   spin_lock(&sem->lock);
   sem->value--;
@@ -139,12 +140,14 @@ static void sem_wait(sem_t *sem){
     enqueue(sem,current);
     current->status=SLEEPING;
   }
+  spin_unlock(&kmtlock);
   spin_unlock(&sem->lock);
   if(sem->value<0){
     yield();
   }
 }
 static void sem_signal(sem_t *sem){
+  spin_lock(&kmtlock);
   debug("sem_signal\n");
   spin_lock(&sem->lock);
   sem->value++;
@@ -153,6 +156,8 @@ static void sem_signal(sem_t *sem){
     task->status=READY;
   }
   spin_unlock(&sem->lock);
+  spin_unlock(&kmtlock);
+
 }
 MODULE_DEF(kmt) = {
  // TODO
