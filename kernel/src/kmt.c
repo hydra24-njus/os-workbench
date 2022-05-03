@@ -73,6 +73,7 @@ static Context *kmt_schedule(Event ev,Context *context){
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
+  panic_on(cpu_count()>8,"cpu>8");
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
