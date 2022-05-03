@@ -41,7 +41,7 @@ static void os_init() {
   //dev->init();
   
   #ifdef LOCAL_MACHINE
-  kmt->sem_init(&empty, "empty", 2);  // 缓冲区大小为 5
+  kmt->sem_init(&empty, "empty", 1);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
   for (int i = 0; i < 4; i++) // 4 个生产者
     kmt->create(task_alloc(), "producer", producer, NULL);
