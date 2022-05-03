@@ -133,16 +133,18 @@ static void sem_init(sem_t *sem,const char *name,int value){
 }
 static void sem_wait(sem_t *sem){
   spin_lock(&kmtlock);
+  int flag=0;
   debug("sem_wait\n");
   spin_lock(&sem->lock);
   sem->value--;
   if(sem->value<0){
+    flag=1;
     enqueue(sem,current);
     current->status=SLEEPING;
   }
   spin_unlock(&kmtlock);
   spin_unlock(&sem->lock);
-  if(sem->value<0){
+  if(flag==0){
     yield();
   }
 }
@@ -157,7 +159,6 @@ static void sem_signal(sem_t *sem){
   }
   spin_unlock(&sem->lock);
   spin_unlock(&kmtlock);
-
 }
 MODULE_DEF(kmt) = {
  // TODO
