@@ -63,17 +63,11 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   debug("kmt_schedule\n");
   //TODO():线程调度。
-  task_t *p=current->next;
-  if(current==idle){
-    p=cpu_header;
-  }
-  while(p!=NULL){
-    if(p->status==READY)break;
+  task_t *p=cpu_header;
+  while(p->status!=READY){
     p=p->next;
   }
-  if(p==NULL){
-    p=idle;
-  }
+  if(p==NULL)p=idle;
   current=p;
   return current->context;
 }
