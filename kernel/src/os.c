@@ -33,12 +33,14 @@ static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmtlock,"中断处理");
-  kmt->sem_init(&empty, "empty", 1);  // 缓冲区大小为 5
+  for (uintptr_t i = 0; i < 4; i++) // 4 个生产者
+    kmt->create(task_alloc(), "func", fun, (void *)i);
+  /*kmt->sem_init(&empty, "empty", 3);  // 缓冲区大小为 5
   kmt->sem_init(&fill,  "fill",  0);
   for (int i = 0; i < 4; i++) // 4 个生产者
     kmt->create(task_alloc(), "producer", producer, NULL);
   for (int i = 0; i < 5; i++) // 5 个消费者
-    kmt->create(task_alloc(), "consumer", consumer, NULL);
+    kmt->create(task_alloc(), "consumer", consumer, NULL);*/
 }
 static void os_run() {
   iset(true);
