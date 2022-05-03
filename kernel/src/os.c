@@ -32,9 +32,6 @@ static void os_init() {
   //dev->init();
 }
 static void os_run() {
-  for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
-    putch(*s == '*' ? '0' + cpu_current() : *s);
-  }
   iset(true);
   while (1)yield();
 }
