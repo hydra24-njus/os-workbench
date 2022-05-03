@@ -88,7 +88,7 @@ struct semaphore {
   // TODO
   int value;
   struct spinlock lock;
-  char *name;
+  char name[256];
   int head,tail,qlen;
   struct task *queue[64];
 };
