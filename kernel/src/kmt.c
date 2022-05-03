@@ -64,7 +64,8 @@ static Context *kmt_schedule(Event ev,Context *context){
   debug("kmt_schedule:");
   //TODO():线程调度。
   task_t *p=cpu_header;
-  while(p->status!=READY&&p!=NULL){
+  while(p!=NULL){
+    if(p->status==READY)break;
     p=p->next;
   }
   if(p==NULL)p=idle;
