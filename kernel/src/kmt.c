@@ -2,9 +2,13 @@
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
 task_t *cpu_header;
+extern spinlock_t kmtlock;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
-extern spinlock_t kmtlock;
+/*------------------------------------------------
+*cpu_currents[i] = idle -> proc0 -> proc1...
+  ------------------------------------------------*/
+
 static int ncli[8]={0};
 static int intena[8]={0};
 int holding(struct spinlock *lock){
@@ -27,13 +31,11 @@ void popcli(){
   if(ncli[cpu_current()]==0 && intena[cpu_current()]) iset(true);
 }
 static void spin_init(spinlock_t *lk,const char *name){
-  debug("spin_init\n");
   strcpy(lk->name,name);
   lk->locked=0;
   lk->cpu=-1;
 }
 static void spin_lock(spinlock_t *lk){
-  debug("spin_lock\n");
   pushcli();
   r_panic_on(holding(lk), "lock(%s) tried to acquire itself while holding.\n",lk->name);
   while(atomic_xchg(&(lk->locked),1));
@@ -43,7 +45,6 @@ static void spin_lock(spinlock_t *lk){
   r_panic_on(lk->locked != 1, "lock(%s) failed!\n",lk->name);
 }
 static void spin_unlock(spinlock_t *lk){
-  debug("spin_unlock\n");
   r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
   lk->cpu = -1;
   __sync_synchronize();
@@ -51,29 +52,29 @@ static void spin_unlock(spinlock_t *lk){
   popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
-  debug("kmt_context_save\n");
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
   if(current->status==RUNNING)current->status=READY;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
-  debug("kmt_schedule:");
   //TODO():线程调度。
   task_t *p=current->next;
-  if(current==idle)p=cpu_header;
+  if(current==idle){
+    p=cpu_header;
+  }
   while(p!=NULL){
     if(p->status==READY)break;
     p=p->next;
   }
-  if(p==NULL)p=idle;
+  if(p==NULL){
+    p=idle;
+  }
   current=p;
-  debug("%s\n",current->name);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
-  panic_on(cpu_count()>8,"cpu>8");
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
     task->status=IDLE;
@@ -89,7 +90,7 @@ void kmt_init(){
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
 static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
-  debug("create\n");
+  kmt->spin_lock(&kmtlock);
   task->status=READY;
   task->name=name;
   task->entry=entry;
@@ -106,6 +107,7 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
     p=p->next;
   }
   debug("\n");
+  kmt->spin_unlock(&kmtlock);
   return 0;
 }
 static void teardown(task_t *task){
@@ -124,7 +126,6 @@ task_t* dequeue(sem_t *sem){
   return ret;
 }
 static void sem_init(sem_t *sem,const char *name,int value){
-  debug("sem_init\n");
   strcpy(sem->name,name);
   sem->value=value;
   spin_init(&sem->lock,name);
@@ -132,25 +133,22 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-  spin_lock(&kmtlock);
-  int flag=0;
-  debug("sem_wait\n");
+  kmt->spin_lock(&kmtlock);
   spin_lock(&sem->lock);
   sem->value--;
   if(sem->value<0){
-    flag=1;
     enqueue(sem,current);
     current->status=SLEEPING;
   }
-  spin_unlock(&kmtlock);
   spin_unlock(&sem->lock);
-  if(flag==1){
+  kmt->spin_unlock(&kmtlock);
+  if(sem->value<0){
     yield();
+    while(current->status!=READY);
   }
 }
 static void sem_signal(sem_t *sem){
-  spin_lock(&kmtlock);
-  debug("sem_signal\n");
+  kmt->spin_lock(&kmtlock);
   spin_lock(&sem->lock);
   sem->value++;
   if(sem->value<=0){
@@ -158,7 +156,7 @@ static void sem_signal(sem_t *sem){
     task->status=READY;
   }
   spin_unlock(&sem->lock);
-  spin_unlock(&kmtlock);
+  kmt->spin_unlock(&kmtlock);
 }
 MODULE_DEF(kmt) = {
  // TODO
