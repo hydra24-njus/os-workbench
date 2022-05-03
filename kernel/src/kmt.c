@@ -11,7 +11,8 @@ task_t *cpu_header;
   spinlock_t infolock;
 #endif
 
-
+static int ncli[8]={0};
+static int intena[8]={0};
 int holding(struct spinlock *lock){
   int r = 0;
   int i = ienabled();
@@ -20,6 +21,17 @@ int holding(struct spinlock *lock){
   if(i == 1) iset(true);
   return r;
 }
+void pushcli(){
+  int i=ienabled();
+  iset(false);
+  if(ncli[cpu_current()]==0)intena[cpu_current()]=i;
+  ncli[cpu_current()]+=1;
+}
+void popcli(){
+  if(ienabled())panic("error");
+  if(--ncli[cpu_current()]<0)panic("error");
+  if(ncli[cpu_current()]==0 && intena[cpu_current()]) iset(true);
+}
 static void spin_init(spinlock_t *lk,const char *name){
   strcpy(lk->name,name);
   lk->locked=0;
@@ -27,12 +39,10 @@ static void spin_init(spinlock_t *lk,const char *name){
   lk->cpu=-1;
 }
 static void spin_lock(spinlock_t *lk){
-  int i=ienabled();
-  iset(false);
+  pushcli();
   r_panic_on(holding(lk), "lock(%s) tried to acquire itself while holding.\n",lk->name);
   while(atomic_xchg(&(lk->locked),1));
   __sync_synchronize();
-  lk->intr=i;
   lk->cpu=cpu_current();
   panic_on(ienabled() != 0, "cli() failed in kmt_lock!\n");
   r_panic_on(lk->locked != 1, "lock(%s) failed!\n",lk->name);
@@ -40,9 +50,9 @@ static void spin_lock(spinlock_t *lk){
 static void spin_unlock(spinlock_t *lk){
   r_panic_on(!holding(lk), "lock(%s) tried to release itself without holding.\n",lk->name);
   lk->cpu = -1;
-  int i=lk->intr;
+  __sync_synchronize();
   atomic_xchg(&(lk->locked),0);
-  if(i)iset(true);
+  popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
   //debug("save from CPU(%d)\n",cpu_current());
@@ -121,44 +131,10 @@ static void sem_init(sem_t *sem,const char *name,int value){
   spin_init(&sem->lock,name);
 }
 static void sem_wait(sem_t *sem){
-  spin_lock(&sem->lock);
-  bool flag =false;
-  sem->count--;
-  if(sem->count < 0){
-    flag = true;
-    current->sem=sem;
-    current->status = SLEEPING; 
-  }
-  spin_unlock(&sem->lock);
-  if(flag)yield();
+
 }
 static void sem_signal(sem_t *sem){
-  spin_lock(&sem->lock);
-  sem->count++;
-  task_t *p = current;
-  int flag=0;
-  while(p) {
-    if(p->sem == sem){
-      p->status = READY;
-      p->sem = NULL;
-      flag=1;
-      break;
-    }
-    p = p->next;
-  }
-  if(flag==0){
-    p=cpu_header;
-    while(p) {
-      if(p->sem == sem){
-        p->status = READY;
-        p->sem = NULL;
-        flag=1;
-        break;
-      }
-    p = p->next;
-  }
-  }
-  spin_unlock(&sem->lock);
+
 }
 MODULE_DEF(kmt) = {
  // TODO
