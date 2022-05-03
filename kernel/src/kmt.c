@@ -60,6 +60,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
+  kmt->spin_lock(&kmt_lock);
   task_t *p=current->next;
   if(current==idle){
     p=cpu_header;
@@ -72,6 +73,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     p=idle;
   }
   current=p;
+  kmt->spin_unlock(&kmt_lock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};

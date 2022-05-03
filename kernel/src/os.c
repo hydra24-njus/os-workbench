@@ -51,7 +51,6 @@ static void os_run() {
   while (1);
 }
 Context *os_trap(Event ev, Context *context){
-  kmt->spin_lock(&kmt_lock);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
@@ -62,7 +61,6 @@ Context *os_trap(Event ev, Context *context){
   }
   panic_on(!next,"returning NULL context");
   //panic_on(sane_context(next),"returning to invalid context");
-  kmt->spin_unlock(&kmt_lock);
   return next;
 }
 void debug_handler(){
