@@ -135,14 +135,28 @@ static void sem_wait(sem_t *sem){
 static void sem_signal(sem_t *sem){
   spin_lock(&sem->lock);
   sem->count++;
-  task_t *p = cpu_header;
+  task_t *p = current;
+  int flag=0;
   while(p) {
     if(p->sem == sem){
       p->status = READY;
       p->sem = NULL;
+      flag=1;
       break;
     }
     p = p->next;
+  }
+  if(flag==0){
+    p=cpu_header;
+    while(p) {
+      if(p->sem == sem){
+        p->status = READY;
+        p->sem = NULL;
+        flag=1;
+        break;
+      }
+    p = p->next;
+  }
   }
   spin_unlock(&sem->lock);
 }
