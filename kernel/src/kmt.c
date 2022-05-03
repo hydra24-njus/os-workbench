@@ -5,10 +5,6 @@ task_t *cpu_header;
 extern spinlock_t kmtlock;
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
-/*------------------------------------------------
-*cpu_currents[i] = idle -> proc0 -> proc1...
-  ------------------------------------------------*/
-
 static int ncli[8]={0};
 static int intena[8]={0};
 int holding(struct spinlock *lock){
