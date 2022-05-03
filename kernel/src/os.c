@@ -20,7 +20,7 @@ void fun(void *i){
   kmt->spin_init(&lk1,"lk1");
   kmt->spin_lock(&lk1);
   for(int k=0;k<100000;k++){
-    printf("test lk1%d\n",i);
+    printf("%d",i);
   }
   kmt->spin_unlock(&lk1);
   while(1)yield();
