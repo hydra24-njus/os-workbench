@@ -16,15 +16,22 @@ static irq_handler_t irq_guard={
   .next=NULL
 };
 void fun(void *i){
-  while(1)printf("%d\n",i);
+  spinlock_t lk1,lk2;
+  kmt->spin_init(&lk1,"lk1");
+  kmt->spin_init(&lk2,"lk2");
+  kmt->spin_lock(&lk1);
+  while(1){
+    printf("test lk1\n");
+  }
+  kmt->spin_unlock(&lk1);
 }
 static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
-  dev->init();
+  //dev->init();
   //for(uintptr_t i=0;i<32;i++)kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)i);
-  
+  kmt->create(pmm->alloc(sizeof(task_t)),"func",fun,(void *)1);
 }
 static void os_run() {
   for (const char *s = "Hello World from CPU #*\n"; *s; s++) {
@@ -45,14 +52,6 @@ Context *os_trap(Event ev, Context *context){
   panic_on(!next,"returning NULL context");
   return next;
 }
-void debug_handler(){
-  irq_handler_t *tmp=&irq_guard;
-  while(tmp!=NULL){
-    debug("%d->",tmp->seq);
-    tmp=tmp->next;
-  }
-  debug("\n");
-}
 void os_on_irq(int seq, int event, handler_t handler){
   debug("os_on_irq\n");
   irq_handler_t *h=pmm->alloc(sizeof(irq_handler_t));
@@ -68,7 +67,6 @@ void os_on_irq(int seq, int event, handler_t handler){
   }
   prev->next=h;
   h->next=p;
-  //debug_handler();
 }
 MODULE_DEF(os) = {
   .init = os_init,
