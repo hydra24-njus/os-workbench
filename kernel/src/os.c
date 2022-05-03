@@ -29,7 +29,7 @@ static void os_init() {
   pmm->init();
   kmt->init();
   kmt->spin_init(&kmt_lock,"中断处理");
-  //dev->init();
+  dev->init();
 }
 static void os_run() {
   iset(true);
