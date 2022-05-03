@@ -87,6 +87,7 @@ void kmt_init(){
     Area stack={&task->context+1,task+1};
     task->context=kcontext(stack,NULL,NULL);
   }
+  spin_init(&kmtlock,"kmtlock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
