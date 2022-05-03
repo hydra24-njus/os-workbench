@@ -48,6 +48,7 @@ static void spin_unlock(spinlock_t *lk){
   popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
+  debug("(%d)save",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
   if(current->status==RUNNING)current->status=READY;
