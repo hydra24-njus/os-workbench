@@ -48,7 +48,6 @@ static void spin_unlock(spinlock_t *lk){
   popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
-  spin_lock(&tasklock);
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
@@ -58,12 +57,10 @@ static Context *kmt_context_save(Event ev,Context *context){
     p=p->next;
   }
   if(current->status==RUNNING)current->status=WAITING;
-  spin_unlock(&tasklock);
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
-  spin_lock(&tasklock);
   task_t *p=current->next;
   if(current==idle){
     p=cpu_header;
@@ -82,7 +79,6 @@ static Context *kmt_schedule(Event ev,Context *context){
   }
   current=p;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
-  spin_unlock(&tasklock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
