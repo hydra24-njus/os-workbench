@@ -57,7 +57,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   panic_on(ienabled()==1,"cli");
-  spin_lock(&tasklock);
+
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
@@ -75,7 +75,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   current=p;
   current->status=RUNNING;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
-  spin_unlock(&tasklock);
+
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
