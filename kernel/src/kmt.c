@@ -64,14 +64,12 @@ static Context *kmt_schedule(Event ev,Context *context){
   }
   while(p!=NULL){
     if(p->status==READY)break;
-    if(p->status==WAITING&&p!=current)p->status=READY;
     p=p->next;
   }
   if(p==NULL){
     p=cpu_header;
     while(p!=NULL){
       if(p->status==READY)break;
-      if(p->status==WAITING&&p!=current)p->status=READY;
       p=p->next;
     }
     if(p==NULL)p=idle;
