@@ -54,7 +54,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
   if(last){
-    r_panic_on(last->status!=WAITING&&last->status!=IDLE,"error status%d",last->status);
+    r_panic_on(last->status!=WAITING&&last->status!=IDLE,"error status:%d",last->status);
     atomic_xchg(&last->status,READY);
     last=NULL;
   }
@@ -81,6 +81,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p==NULL)p=idle;
   }
   last=current;
+  atomic_xchg(&last->status,WAITING);
   current=p;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
   spin_unlock(&tasklock);
