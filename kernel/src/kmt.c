@@ -1,9 +1,11 @@
 #include <os.h>
 task_t *cpu_currents[8];
+task_t *lasts[8];
 task_t *cpu_idle[8];
 task_t *cpu_header;
 spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
+#define last lasts[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};
 static int intena[8]={0};
@@ -51,7 +53,11 @@ static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
-  if(current->status==RUNNING)current->status=WAITING;
+  if(last){
+    panic_on(last->status!=WAITING&&last->status!=IDLE,"error status");
+    atomic_xchg(&last->status,READY);
+    last=NULL;
+  }
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
@@ -74,6 +80,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
     if(p==NULL)p=idle;
   }
+  last=current;
   current=p;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
   spin_unlock(&tasklock);
