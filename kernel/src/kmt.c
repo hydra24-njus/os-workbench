@@ -53,10 +53,10 @@ static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   if(last){
-    if(last->cpustatus!=WAITING)assert(0);
-    last->cpustatus=READY;
+    if(last->status==WAITING)last->status=READY;
     last=NULL;
   }
+  if(current->status==RUNNING)current->status=WAITING;
   current->context=context;
   return NULL;
 }
@@ -68,19 +68,18 @@ static Context *kmt_schedule(Event ev,Context *context){
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
-    if(p->status==READY&&p->cpustatus==READY)break;
+    if(p->status==READY)break;
     p=p->next;
   }
   if(p==NULL){
     p=cpu_header;
     while(p!=NULL){
-      if(p->status==READY&&p->cpustatus==READY)break;
+      if(p->status==READY)break;
       p=p->next;
     }
     if(p==NULL)p=idle;
   }
   last=current;
-  last->cpustatus=WAITING;
   current=p;
   current->status=RUNNING;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
@@ -109,7 +108,6 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   task->status=READY;
   task->name=name;
   task->entry=entry;
-  task->cpustatus=READY;
   if(cpu_header==NULL)cpu_header=task;
   else{
     task->next=cpu_header->next;
