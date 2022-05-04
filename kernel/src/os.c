@@ -50,8 +50,6 @@ static void os_run() {
   while (1)yield();
 }
 Context *os_trap(Event ev, Context *context){
-  int i=ienabled();
-  iset(false);
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
     if(handler_now->event==EVENT_NULL||handler_now->event==ev.event){
@@ -62,7 +60,6 @@ Context *os_trap(Event ev, Context *context){
   }
   panic_on(!next,"returning NULL context");
   panic_on(ienabled(),"cli");
-  if(i)iset(true);
   return next;
 }
 void os_on_irq(int seq, int event, handler_t handler){
