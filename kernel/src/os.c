@@ -59,7 +59,7 @@ Context *os_trap(Event ev, Context *context){
     }
   }
   panic_on(!next,"returning NULL context");
-  panic_on(ienabled(),"cli");
+  panic_on(ienabled()==0,"cli");
   return next;
 }
 void os_on_irq(int seq, int event, handler_t handler){
