@@ -51,7 +51,12 @@ static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
-  if(current->status==RUNNING)current->status=READY;
+  task_t *p=cpu_header;
+  while(p!=NULL){
+    if(p->status==WAITING)p->status=READY;
+    p=p->next;
+  }
+  if(current->status==RUNNING)current->status=WAITING;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
