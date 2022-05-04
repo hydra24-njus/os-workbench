@@ -1,10 +1,8 @@
 #include <os.h>
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
-task_t *cpu_last[8];
 task_t *cpu_header;
 spinlock_t tasklock;
-#define last cpu_last[cpu_current()]
 #define current cpu_currents[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};
@@ -52,18 +50,13 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
-  if(last){
-    if(last->status==WAITING)last->status=READY;
-    last=NULL;
-  }
-  if(current->status==RUNNING)current->status=WAITING;
+  if(current->status==RUNNING)current->status=READY;
   current->context=context;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   panic_on(ienabled()==1,"cli");
-  panic_on(last!=NULL,"last");
   spin_lock(&tasklock);
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
@@ -77,9 +70,8 @@ static Context *kmt_schedule(Event ev,Context *context){
       if(p->status==READY)break;
       p=p->next;
     }
-    if(p==NULL)p=idle;
+    if(p==NULL||p==current)p=idle;
   }
-  last=current;
   current=p;
   current->status=RUNNING;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
