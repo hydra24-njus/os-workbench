@@ -66,7 +66,7 @@ struct task {
   union{
     struct {
     int status;
-    int cpu;
+    int cpustatus;
     struct semaphore *sem;
     const char *name;
     struct task *next;
