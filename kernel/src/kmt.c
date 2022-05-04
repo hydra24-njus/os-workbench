@@ -54,7 +54,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   r_panic_on(current==NULL,"current==NULL");
   current->context=context;
   if(last){
-    panic_on(last->status!=WAITING&&last->status!=IDLE,"error status");
+    r_panic_on(last->status!=WAITING&&last->status!=IDLE,"error status%d",last->status);
     atomic_xchg(&last->status,READY);
     last=NULL;
   }
