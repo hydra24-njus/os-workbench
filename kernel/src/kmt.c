@@ -83,6 +83,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
     if(p==NULL||p==current)p=idle;
   }
+  panic_on(last!=NULL,"last!=NULL");
   last=current;
   current=p;
   current->status=RUNNING;
