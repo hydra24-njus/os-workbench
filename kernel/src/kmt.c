@@ -163,7 +163,7 @@ static void sem_signal(sem_t *sem){
   sem->value++;
   if(sem->value<=0){
     task_t *task=dequeue(sem);
-    task->status=READY;
+    task->status-=SLEEPING;
   }
   spin_unlock(&sem->lock);
 }
