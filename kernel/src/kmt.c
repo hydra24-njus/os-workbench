@@ -146,7 +146,6 @@ static void sem_init(sem_t *sem,const char *name,int value){
 }
 static void sem_wait(sem_t *sem){
   debug("(%d)sem_wait\n",cpu_current());
-  spin_lock(&tasklock);
   spin_lock(&sem->lock);
   int flag=0;
   sem->value--;
@@ -156,14 +155,12 @@ static void sem_wait(sem_t *sem){
     current->status=SLEEPING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
-  spin_unlock(&tasklock);
   if(flag){
     yield();
   }
 }
 static void sem_signal(sem_t *sem){
   debug("(%d)sem_signal\n",cpu_current());
-  spin_lock(&tasklock);
   spin_lock(&sem->lock);
   sem->value++;
   if(sem->value<=0){
@@ -171,7 +168,6 @@ static void sem_signal(sem_t *sem){
     task->status-=SLEEPING;
   }
   spin_unlock(&sem->lock);
-  spin_unlock(&tasklock);
 }
 MODULE_DEF(kmt) = {
  // TODO
