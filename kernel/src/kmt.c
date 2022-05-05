@@ -119,8 +119,26 @@ static int create(task_t *task,const char *name,void (*entry)(void *arg),void *a
   return 0;
 }
 static void teardown(task_t *task){
-  debug("teardown\n");
-  assert(0);
+  spin_lock(&tasklock);
+  task_t *head=cpu_header;
+  if(task==head){
+    cpu_header=cpu_header->next;
+    task->next=NULL;
+  }
+  else{
+    while(head!=NULL){
+      if(head->next==task){
+        head->next=task->next;
+        task->next=NULL;
+        break;
+      }
+      head=head->next;
+    }
+    panic_on(head==NULL,"cannot find task");
+  }
+  spin_unlock(&tasklock);
+  task->status=DEAD;
+  pmm->free(task);
   return;
 }
 
