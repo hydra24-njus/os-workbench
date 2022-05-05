@@ -175,7 +175,7 @@ static void sem_wait(sem_t *sem){
   }
 }
 static void sem_signal(sem_t *sem){
-  //spin_lock(&tasklock);
+  spin_lock(&tasklock);
   spin_lock(&sem->lock);
   sem->value++;
   if(sem->value<=0){
@@ -183,7 +183,7 @@ static void sem_signal(sem_t *sem){
     task->status-=SLEEPING;
   }
   spin_unlock(&sem->lock);
-  //spin_unlock(&tasklock);
+  spin_unlock(&tasklock);
 }
 MODULE_DEF(kmt) = {
  .init=kmt_init,
