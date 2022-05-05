@@ -26,7 +26,7 @@ static void os_init() {
 }
 static void os_run() {
   iset(true);
-  while (1)yield();
+  while (1);
 }
 Context *os_trap(Event ev, Context *context){
   panic_on(ienabled()==1,"cli");
