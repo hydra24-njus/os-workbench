@@ -52,9 +52,8 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
-  r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING,"current status error(%d)",current->status);
+  r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
-  else if(current->status==SLEEPING)current->status+=ZOMBIE;
   if(last){
     if(last->status!=IDLE){
     r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
@@ -154,7 +153,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=SLEEPING;
+    current->status=SLEEPING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
