@@ -143,7 +143,15 @@ int printf(const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+	va_list ap;
+	int ret;
+	
+	va_start(ap, fmt);
+	ret = vsprintf(out, fmt, ap);
+	va_end(ap);
+	if(ret<n)out[ret]='\0';
+	else {out[n-1]='\0';ret=n;}
+	return ret;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
