@@ -35,7 +35,7 @@ void consumer(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
 static void os_init() {
   pmm->init();
   kmt->init();
-  //dev->init();
+  dev->init();
   /*for (uintptr_t i = 0; i < 10; i++)
     kmt->create(task_alloc(), "func", fun, (void *)i);*/
   /*kmt->sem_init(&empty, "empty", 5);  // 缓冲区大小为 5
