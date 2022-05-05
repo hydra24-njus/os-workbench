@@ -150,7 +150,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=SLEEPING;
+    current->status+=SLEEPING;
   }
   spin_unlock(&sem->lock);
   if(flag){
