@@ -51,7 +51,6 @@ static void spin_unlock(spinlock_t *lk){
 }
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
-  debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE&&current->status!=ZOMBIE,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
@@ -88,7 +87,6 @@ static Context *kmt_schedule(Event ev,Context *context){
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
-  debug("(%d)schedule:%s\n",cpu_current(),current->name);
   spin_unlock(&tasklock);
   return current->context;
 }
@@ -148,7 +146,6 @@ static void sem_init(sem_t *sem,const char *name,int value){
   sem->head=0;sem->tail=0;
 }
 static void sem_wait(sem_t *sem){
-  debug("(%d)sem_wait\n",cpu_current());
   spin_lock(&tasklock);
   spin_lock(&sem->lock);
   int flag=0;
@@ -165,7 +162,6 @@ static void sem_wait(sem_t *sem){
   }
 }
 static void sem_signal(sem_t *sem){
-  debug("(%d)sem_signal\n",cpu_current());
   //spin_lock(&tasklock);
   spin_lock(&sem->lock);
   sem->value++;
