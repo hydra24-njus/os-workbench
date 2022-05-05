@@ -29,7 +29,7 @@ void popcli(){
   if(ncli[cpu_current()]==0 && intena[cpu_current()]) iset(true);
 }
 static void spin_init(spinlock_t *lk,const char *name){
-  strcpy(lk->name,name);
+  lk->name=(char*)name;
   lk->locked=0;
   lk->cpu=-1;
 }
@@ -152,7 +152,7 @@ task_t* dequeue(sem_t *sem){
   return ret;
 }
 static void sem_init(sem_t *sem,const char *name,int value){
-  strcpy(sem->name,name);
+  sem->name=(char*)name;
   sem->value=value;
   spin_init(&sem->lock,name);
   sem->qlen=sizeof(sem->queue)/sizeof(task_t*);
