@@ -75,14 +75,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p->status==READY)break;
     p=p->next;
   }
-  if(p==NULL){
-    p=cpu_header;
-    while(p!=NULL){
-      if(p->status==READY)break;
-      p=p->next;
-    }
-    if(p==NULL||p==current)p=idle;
-  }
+  if(p==NULL||p==current)p=idle;
   panic_on(last!=NULL,"last!=NULL");
   last=current;
   current=p;
