@@ -1,9 +1,11 @@
 #include <os.h>
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
+task_t *cpu_last[8];
 task_t *cpu_header;
 spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
+#define last cpu_last[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};
 static int intena[8]={0};
@@ -50,14 +52,19 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
-  if(current->status==RUNNING)current->status=READY;
+  if(current->status==RUNNING)current->status=ZOMBIE;
+  else if(current->status==SLEEPING)current->status+=ZOMBIE;
+  if(last){
+    last->status-=ZOMBIE;
+    panic_on(last->status!=READY&&last->status!=SLEEPING,"last status error.");
+    last=NULL;
+  }
   current->context=context;
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   //TODO():线程调度。
   panic_on(ienabled()==1,"cli");
-
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
@@ -72,16 +79,17 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
     if(p==NULL||p==current)p=idle;
   }
+  last=current;
   current=p;
   current->status=RUNNING;
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
-
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
+    cpu_last[cpu_current()]=NULL;
     task->status=IDLE;
     task->name=name[i];
     task->entry=NULL;

@@ -59,7 +59,7 @@ typedef unsigned long int uintptr_t;
 #endif
 #define MAGIC 0x114514
 enum{
-  READY=0,RUNNING,WAITING,SLEEPING,IDLE
+  READY=0,RUNNING,WAITING,SLEEPING,IDLE,ZOMBIE
 };
 struct task {
   // TODO
