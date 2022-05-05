@@ -51,7 +51,7 @@ static void spin_unlock(spinlock_t *lk){
 }
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
-  //debug("(%d)save\n",cpu_current());
+  debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE&&current->status!=ZOMBIE,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
