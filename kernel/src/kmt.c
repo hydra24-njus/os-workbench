@@ -55,10 +55,11 @@ static Context *kmt_context_save(Event ev,Context *context){
   if(current->status==RUNNING)current->status=ZOMBIE;
   else if(current->status==SLEEPING)current->status+=ZOMBIE;
   if(last){
-    debug("last status=%d\n",last->status);
+    if(last->status!=IDLE){
     last->status-=ZOMBIE;
     r_panic_on(last->status!=READY&&last->status!=SLEEPING,"last status error(%d).",last->status);
     last=NULL;
+    }
   }
   current->context=context;
   return NULL;
