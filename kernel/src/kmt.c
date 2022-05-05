@@ -56,8 +56,8 @@ static Context *kmt_context_save(Event ev,Context *context){
   else if(current->status==SLEEPING)current->status+=ZOMBIE;
   if(last){
     if(last->status!=IDLE){
+    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
     last->status-=ZOMBIE;
-    r_panic_on(last->status!=READY&&last->status!=SLEEPING,"last status error(%d).",last->status);
     last=NULL;
     }
   }
@@ -150,7 +150,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status+=SLEEPING;
+    current->status=SLEEPING;
   }
   spin_unlock(&sem->lock);
   if(flag){
