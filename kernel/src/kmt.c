@@ -50,6 +50,7 @@ static void spin_unlock(spinlock_t *lk){
   popcli();
 }
 static Context *kmt_context_save(Event ev,Context *context){
+  spin_lock(&tasklock);
   debug("(%d)save\n",cpu_current());
   r_panic_on(current==NULL,"current==NULL");
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE&&current->status!=ZOMBIE,"current status error(%d)",current->status);
@@ -62,10 +63,11 @@ static Context *kmt_context_save(Event ev,Context *context){
   }
   last=NULL;
   current->context=context;
+  spin_unlock(&tasklock);
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
-  //TODO():线程调度。
+  spin_lock(&tasklock);
   panic_on(ienabled()==1,"cli");
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
@@ -87,6 +89,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
+  spin_unlock(&tasklock);
   return current->context;
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
@@ -174,7 +177,6 @@ static void sem_signal(sem_t *sem){
   //spin_unlock(&tasklock);
 }
 MODULE_DEF(kmt) = {
- // TODO
  .init=kmt_init,
  .create=create,
  .teardown=teardown,

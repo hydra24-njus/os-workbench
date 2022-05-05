@@ -1,5 +1,4 @@
 #include <os.h>
-extern spinlock_t tasklock;
 typedef struct irq_handler{
   int seq;int event;
   handler_t handler;
@@ -15,12 +14,7 @@ static irq_handler_t irq_guard={
   .handler=(handler_t)irq_guard_fun,
   .next=NULL
 };
-void fun(void *i){
-  while(1){
-    printf("%d",i);
-    for(int i=0;i<10000;i++);
-  }
-}
+
 static inline task_t *task_alloc() {
   return pmm->alloc(sizeof(task_t));
 }
@@ -35,7 +29,7 @@ void consumer(void *arg) { while (1) { P(&fill);  putch(')'); V(&empty); } }
 static void os_init() {
   pmm->init();
   kmt->init();
-  //dev->init();
+  dev->init();
   /*for (uintptr_t i = 0; i < 10; i++)
     kmt->create(task_alloc(), "func", fun, (void *)i);*/
  /* kmt->sem_init(&empty, "empty", 5);  // 缓冲区大小为 5
@@ -50,7 +44,6 @@ static void os_run() {
   while (1)yield();
 }
 Context *os_trap(Event ev, Context *context){
-  kmt->spin_lock(&tasklock);
   panic_on(ienabled()==1,"cli");
   Context *next=NULL;
   for(irq_handler_t* handler_now=&irq_guard;handler_now!=NULL;handler_now=handler_now->next){
@@ -62,7 +55,6 @@ Context *os_trap(Event ev, Context *context){
   }
   panic_on(!next,"returning NULL context");
   panic_on(ienabled()==1,"cli");
-  kmt->spin_unlock(&tasklock);
   return next;
 }
 void os_on_irq(int seq, int event, handler_t handler){
