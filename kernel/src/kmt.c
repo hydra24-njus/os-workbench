@@ -84,7 +84,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   panic_on(last!=NULL,"last!=NULL");
   last=current;
   current=p;
-  current->status=RUNNING;
+  if(current!=idle)current->status=RUNNING;
   panic_on(current->status!=RUNNING,"in schedule");
   debug("(%d)schedule:%s\n",cpu_current(),current->name);
   return current->context;
