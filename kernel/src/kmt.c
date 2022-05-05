@@ -60,9 +60,9 @@ static Context *kmt_context_save(Event ev,Context *context){
     if(last->status!=IDLE){
     r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
     last->status-=ZOMBIE;
-    last=NULL;
     }
   }
+  last=NULL;
   current->context=context;
   return NULL;
 }
