@@ -8,6 +8,7 @@
   实现对compile error的处理
   管道连接的修改
   两个子进程wait()存在问题
+  进程退出后删除创建的文件（否则第二次之后无法编译）
   （但是为什么能过oj）
 */
 #ifndef LOCAL_MACHINE
