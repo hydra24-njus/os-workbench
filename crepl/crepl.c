@@ -3,6 +3,13 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/wait.h>
+
+/*TODO():
+  实现对compile error的处理
+  管道连接的修改
+  两个子进程wait()存在问题
+  （但是为什么能过oj）
+*/
 #ifndef LOCAL_MACHINE
 char* fpath="/tmp/func.c";
 char* ppath="/tmp/test";
