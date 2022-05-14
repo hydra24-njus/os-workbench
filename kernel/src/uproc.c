@@ -4,11 +4,11 @@
 #include "initcode.inc"
 extern int ucreate(task_t *task);
 Context *syscall(Event e,Context *c){
-  panic(0);
+  panic("ucreate");
   return NULL;
 }
 Context *pagefault(Event e,Context *c){
-  panic(0);
+  panic("pagefault");
   return NULL;
 }
 void uproc_init(){
