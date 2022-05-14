@@ -67,6 +67,7 @@ struct task {
     struct {
     int status;
     const char *name;//for debug
+    AddrSpace as;
     struct task *next;
     Context   *context;
   };

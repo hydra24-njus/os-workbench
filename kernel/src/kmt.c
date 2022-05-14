@@ -125,6 +125,21 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   spin_unlock(&tasklock);
   return 0;
 }
+/*static int ucreate(task_t *task){
+  spin_lock(&tasklock);
+  task->status=READY;
+  task->name="user task";
+  if(cpu_header==NULL)cpu_header=task;
+  else{
+    task->next=cpu_header->next;
+    cpu_header->next=task;
+  }
+  protect(&task->as);
+  Area stack={&task->context+1,task+1};
+  task->context=ucontext(&task->as,stack,task->as.area.start);
+  spin_unlock(&tasklock);
+  return 0;
+}*/
 static void teardown(task_t *task){
   spin_lock(&tasklock);
   task_t *head=cpu_header;

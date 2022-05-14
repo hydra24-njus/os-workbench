@@ -2,8 +2,18 @@
 #include <syscall.h>
 
 #include "initcode.inc"
+Context *syscall(Event e,Context *c){
+  panic(0);
+  return NULL;
+}
+Context *pagefault(Event e,Context *c){
+  panic(0);
+  return NULL;
+}
 void uproc_init(){
-  //vme_init(pmm->alloc,pmm->free);
+  os->on_irq(0,EVENT_SYSCALL,syscall);
+  os->on_irq(0,EVENT_PAGEFAULT,pagefault);
+  vme_init((void * (*)(int))pmm->alloc,pmm->free);
   return;
 }
 int kputc(task_t *task,char ch){
