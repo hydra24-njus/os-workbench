@@ -4,6 +4,7 @@
 #include "initcode.inc"
 
 extern int ucreate(task_t *task);
+extern void teardown(task_t *task);
 extern task_t *cpu_currents[8];
 #define current cpu_currents[cpu_current()]
 
@@ -35,7 +36,14 @@ int wait(task_t *task,int *status){
   return 0;
 }
 int exit(task_t *task,int status){
-  halt(status);
+  current->status=DEAD;
+  for(int i=0;i<task->pgcnt;i++){
+    pmm->free(task->pa[i]);
+    task->va[i]=NULL;
+    task->pa[i]=NULL;
+  }
+  task->pgcnt=0;
+  kmt->teardown(task);
   return 0;
 }
 int kill(task_t *task,int pid){

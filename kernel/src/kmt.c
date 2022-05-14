@@ -141,6 +141,7 @@ int ucreate(task_t *task){
   return 0;
 }
 static void teardown(task_t *task){
+  task->status=DEAD;
   spin_lock(&tasklock);
   task_t *head=cpu_header;
   if(task==head){
@@ -159,7 +160,6 @@ static void teardown(task_t *task){
     panic_on(head==NULL,"cannot find task");
   }
   spin_unlock(&tasklock);
-  task->status=DEAD;
   pmm->free(task);
   return;
 }
