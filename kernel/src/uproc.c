@@ -6,7 +6,7 @@ extern int ucreate(task_t *task);
 extern task_t *cpu_currents[8];
 #define current cpu_currents[cpu_current()]
 Context *syscall(Event e,Context *c){
-  r_panic_on(0,"syscall:%d",c->GPRx);
+  r_panic_on(1,"syscall:%d",c->GPRx);
   return NULL;
 }
 void pgmap(task_t *task,void *va,void *pa){
