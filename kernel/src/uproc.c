@@ -74,8 +74,8 @@ Context *syscall(Event e,Context *c){
   return NULL;
 }
 void uproc_init(){
-  os->on_irq(0,EVENT_SYSCALL,syscall);
-  os->on_irq(0,EVENT_PAGEFAULT,pagefault);
+  os->on_irq(1,EVENT_SYSCALL,syscall);
+  os->on_irq(1,EVENT_PAGEFAULT,pagefault);
   vme_init((void * (*)(int))pmm->alloc,pmm->free);
   ucreate(pmm->alloc(sizeof(task_t)));
   return;
