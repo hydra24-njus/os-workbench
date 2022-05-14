@@ -8,7 +8,7 @@ Context *syscall(Event e,Context *c){
   return NULL;
 }
 Context *pagefault(Event e,Context *c){
-  printf("pf:%p\n",e.ref);
+  printf("pf:%x\n",e.ref);
   return NULL;
 }
 void uproc_init(){
