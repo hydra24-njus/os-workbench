@@ -65,7 +65,7 @@ struct task {
   // TODO
   union{
     struct {
-    int status;
+    int status,pid;
     const char *name;//for debug
     AddrSpace as;
     void *va[64],*pa[64];

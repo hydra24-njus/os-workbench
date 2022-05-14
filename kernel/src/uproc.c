@@ -11,7 +11,7 @@ void pgmap(task_t *task,void *va,void *pa){
   task->va[task->pgcnt]=va;
   task->pa[task->pgcnt]=pa;
   task->pgcnt++;
-  printf("map:%p -> %p\n",va,pa);
+  debug("map:%p -> %p\n",va,pa);
   map(&task->as,va,pa,MMAP_READ|MMAP_WRITE);
 }
 Context *pagefault(Event e,Context *c){
@@ -35,6 +35,7 @@ int wait(task_t *task,int *status){
   return 0;
 }
 int exit(task_t *task,int status){
+  halt(status);
   return 0;
 }
 int kill(task_t *task,int pid){
@@ -56,6 +57,7 @@ Context *syscall(Event e,Context *c){
   //r_panic_on(1,"syscall:%d",c->GPRx);
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
+    case SYS_exit:exit(current,c->GPR1);break;
     default:assert(0);
   }
   return NULL;
