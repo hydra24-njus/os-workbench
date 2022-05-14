@@ -2,6 +2,7 @@
 #include <syscall.h>
 
 #include "initcode.inc"
+extern int ucreate(task_t *task);
 Context *syscall(Event e,Context *c){
   panic(0);
   return NULL;
@@ -14,6 +15,7 @@ void uproc_init(){
   os->on_irq(0,EVENT_SYSCALL,syscall);
   os->on_irq(0,EVENT_PAGEFAULT,pagefault);
   vme_init((void * (*)(int))pmm->alloc,pmm->free);
+  ucreate(pmm->alloc(sizeof(task_t)));
   return;
 }
 int kputc(task_t *task,char ch){

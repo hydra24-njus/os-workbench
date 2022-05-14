@@ -125,7 +125,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   spin_unlock(&tasklock);
   return 0;
 }
-/*static int ucreate(task_t *task){
+int ucreate(task_t *task){
   spin_lock(&tasklock);
   task->status=READY;
   task->name="user task";
@@ -139,7 +139,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   task->context=ucontext(&task->as,stack,task->as.area.start);
   spin_unlock(&tasklock);
   return 0;
-}*/
+}
 static void teardown(task_t *task){
   spin_lock(&tasklock);
   task_t *head=cpu_header;
