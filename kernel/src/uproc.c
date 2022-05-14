@@ -53,9 +53,9 @@ int64_t uptime(task_t *task){
   return 0;
 }
 Context *syscall(Event e,Context *c){
-  r_panic_on(1,"syscall:%d",c->GPRx);
+  //r_panic_on(1,"syscall:%d",c->GPRx);
   switch(c->GPRx){
-    case SYS_kputc:break;
+    case SYS_kputc:kputc(current,c->GPR1);break;
     default:assert(0);
   }
   return NULL;
