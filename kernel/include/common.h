@@ -66,9 +66,8 @@ struct task {
   union{
     struct {
     int status;
-    const char *name;
+    const char *name;//for debug
     struct task *next;
-    void (*entry)(void*);
     Context   *context;
   };
   uint8_t stack[4096];

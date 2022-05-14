@@ -101,7 +101,6 @@ void kmt_init(){
     cpu_last[cpu_current()]=NULL;
     task->status=IDLE;
     task->name=name[i];
-    task->entry=NULL;
     task->next=NULL;
     cpu_idle[i]=task;
     cpu_currents[i]=task;
@@ -112,11 +111,10 @@ void kmt_init(){
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
-static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   spin_lock(&tasklock);
   task->status=READY;
   task->name=name;
-  task->entry=entry;
   if(cpu_header==NULL)cpu_header=task;
   else{
     task->next=cpu_header->next;
@@ -196,7 +194,7 @@ static void sem_signal(sem_t *sem){
 }
 MODULE_DEF(kmt) = {
  .init=kmt_init,
- .create=create,
+ .create=kcreate,
  .teardown=teardown,
  .spin_init=spin_init,
  .spin_lock=spin_lock,
