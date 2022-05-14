@@ -2,17 +2,11 @@
 #include <syscall.h>
 
 #include "initcode.inc"
+
 extern int ucreate(task_t *task);
 extern task_t *cpu_currents[8];
 #define current cpu_currents[cpu_current()]
-Context *syscall(Event e,Context *c){
-  r_panic_on(1,"syscall:%d",c->GPRx);
-  switch(c->GPRx){
-    case SYS_kputc:break;
-    default:assert(0);
-  }
-  return NULL;
-}
+
 void pgmap(task_t *task,void *va,void *pa){
   task->va[task->pgcnt]=va;
   task->pa[task->pgcnt]=pa;
@@ -29,13 +23,6 @@ Context *pagefault(Event e,Context *c){
   }
   pgmap(current,va,pa);
   return NULL;
-}
-void uproc_init(){
-  os->on_irq(0,EVENT_SYSCALL,syscall);
-  os->on_irq(0,EVENT_PAGEFAULT,pagefault);
-  vme_init((void * (*)(int))pmm->alloc,pmm->free);
-  ucreate(pmm->alloc(sizeof(task_t)));
-  return;
 }
 int kputc(task_t *task,char ch){
   putch(ch);
@@ -64,6 +51,21 @@ int sleep(task_t *task,int seconds){
 }
 int64_t uptime(task_t *task){
   return 0;
+}
+Context *syscall(Event e,Context *c){
+  r_panic_on(1,"syscall:%d",c->GPRx);
+  switch(c->GPRx){
+    case SYS_kputc:break;
+    default:assert(0);
+  }
+  return NULL;
+}
+void uproc_init(){
+  os->on_irq(0,EVENT_SYSCALL,syscall);
+  os->on_irq(0,EVENT_PAGEFAULT,pagefault);
+  vme_init((void * (*)(int))pmm->alloc,pmm->free);
+  ucreate(pmm->alloc(sizeof(task_t)));
+  return;
 }
 MODULE_DEF(uproc) = {
   .init=uproc_init,
