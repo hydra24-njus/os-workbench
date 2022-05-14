@@ -56,6 +56,8 @@ int getpid(task_t *task){
   return 0;
 }
 int sleep(task_t *task,int seconds){
+  int64_t wakeup=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
+  while(wakeup>io_read(AM_TIMER_UPTIME).us)yield();
   return 0;
 }
 int64_t uptime(task_t *task){
@@ -66,6 +68,7 @@ Context *syscall(Event e,Context *c){
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
     case SYS_exit:exit(current,c->GPR1);break;
+    case SYS_sleep:sleep(current,c->GPR1);break;
     default:assert(0);
   }
   return NULL;
