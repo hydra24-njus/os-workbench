@@ -3,12 +3,27 @@
 
 #include "initcode.inc"
 extern int ucreate(task_t *task);
+extern task_t *cpu_currents[8];
+#define current cpu_currents[cpu_current()]
 Context *syscall(Event e,Context *c){
   panic("ucreate");
   return NULL;
 }
+void pgmap(task_t *task,void *va,void *pa){
+  task->va[task->pgcnt]=va;
+  task->pa[task->pgcnt]=pa;
+  task->pgcnt++;
+  printf("map:%p -> %p\n",va,pa);
+  map(&task->as,va,pa,MMAP_READ|MMAP_WRITE);
+}
 Context *pagefault(Event e,Context *c){
-  printf("pf:%x\n",e.ref>>32);
+  AddrSpace *as=&(current->as);
+  void *pa=pmm->alloc(as->pgsize);
+  void *va=(void *)(e.ref & ~(as->pgsize-1L));
+  if(va==as->area.start){
+    memcpy(pa,_init,_init_len);
+  }
+  pgmap(current,va,pa);
   return NULL;
 }
 void uproc_init(){

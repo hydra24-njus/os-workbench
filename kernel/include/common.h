@@ -68,6 +68,8 @@ struct task {
     int status;
     const char *name;//for debug
     AddrSpace as;
+    void *va[64],*pa[64];
+    int pgcnt;
     struct task *next;
     Context   *context;
   };
