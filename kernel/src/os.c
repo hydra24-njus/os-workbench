@@ -32,7 +32,9 @@ static void tty_reader(void *arg) {
     tty->ops->write(tty, 0, resp, strlen(resp));
   }
 }
-
+static void ide(void *arg){
+  while(1);
+}
 static void os_init() {
   pmm->init();
   kmt->init();
@@ -40,6 +42,7 @@ static void os_init() {
   uproc->init();
   kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
   kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
+  for(int i=0;i<8;i++)kmt->create(task_alloc(),"ide_test",ide,NULL);
 }
 static void os_run() {
   iset(true);
