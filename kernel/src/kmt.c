@@ -57,7 +57,7 @@ static Context *kmt_context_save(Event ev,Context *context){
   if(current->status==RUNNING)current->status=ZOMBIE;
   if(last){
     if(last->status!=IDLE){
-    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
+    //r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
     last->status-=ZOMBIE;
     }
   }
