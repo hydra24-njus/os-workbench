@@ -61,6 +61,8 @@ int sleep(task_t *task,int seconds){
   current->wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
   last=current;
   current->status=SLEEPING+ZOMBIE;
+  yield();
+  
   return 0;
 }
 int64_t uptime(task_t *task){
