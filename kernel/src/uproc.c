@@ -64,7 +64,15 @@ int sleep(task_t *task,int seconds){
     current->status=ZOMBIE;
     yield();
   }
-  current->status=READY;
+  current->status=ZOMBIE;
+    if(current->status==RUNNING)current->status=ZOMBIE;
+  if(last&&last!=current){
+    if(last->status!=IDLE){
+    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
+    last->status-=ZOMBIE;
+    }
+  }
+  last=NULL;
   return 0;
 }
 int64_t uptime(task_t *task){
