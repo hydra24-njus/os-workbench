@@ -64,6 +64,7 @@ int sleep(task_t *task,int seconds){
     current->status=SLEEPING;
     yield();
   }
+  current->status=ZOMBIE;
   return 0;
 }
 int64_t uptime(task_t *task){
