@@ -6,7 +6,9 @@
 extern int ucreate(task_t *task);
 extern void teardown(task_t *task);
 extern task_t *cpu_currents[8];
+extern task_t *cpu_last[8];
 #define current cpu_currents[cpu_current()]
+#define last cpu_last[cpu_current()]
 
 void pgmap(task_t *task,void *va,void *pa){
   task->va[task->pgcnt]=va;
@@ -57,6 +59,7 @@ int getpid(task_t *task){
 }
 int sleep(task_t *task,int seconds){
   int64_t wakeup=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
+  last=current;
   while(wakeup>io_read(AM_TIMER_UPTIME).us)yield();
   return 0;
 }
