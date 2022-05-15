@@ -62,7 +62,7 @@ static Context *kmt_context_save(Event ev,Context *context){
     }
   }
   last=NULL;
-  current->context=context;
+  current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
 }
@@ -92,7 +92,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
   spin_unlock(&tasklock);
-  return current->context;
+  return current->context[current->cn--];
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
@@ -105,7 +105,8 @@ void kmt_init(){
     cpu_idle[i]=task;
     cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
-    task->context=kcontext(stack,NULL,NULL);
+    task->context[0]=kcontext(stack,NULL,NULL);
+    task->cn=0;
   }
   spin_init(&tasklock,"kmtlock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
@@ -121,7 +122,8 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
     cpu_header->next=task;
   }
   Area stack={&task->context+1,task+1};
-  task->context=kcontext(stack,entry,arg);
+  task->context[0]=kcontext(stack,entry,arg);
+  task->cn=0;
   spin_unlock(&tasklock);
   return 0;
 }
@@ -136,7 +138,8 @@ int ucreate(task_t *task){
   }
   protect(&task->as);
   Area stack={&task->context+1,task+1};
-  task->context=ucontext(&task->as,stack,task->as.area.start);
+  task->context[0]=ucontext(&task->as,stack,task->as.area.start);
+  task->cn=0;
   spin_unlock(&tasklock);
   return 0;
 }

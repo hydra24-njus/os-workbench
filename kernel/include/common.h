@@ -71,7 +71,8 @@ struct task {
     void *va[64],*pa[64];
     int pgcnt;
     struct task *next;
-    Context   *context;
+    int cn;
+    Context   *context[4];
   };
   uint8_t stack[4096];
   };
