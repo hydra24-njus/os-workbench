@@ -68,7 +68,7 @@ int sleep(task_t *task,int seconds){
   kmt->spin_lock(&tasklock);
   //printf("%s\t%s\n",last->name,current->name);
   if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
-  current->status+=ZOMBIE;
+  current->status=ZOMBIE;
   last=NULL;
   kmt->spin_unlock(&tasklock);
   return 0;
