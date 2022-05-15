@@ -60,6 +60,7 @@ int getpid(task_t *task){
 int sleep(task_t *task,int seconds){
   int64_t wakeup=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
   while(wakeup>io_read(AM_TIMER_UPTIME).us){
+    last=current;
     current->status=ZOMBIE;
   }
   return 0;
