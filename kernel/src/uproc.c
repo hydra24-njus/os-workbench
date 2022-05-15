@@ -61,7 +61,7 @@ int getpid(task_t *task){
 int sleep(task_t *task,int seconds){
   kmt->spin_lock(&tasklock);
   current->wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
-  printf("iotime:%d\twakeuptime:%d\n",io_read(AM_TIMER_UPTIME).us/1000000,current->wakeuptime/1000000);
+  printf("iotime:%d\twakeuptime:%d\n",current->wakeuptime/1000000-seconds,current->wakeuptime/1000000);
   last=current;
   current->status=SLEEPING+ZOMBIE;
   kmt->spin_unlock(&tasklock);
