@@ -67,13 +67,15 @@ int64_t uptime(task_t *task){
 }
 Context *syscall(Event e,Context *c){
   panic_on(ienabled()==1,"cli");
-  //r_panic_on(1,"syscall:%d",c->GPRx);
+  iset(true);
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
     case SYS_exit:exit(current,c->GPR1);break;
     case SYS_sleep:sleep(current,c->GPR1);break;
     default:assert(0);
   }
+  panic_on(ienabled()==0,"cli");
+  iset(false);
   return NULL;
 }
 void uproc_init(){
