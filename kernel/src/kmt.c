@@ -74,7 +74,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   while(p!=NULL){
     if(p->status==READY)break;
     panic_on(p->status==DEAD,"DEAD task in lint-table");
-    if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE)
+    if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){}
     p=p->next;
   }
   if(p==NULL){
