@@ -66,7 +66,7 @@ struct task {
   union{
     struct {
     int status,pid;
-    int64_t wakeuptime;
+    uint64_t wakeuptime;
     const char *name;//for debug
     AddrSpace as;
     void *va[64],*pa[64];
