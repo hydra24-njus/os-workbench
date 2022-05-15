@@ -53,11 +53,11 @@ static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
   r_panic_on(current==NULL,"current==NULL");
-  //r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE&&current->status!=ZOMBIE,"current status error(%d)",current->status);
+  r_panic_on(current->status==READY,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
-  if(last){
+  if(last&&last!=current){
     if(last->status!=IDLE){
-    //r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
+    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
     last->status-=ZOMBIE;
     }
   }
