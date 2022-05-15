@@ -91,8 +91,9 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
+  current->cn--;
   spin_unlock(&tasklock);
-  return current->context[--current->cn];
+  return current->context[current->cn];
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
