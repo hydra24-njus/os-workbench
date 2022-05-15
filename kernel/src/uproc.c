@@ -7,6 +7,7 @@ extern int ucreate(task_t *task);
 extern void teardown(task_t *task);
 extern task_t *cpu_currents[8];
 extern task_t *cpu_last[8];
+extern spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
 #define last cpu_last[cpu_current()]
 
@@ -58,14 +59,18 @@ int getpid(task_t *task){
   return 0;
 }
 int sleep(task_t *task,int seconds){
+  kmt->spin_lock(&tasklock);
   current->wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
   last=current;
   current->status=SLEEPING+ZOMBIE;
+  kmt->spin_unlock(&tasklock);
   yield();
+  kmt->spin_lock(&tasklock);
   printf("%s\t%s\n",last->name,current->name);
-  last->status-=ZOMBIE;
+  if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
   current->status=ZOMBIE;
   last=NULL;
+  kmt->spin_unlock(&tasklock);
   return 0;
 }
 int64_t uptime(task_t *task){
