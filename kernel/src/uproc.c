@@ -59,7 +59,9 @@ int getpid(task_t *task){
   return 0;
 }
 int sleep(task_t *task,int seconds){
-  kmt->spin_lock(&tasklock);
+  uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
+  printf("iotime:%d\n",iotime/1000000);
+  /*kmt->spin_lock(&tasklock);
   uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
   current->wakeuptime=iotime+1000000*seconds;
   printf("iotime:%d\twakeuptime:%d\n",iotime/1000000,current->wakeuptime/1000000);
@@ -72,7 +74,7 @@ int sleep(task_t *task,int seconds){
   if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
   current->status=ZOMBIE;
   last=NULL;
-  kmt->spin_unlock(&tasklock);
+  kmt->spin_unlock(&tasklock);*/
   return 0;
 }
 int64_t uptime(task_t *task){
