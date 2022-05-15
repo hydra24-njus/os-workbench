@@ -107,7 +107,7 @@ void kmt_init(){
     cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
     task->context[0]=kcontext(stack,NULL,NULL);
-    task->cn=0;
+    task->cn=1;
   }
   spin_init(&tasklock,"kmtlock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
@@ -124,7 +124,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   }
   Area stack={&task->context+1,task+1};
   task->context[0]=kcontext(stack,entry,arg);
-  task->cn=0;
+  task->cn=1;
   spin_unlock(&tasklock);
   return 0;
 }
@@ -140,7 +140,7 @@ int ucreate(task_t *task){
   protect(&task->as);
   Area stack={&task->context+1,task+1};
   task->context[0]=ucontext(&task->as,stack,task->as.area.start);
-  task->cn=0;
+  task->cn=1;
   spin_unlock(&tasklock);
   return 0;
 }
