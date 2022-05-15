@@ -49,6 +49,7 @@ static void spin_unlock(spinlock_t *lk){
   atomic_xchg(&(lk->locked),0);
   popcli();
 }
+//TODO:删除last，遍历修改ZOMBIE
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
