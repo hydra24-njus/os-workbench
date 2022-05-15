@@ -63,7 +63,7 @@ int sleep(task_t *task,int seconds){
   current->status=SLEEPING+ZOMBIE;
   yield();
   printf("%s\t%s\n",last->name,current->name);
-  last->status=READY;
+  last->status-=ZOMBIE;
   current->status=ZOMBIE;
   last=NULL;
   return 0;
