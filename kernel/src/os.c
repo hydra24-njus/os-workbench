@@ -19,7 +19,7 @@ static irq_handler_t irq_guard={
 static inline task_t *task_alloc() {
   return pmm->alloc(sizeof(task_t));
 }
-/*
+
 static void tty_reader(void *arg) {
   device_t *tty = dev->lookup(arg);
   char cmd[128], resp[128], ps[16];
@@ -32,14 +32,14 @@ static void tty_reader(void *arg) {
     tty->ops->write(tty, 0, resp, strlen(resp));
   }
 }
-*/
+
 static void os_init() {
   pmm->init();
   kmt->init();
   dev->init();
   uproc->init();
-  //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
-  //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
+  kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
+  kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
 }
 static void os_run() {
   iset(true);
