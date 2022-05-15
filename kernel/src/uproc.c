@@ -62,7 +62,7 @@ int sleep(task_t *task,int seconds){
   last=current;
   current->status=SLEEPING+ZOMBIE;
   yield();
-  
+  printf("%s\t%s\n",last->name,current->name);
   return 0;
 }
 int64_t uptime(task_t *task){
