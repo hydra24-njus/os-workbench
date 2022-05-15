@@ -58,21 +58,9 @@ int getpid(task_t *task){
   return 0;
 }
 int sleep(task_t *task,int seconds){
-  int64_t wakeup=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
-  while(wakeup>io_read(AM_TIMER_UPTIME).us){
-    last=current;
-    current->status=ZOMBIE;
-    yield();
-  }
-  current->status=ZOMBIE;
-    if(current->status==RUNNING)current->status=ZOMBIE;
-  if(last&&last!=current){
-    if(last->status!=IDLE){
-    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
-    last->status-=ZOMBIE;
-    }
-  }
-  last=NULL;
+  current->wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
+  last=current;
+  current->status=SLEEPING+ZOMBIE;
   return 0;
 }
 int64_t uptime(task_t *task){

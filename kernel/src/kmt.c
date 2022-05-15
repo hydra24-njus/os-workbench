@@ -74,6 +74,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   while(p!=NULL){
     if(p->status==READY)break;
     panic_on(p->status==DEAD,"DEAD task in lint-table");
+    if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE)
     p=p->next;
   }
   if(p==NULL){
@@ -192,7 +193,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=SLEEPING+ZOMBIE;
+    current->status=WAITING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
@@ -206,7 +207,7 @@ static void sem_signal(sem_t *sem){
   sem->value++;
   if(sem->value<=0){
     task_t *task=dequeue(sem);
-    task->status-=SLEEPING;
+    task->status-=WAITING;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
