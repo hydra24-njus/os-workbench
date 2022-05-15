@@ -64,14 +64,6 @@ int sleep(task_t *task,int seconds){
   yield();
 
   printf("%s\t%s\n",last->name,current->name);
-  if(current->status==RUNNING)current->status=ZOMBIE;
-  if(last&&last!=current){
-    if(last->status!=IDLE){
-    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
-    last->status-=ZOMBIE;
-    }
-  }
-  last=NULL;
 
   return 0;
 }
