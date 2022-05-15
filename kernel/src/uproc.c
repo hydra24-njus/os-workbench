@@ -60,9 +60,7 @@ int getpid(task_t *task){
 int sleep(task_t *task,int seconds){
   int64_t wakeup=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
   while(wakeup>io_read(AM_TIMER_UPTIME).us){
-    last=current;
     current->status=ZOMBIE;
-    yield();
   }
   return 0;
 }
@@ -70,6 +68,8 @@ int64_t uptime(task_t *task){
   return 0;
 }
 Context *syscall(Event e,Context *c){
+  panic_on(ienabled()==1,"cli");
+  iset(true);
   //r_panic_on(1,"syscall:%d",c->GPRx);
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
@@ -77,6 +77,7 @@ Context *syscall(Event e,Context *c){
     case SYS_sleep:sleep(current,c->GPR1);break;
     default:assert(0);
   }
+  iset(false);
   return NULL;
 }
 void uproc_init(){
