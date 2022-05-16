@@ -36,9 +36,9 @@ void ide(void *arg){
   while(1);
 }
 static void os_init() {
+  ioe_init();
   pmm->init();
   kmt->init();
-  ioe_init();
   dev->init();
   uproc->init();
   kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
