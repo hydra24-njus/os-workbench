@@ -81,7 +81,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
   }
   if(p==NULL||p==current)p=idle;
-  last->status-=ZOMBIE;
+  if(last!=idle)last->status-=ZOMBIE;
   if(last->status==RUNNING)assert(0);
   last=current;
   if(last->status==RUNNING)last->status=ZOMBIE;
