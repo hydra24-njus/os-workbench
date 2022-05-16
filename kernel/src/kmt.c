@@ -51,13 +51,24 @@ static void spin_unlock(spinlock_t *lk){
 }
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
+  //debug("save\n");
   r_panic_on(current==NULL,"current==NULL");
+  r_panic_on(current->status==READY,"current status error(%d)",current->status);
+  if(current->status==RUNNING)current->status=ZOMBIE;
+  if(last&&last!=current){
+    if(last->status!=IDLE){
+    r_panic_on(last->status<ZOMBIE&&last->status!=SLEEPING,"last status error(%d).",last->status);
+    last->status-=ZOMBIE;
+    }
+  }
+  last=NULL;
   current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
 }
 static Context *kmt_schedule(Event ev,Context *context){
   spin_lock(&tasklock);
+  panic_on(ienabled()==1,"cli");
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
@@ -81,11 +92,8 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
   }
   if(p==NULL||p==current)p=idle;
-  if(last!=idle)last->status-=ZOMBIE;
-  if(last->status==RUNNING)assert(0);
+  panic_on(last!=NULL,"last!=NULL");
   last=current;
-  if(last->status==RUNNING)last->status=ZOMBIE;
-  else if(last!=idle)last->status+=ZOMBIE;
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
