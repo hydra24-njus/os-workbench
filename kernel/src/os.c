@@ -36,11 +36,11 @@ void ide(void *arg){
   while(1);
 }
 static void os_init() {
-  //ioe_init();
+  ioe_init();
   pmm->init();
   kmt->init();
   dev->init();
-  //uproc->init();
+  uproc->init();
   kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
   kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
   //for(int i=0;i<20;i++)kmt->create(task_alloc(),"ide_test",ide,NULL);
