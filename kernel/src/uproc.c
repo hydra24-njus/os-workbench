@@ -83,9 +83,9 @@ Context *syscall(Event e,Context *c){
   //panic_on(ienabled()==1,"cli");
   //iset(true);
   switch(c->GPRx){
-    case SYS_kputc:kputc(current,c->GPR1);break;
-    case SYS_exit:exit(current,c->GPR1);break;
-    case SYS_sleep:sleep(current,c->GPR1);break;
+    case SYS_kputc:c->GPRx=kputc(current,c->GPR1);break;
+    case SYS_exit:c->GPRx=exit(current,c->GPR1);break;
+    case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
     case SYS_uptime:c->GPRx=uptime(current);break;
     default:assert(0);
   }
