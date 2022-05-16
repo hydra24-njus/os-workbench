@@ -81,6 +81,7 @@ int sleep(task_t *task,int seconds){
 }
 int64_t uptime(task_t *task){
   int64_t time=io_read(AM_TIMER_UPTIME).us/1000;
+  printf("[%d]uptime:%d\n",cpu_current(),time);
   return time;
 }
 Context *syscall(Event e,Context *c){
