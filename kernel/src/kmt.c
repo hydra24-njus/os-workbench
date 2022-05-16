@@ -85,7 +85,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(last->status==RUNNING)assert(0);
   last=current;
   if(last->status==RUNNING)last->status=ZOMBIE;
-  else last->status+=ZOMBIE;
+  else if(last!=idle)last->status+=ZOMBIE;
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
