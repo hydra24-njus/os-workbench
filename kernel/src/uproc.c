@@ -65,7 +65,7 @@ int sleep(task_t *task,int seconds){
   kmt->spin_lock(&tasklock);
   uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
   current->wakeuptime=iotime+1000000*seconds;
-  printf("iotime:%d\twakeuptime:%d\n",iotime/1000000,current->wakeuptime/1000000);
+  debug("uptime:%d\twakeuptime:%d\n",iotime/1000000,current->wakeuptime/1000000);
   last=current;
   current->status=SLEEPING+ZOMBIE;
   kmt->spin_unlock(&tasklock);
