@@ -76,7 +76,8 @@ int sleep(task_t *task,int seconds){
   return 0;
 }
 int64_t uptime(task_t *task){
-  return 0;
+  int64_t time=io_read(AM_TIMER_UPTIME).us/1000;
+  return time;
 }
 Context *syscall(Event e,Context *c){
   //panic_on(ienabled()==1,"cli");
@@ -85,6 +86,7 @@ Context *syscall(Event e,Context *c){
     case SYS_kputc:kputc(current,c->GPR1);break;
     case SYS_exit:exit(current,c->GPR1);break;
     case SYS_sleep:sleep(current,c->GPR1);break;
+    case SYS_uptime:c->GPRx=uptime(current);break;
     default:assert(0);
   }
   //panic_on(ienabled()==0,"cli");
