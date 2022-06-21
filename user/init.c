@@ -1,21 +1,14 @@
 #include "ulib.h"
-
+int printf(char *fmt){
+  while(*fmt!='\0'){
+    kputc(*fmt++);
+  }
+  return 0;
+}
 int main() {
   // Example:
-  kputc('h');
-  kputc('e');
-  kputc('l');
-  kputc('l');
-  kputc('o');
-  kputc('\n');
   while(1){
-    kputc('h');
-    kputc('e');
-    kputc('l');
-    kputc('l');
-    kputc('o');
-    kputc('\n');
-    sleep(1);
+    uptime();
   }
   // printf("pid = %d\n", getpid());
   return 0;
