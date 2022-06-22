@@ -126,6 +126,7 @@ int exit(task_t *task,int status){
     printf("status=%p\n",task->retstatus);
     kmt->sem_signal(task->wait_sem);
     *(task->retstatus)=status;
+    printf("*status=%p\n",*(task->retstatus));
   }
   kmt->teardown(task);
   return status;
