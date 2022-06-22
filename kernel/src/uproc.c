@@ -16,7 +16,7 @@ void pid_init(){
   pidset=pmm->alloc(4096);
   memset(pidset,0,4096);
   kmt->spin_init(&pidlock,"pidlock");
-  *pidset[1]=1;
+  *pidset[0]=1;
 }
 int pid_alloc(){
   int pid=0;
