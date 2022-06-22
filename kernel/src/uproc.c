@@ -107,6 +107,7 @@ int wait(task_t *task,int *status){
         last=NULL;
         kmt->spin_unlock(&tasklock);
       pmm->free(wait_sem);
+      *status=*(task->retstatus);
       printf("status=%d\n",*status);
       return 0;
     }
