@@ -41,7 +41,6 @@ int fork(task_t *task){
   t->context[0]->rsp0=rsp0;
   t->context[0]->cr3=cr3;
   t->context[0]->GPRx=0;
-  t->status=task->status-ZOMBIE;
   for(int i=0;i<task->pgcnt;i++){
     int sz=task->as.pgsize;
     void *va=task->va[i];
@@ -50,7 +49,7 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
-  return 1;
+  return 0;
 }
 int wait(task_t *task,int *status){
   return 0;
