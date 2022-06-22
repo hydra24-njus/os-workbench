@@ -33,7 +33,23 @@ int kputc(task_t *task,char ch){
   return 0;
 }
 int fork(task_t *task){
-  return 0;
+  task_t *t=pmm->alloc(sizeof(task_t));
+  ucreate(t);
+  uintptr_t rsp0=t->context[0]->rsp0;
+  void *cr3=t->context[0]->cr3;
+  t->context[0]=task->context[0];
+  t->context[0]->rsp0=rsp0;
+  t->context[0]->cr3=cr3;
+  t->context[0]->GPRx=0;
+  for(int i=0;i<task->pgcnt;i++){
+    int sz=task->as.pgsize;
+    void *va=task->va[i];
+    void *pa=task->pa[i];
+    void *npa=pmm->alloc(sz);
+    memcpy(npa,pa,sz);
+    pgmap(t,va,npa);
+  }
+  return 1;
 }
 int wait(task_t *task,int *status){
   return 0;
@@ -81,21 +97,23 @@ int sleep(task_t *task,int seconds){
 }
 int64_t uptime(task_t *task){
   int64_t time=io_read(AM_TIMER_UPTIME).us/1000;
-  printf("[%d]uptime:%d\n",cpu_current(),time);
+  debug("[%d]uptime:%d\n",cpu_current(),time);
   return time;
 }
 Context *syscall(Event e,Context *c){
-  //panic_on(ienabled()==1,"cli");
-  //iset(true);
+  assert(current->cn==1);
+  panic_on(ienabled()==1,"cli");
+  iset(true);
   switch(c->GPRx){
     case SYS_kputc:c->GPRx=kputc(current,c->GPR1);break;
     case SYS_exit:c->GPRx=exit(current,c->GPR1);break;
     case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
     case SYS_uptime:c->GPRx=uptime(current);break;
+    case SYS_fork:c->GPRx=fork(current);break;
     default:assert(0);
   }
-  //panic_on(ienabled()==0,"cli");
-  //iset(false);
+  panic_on(ienabled()==0,"cli");
+  iset(false);
   return NULL;
 }
 void uproc_init(){
