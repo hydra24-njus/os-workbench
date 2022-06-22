@@ -8,6 +8,7 @@ extern void teardown(task_t *task);
 extern task_t *cpu_currents[8];
 extern task_t *cpu_last[8];
 extern spinlock_t tasklock;
+extern task_t *cpu_header;
 #define current cpu_currents[cpu_current()]
 #define last cpu_last[cpu_current()]
 uint32_t (*pidset)[2048];
@@ -66,6 +67,7 @@ int kputc(task_t *task,char ch){
 int fork(task_t *task){
   task_t *t=pmm->alloc(sizeof(task_t));
   t->pid=pid_alloc();
+  t->ppid=task->pid;
   ucreate(t);
   int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
@@ -86,7 +88,18 @@ int fork(task_t *task){
   return pid;
 }
 int wait(task_t *task,int *status){
-  return 0;
+  for(task_t *t=cpu_header;t!=NULL;t=t->next){
+    if(t->ppid==task->pid){
+      sem_t *wait_sem=pmm->alloc(sizeof(sem_t));
+      kmt->sem_init(wait_sem,"wait_sem",0);
+      t->wait_sem=wait_sem;
+      t->retstatus=status;
+      kmt->sem_wait(wait_sem);
+      pmm->free(wait_sem);
+      return 0;
+    }
+  }
+  return -1;
 }
 int exit(task_t *task,int status){
   current->status=DEAD;
@@ -97,8 +110,12 @@ int exit(task_t *task,int status){
   }
   task->pgcnt=0;
   pid_free(task->pid);
+  if(task->ppid!=0&&task->wait_sem!=NULL){
+    kmt->sem_signal(task->wait_sem);
+    *(task->retstatus)=status;
+  }
   kmt->teardown(task);
-  return 0;
+  return status;
 }
 int kill(task_t *task,int pid){
   return 0;

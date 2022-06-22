@@ -65,7 +65,9 @@ struct task {
   // TODO
   union{
     struct {
-    int status,pid;
+    int status,pid,ppid;
+    int *retstatus;
+    sem_t *wait_sem;
     uint64_t wakeuptime;
     const char *name;//for debug
     AddrSpace as;
