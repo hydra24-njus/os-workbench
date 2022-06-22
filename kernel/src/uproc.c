@@ -90,7 +90,7 @@ int fork(task_t *task){
 int wait(task_t *task,int *status){
   task->retstatus=0;
   for(task_t *t=cpu_header;t!=NULL;t=t->next){
-    if(t->ppid==task->pid){
+    if(t->ppid==task->pid&&t->status!=DEAD){
       sem_t *wait_sem=pmm->alloc(sizeof(sem_t));
       kmt->sem_init(wait_sem,"wait_sem",0);
       t->wait_sem=wait_sem;
