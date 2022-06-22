@@ -84,7 +84,7 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
-  pid=1;
+  pid=t->pid;
   return pid;
 }
 int wait(task_t *task,int *status){
@@ -93,16 +93,20 @@ int wait(task_t *task,int *status){
       sem_t *wait_sem=pmm->alloc(sizeof(sem_t));
       kmt->sem_init(wait_sem,"wait_sem",0);
       t->wait_sem=wait_sem;
+      {
         kmt->spin_lock(&tasklock);
         last=current;
         current->status=SLEEPING+ZOMBIE;
         kmt->spin_unlock(&tasklock);
+      }
       kmt->sem_wait(wait_sem);
+      {
         kmt->spin_lock(&tasklock);
         if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
         current->status=ZOMBIE;
         last=NULL;
         kmt->spin_unlock(&tasklock);
+      }
       *status=task->retstatus;
       pmm->free(wait_sem);
       return 0;
@@ -112,12 +116,6 @@ int wait(task_t *task,int *status){
 }
 int exit(task_t *task,int status){
   current->status=DEAD;
-  for(int i=0;i<task->pgcnt;i++){
-    pmm->free(task->pa[i]);
-    task->va[i]=NULL;
-    task->pa[i]=NULL;
-  }
-  task->pgcnt=0;
   if(task->ppid!=0&&task->wait_sem!=NULL){
     for(task_t *t=cpu_header;t!=NULL;t=t->next){
       if(t->pid==task->ppid){
@@ -127,6 +125,13 @@ int exit(task_t *task,int status){
     }
     kmt->sem_signal(task->wait_sem);
   }
+  for(int i=0;i<task->pgcnt;i++){
+    pmm->free(task->pa[i]);
+    task->va[i]=NULL;
+    task->pa[i]=NULL;
+  }
+  task->pgcnt=0;
+
   pid_free(task->pid);
   kmt->teardown(task);
   return status;
