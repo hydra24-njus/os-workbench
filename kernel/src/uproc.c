@@ -88,27 +88,23 @@ int fork(task_t *task){
   return pid;
 }
 int wait(task_t *task,int *status){
-  printf("status=%p\n",status);
   for(task_t *t=cpu_header;t!=NULL;t=t->next){
     if(t->ppid==task->pid){
       sem_t *wait_sem=pmm->alloc(sizeof(sem_t));
       kmt->sem_init(wait_sem,"wait_sem",0);
       t->wait_sem=wait_sem;
-      t->retstatus=status;
         kmt->spin_lock(&tasklock);
         last=current;
         current->status=SLEEPING+ZOMBIE;
         kmt->spin_unlock(&tasklock);
       kmt->sem_wait(wait_sem);
         kmt->spin_lock(&tasklock);
-        //printf("%s\t%s\n",last->name,current->name);
         if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
         current->status=ZOMBIE;
         last=NULL;
         kmt->spin_unlock(&tasklock);
+      *status=task->retstatus;
       pmm->free(wait_sem);
-      *status=*(task->retstatus);
-      printf("status=%d\n",*status);
       return 0;
     }
   }
@@ -124,10 +120,13 @@ int exit(task_t *task,int status){
   task->pgcnt=0;
   pid_free(task->pid);
   if(task->ppid!=0&&task->wait_sem!=NULL){
-    printf("status=%p\n",task->retstatus);
+    for(task_t *t=cpu_header;t!=NULL;t=t->next){
+      if(t->pid==task->ppid){
+        t->retstatus=status;
+        break;
+      }
+    }
     kmt->sem_signal(task->wait_sem);
-    *(task->retstatus)=status;
-    printf("*status=%p\n",*(task->retstatus));
   }
   kmt->teardown(task);
   return status;

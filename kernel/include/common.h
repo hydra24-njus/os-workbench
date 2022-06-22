@@ -66,7 +66,7 @@ struct task {
   union{
     struct {
     int status,pid,ppid;
-    int *retstatus;
+    int retstatus;
     sem_t *wait_sem;
     uint64_t wakeuptime;
     const char *name;//for debug
