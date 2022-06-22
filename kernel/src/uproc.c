@@ -35,6 +35,7 @@ int kputc(task_t *task,char ch){
 int fork(task_t *task){
   task_t *t=pmm->alloc(sizeof(task_t));
   ucreate(t);
+  int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
   void *cr3=t->context[0]->cr3;
   memcpy(t->context[0],task->context[0],sizeof(Context));
@@ -49,7 +50,8 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
-  return 0;
+  pid=1;
+  return pid;
 }
 int wait(task_t *task,int *status){
   return 0;
