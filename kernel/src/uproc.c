@@ -37,7 +37,7 @@ int fork(task_t *task){
   ucreate(t);
   uintptr_t rsp0=t->context[0]->rsp0;
   void *cr3=t->context[0]->cr3;
-  int GPRx=0;
+  int ret=0;
   t->context[0]=task->context[0];
   t->context[0]->rsp0=rsp0;
   t->context[0]->cr3=cr3;
@@ -50,8 +50,8 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
-  GPRx=1;
-  return GPRx;
+  ret=1;
+  return ret;
 }
 int wait(task_t *task,int *status){
   return 0;
