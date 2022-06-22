@@ -84,7 +84,7 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
-  pid=t->pid;
+  pid=1;
   return pid;
 }
 int wait(task_t *task,int *status){
