@@ -10,12 +10,37 @@ extern task_t *cpu_last[8];
 extern spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
 #define last cpu_last[cpu_current()]
-
-int alloc_pid(){
-  return 0;
+uint32_t (*pidset)[2048];
+spinlock_t pidlock;
+void pid_init(){
+  pidset=pmm->alloc(4096);
+  memset(pidset,0,4096);
+  kmt->spin_init(&pidlock,"pidlock");
+  *pidset[1]=1;
 }
-void free_pid(int pid){
-
+int pid_alloc(){
+  int pid=0;
+  kmt->spin_lock(&pidlock);
+  for(int i=0;i<2048;i++){
+    if(*pidset[i]!=0xffffffff){
+      int x=*pidset[i];int j=0;
+      for(;j<32;j++){
+        if(((x>>j)&1)==0)break;
+      }
+      *pidset[i]|=1<<j;
+      pid=i*32+j;
+      break;
+    }
+  }
+  kmt->spin_unlock(&pidlock);
+  return pid;
+}
+void pid_free(int pid){
+  kmt->spin_lock(&pidlock);
+  int i=pid/32;
+  int j=pid%32;
+  *pidset[i]-=1<<j;
+  kmt->spin_unlock(&pidlock);
 }
 void pgmap(task_t *task,void *va,void *pa){
   task->va[task->pgcnt]=va;
@@ -40,6 +65,7 @@ int kputc(task_t *task,char ch){
 }
 int fork(task_t *task){
   task_t *t=pmm->alloc(sizeof(task_t));
+  t->pid=pid_alloc();
   ucreate(t);
   int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
@@ -70,6 +96,7 @@ int exit(task_t *task,int status){
     task->pa[i]=NULL;
   }
   task->pgcnt=0;
+  pid_free(task->pid);
   kmt->teardown(task);
   return 0;
 }
@@ -127,8 +154,11 @@ Context *syscall(Event e,Context *c){
 void uproc_init(){
   os->on_irq(0,EVENT_SYSCALL,syscall);
   os->on_irq(0,EVENT_PAGEFAULT,pagefault);
+  pid_init();
   vme_init((void * (*)(int))pmm->alloc,pmm->free);
-  ucreate(pmm->alloc(sizeof(task_t)));
+  task_t *t=pmm->alloc(sizeof(task_t));
+  ucreate(t);
+  t->pid=pid_alloc();
   return;
 }
 MODULE_DEF(uproc) = {
