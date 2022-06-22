@@ -37,7 +37,7 @@ int fork(task_t *task){
   ucreate(t);
   uintptr_t rsp0=t->context[0]->rsp0;
   void *cr3=t->context[0]->cr3;
-  t->context[0]=task->context[0];
+  memcpy(t->context[0],task->context[0],sizeof(Context));
   t->context[0]->rsp0=rsp0;
   t->context[0]->cr3=cr3;
   t->context[0]->GPRx=0;
