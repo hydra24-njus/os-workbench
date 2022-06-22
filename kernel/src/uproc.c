@@ -94,7 +94,17 @@ int wait(task_t *task,int *status){
       kmt->sem_init(wait_sem,"wait_sem",0);
       t->wait_sem=wait_sem;
       t->retstatus=status;
+        kmt->spin_lock(&tasklock);
+        last=current;
+        current->status=SLEEPING+ZOMBIE;
+        kmt->spin_unlock(&tasklock);
       kmt->sem_wait(wait_sem);
+        kmt->spin_lock(&tasklock);
+        //printf("%s\t%s\n",last->name,current->name);
+        if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
+        current->status=ZOMBIE;
+        last=NULL;
+        kmt->spin_unlock(&tasklock);
       pmm->free(wait_sem);
       return 0;
     }
@@ -138,7 +148,6 @@ int sleep(task_t *task,int seconds){
   current->status=SLEEPING+ZOMBIE;
   kmt->spin_unlock(&tasklock);
   yield();
-  debug_smp();
   kmt->spin_lock(&tasklock);
   //printf("%s\t%s\n",last->name,current->name);
   if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
