@@ -88,6 +88,7 @@ int fork(task_t *task){
   return pid;
 }
 int wait(task_t *task,int *status){
+  printf("status=%p\n",status);
   for(task_t *t=cpu_header;t!=NULL;t=t->next){
     if(t->ppid==task->pid){
       sem_t *wait_sem=pmm->alloc(sizeof(sem_t));
