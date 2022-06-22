@@ -118,7 +118,6 @@ int exit(task_t *task,int status){
     task->pa[i]=NULL;
   }
   task->pgcnt=0;
-  pid_free(task->pid);
   if(task->ppid!=0&&task->wait_sem!=NULL){
     for(task_t *t=cpu_header;t!=NULL;t=t->next){
       if(t->pid==task->ppid){
@@ -128,6 +127,7 @@ int exit(task_t *task,int status){
     }
     kmt->sem_signal(task->wait_sem);
   }
+  pid_free(task->pid);
   kmt->teardown(task);
   return status;
 }
