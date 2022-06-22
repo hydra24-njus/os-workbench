@@ -123,6 +123,7 @@ int exit(task_t *task,int status){
   task->pgcnt=0;
   pid_free(task->pid);
   if(task->ppid!=0&&task->wait_sem!=NULL){
+    printf("status=%p\n",task->retstatus);
     kmt->sem_signal(task->wait_sem);
     *(task->retstatus)=status;
   }
