@@ -12,10 +12,10 @@ extern spinlock_t tasklock;
 #define last cpu_last[cpu_current()]
 
 int alloc_pid(){
-
+  return 0;
 }
 void free_pid(int pid){
-  
+
 }
 void pgmap(task_t *task,void *va,void *pa){
   task->va[task->pgcnt]=va;
