@@ -107,7 +107,7 @@ void *mmap(task_t *task,void *addr,int length,int prot,int flags){
   return NULL;
 }
 int getpid(task_t *task){
-  return 0;
+  return task->pid;
 }
 void debug_smp(){
   return;
@@ -145,6 +145,7 @@ Context *syscall(Event e,Context *c){
     case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
     case SYS_uptime:c->GPRx=uptime(current);break;
     case SYS_fork:c->GPRx=fork(current);break;
+    case SYS_getpid:c->GPRx=getpid(current);break;
     default:assert(0);
   }
   panic_on(ienabled()==0,"cli");
