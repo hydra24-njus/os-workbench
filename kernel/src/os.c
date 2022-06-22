@@ -40,10 +40,10 @@ static void os_init() {
   pmm->init();
   kmt->init();
   dev->init();
-  uproc->init();
+  //uproc->init();
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
-  for(int i=0;i<4;i++)kmt->create(task_alloc(),"ide_test",ide,NULL);
+  //for(int i=0;i<4;i++)kmt->create(task_alloc(),"ide_test",ide,NULL);
 }
 static void os_run() {
   iset(true);
