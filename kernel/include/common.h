@@ -59,17 +59,23 @@ typedef unsigned long int uintptr_t;
 #endif
 #define MAGIC 0x114514
 enum{
-  READY=0,RUNNING,WAITING,SLEEPING,IDLE,ZOMBIE,DEAD
+  READY=0,RUNNING,WAITING,SLEEPING,IDLE,ZOMBIE,DEAD=15
 };
 struct task {
   // TODO
   union{
     struct {
-    int status;
-    const char *name;
+    int status,pid,ppid;
+    int retstatus;
+    sem_t *wait_sem;
+    uint64_t wakeuptime;
+    const char *name;//for debug
+    AddrSpace as;
+    void *va[64],*pa[64];
+    int pgcnt;
     struct task *next;
-    void (*entry)(void*);
-    Context   *context;
+    int cn;
+    Context   *context[4];
   };
   uint8_t stack[4096];
   };

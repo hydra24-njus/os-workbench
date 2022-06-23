@@ -1,0 +1,17 @@
+#!/bin/bash
+
+make && \
+qemu-system-x86_64 \
+	-serial none \
+	-machine accel=tcg \
+	-smp 1 \
+	-s -S \
+	-drive format=raw,file=build/kernel-x86_64-qemu &
+pid=$!
+
+gdb -x build/kernel-x86_64-qemu\
+	-ex "target remot localhost:1234" \
+	-ex "set confirm off" \
+	-ex "file build/kernel-x86_64-qemu.elf" 
+
+kill -9 $!

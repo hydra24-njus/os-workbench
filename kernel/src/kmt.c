@@ -53,16 +53,16 @@ static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
   r_panic_on(current==NULL,"current==NULL");
-  r_panic_on(current->status!=RUNNING&&current->status!=IDLE&&current->status!=SLEEPING+ZOMBIE&&current->status!=ZOMBIE,"current status error(%d)",current->status);
+  r_panic_on(current->status==READY,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
-  if(last){
+  if(last&&last!=current){
     if(last->status!=IDLE){
-    r_panic_on(last->status<ZOMBIE,"last status error(%d).",last->status);
+    r_panic_on(last->status<ZOMBIE&&last->status!=SLEEPING,"last status error(%d).",last->status);
     last->status-=ZOMBIE;
     }
   }
   last=NULL;
-  current->context=context;
+  current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
 }
@@ -74,6 +74,13 @@ static Context *kmt_schedule(Event ev,Context *context){
   while(p!=NULL){
     if(p->status==READY)break;
     panic_on(p->status==DEAD,"DEAD task in lint-table");
+    if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
+      if(p->wakeuptime!=0){
+        if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
+          p->status-=SLEEPING;
+        }
+      }
+    }
     p=p->next;
   }
   if(p==NULL){
@@ -91,8 +98,9 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
+  current->cn--;
   spin_unlock(&tasklock);
-  return current->context;
+  return current->context[current->cn];
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
@@ -101,33 +109,50 @@ void kmt_init(){
     cpu_last[cpu_current()]=NULL;
     task->status=IDLE;
     task->name=name[i];
-    task->entry=NULL;
     task->next=NULL;
     cpu_idle[i]=task;
     cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
-    task->context=kcontext(stack,NULL,NULL);
+    task->context[0]=kcontext(stack,NULL,NULL);
+    task->cn=1;
   }
   spin_init(&tasklock,"kmtlock");
   os->on_irq(INT32_MIN+1,EVENT_NULL,kmt_context_save);
   os->on_irq(INT32_MAX,EVENT_NULL,kmt_schedule);
 }
-static int create(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
+static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *arg){
   spin_lock(&tasklock);
   task->status=READY;
   task->name=name;
-  task->entry=entry;
   if(cpu_header==NULL)cpu_header=task;
   else{
     task->next=cpu_header->next;
     cpu_header->next=task;
   }
   Area stack={&task->context+1,task+1};
-  task->context=kcontext(stack,entry,arg);
+  task->context[0]=kcontext(stack,entry,arg);
+  task->cn=1;
+  spin_unlock(&tasklock);
+  return 0;
+}
+int ucreate(task_t *task){
+  spin_lock(&tasklock);
+  task->status=READY;
+  task->name="user task";
+  if(cpu_header==NULL)cpu_header=task;
+  else{
+    task->next=cpu_header->next;
+    cpu_header->next=task;
+  }
+  protect(&task->as);
+  Area stack={&task->context+1,task+1};
+  task->context[0]=ucontext(&task->as,stack,task->as.area.start);
+  task->cn=1;
   spin_unlock(&tasklock);
   return 0;
 }
 static void teardown(task_t *task){
+  task->status=DEAD;
   spin_lock(&tasklock);
   task_t *head=cpu_header;
   if(task==head){
@@ -146,7 +171,6 @@ static void teardown(task_t *task){
     panic_on(head==NULL,"cannot find task");
   }
   spin_unlock(&tasklock);
-  task->status=DEAD;
   pmm->free(task);
   return;
 }
@@ -175,7 +199,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=SLEEPING+ZOMBIE;
+    current->status=WAITING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
@@ -189,14 +213,14 @@ static void sem_signal(sem_t *sem){
   sem->value++;
   if(sem->value<=0){
     task_t *task=dequeue(sem);
-    task->status-=SLEEPING;
+    task->status-=WAITING;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
 }
 MODULE_DEF(kmt) = {
  .init=kmt_init,
- .create=create,
+ .create=kcreate,
  .teardown=teardown,
  .spin_init=spin_init,
  .spin_lock=spin_lock,
