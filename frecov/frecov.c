@@ -208,7 +208,6 @@ int main(int argc, char *argv[]) {
         else{
           fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
         }
-        print:
         fclose(bmp_tmp_file);
 
         char buf[40];
