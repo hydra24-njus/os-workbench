@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
     fclose(bmp_tmp_file);
 
     char buf[64];
-    char file_path[128]="sha1sum /tmp/DICM";
+    char file_path[128]="sha1sum /tmp/DICM/";
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
     fscanf(fp,"%s",buf);
