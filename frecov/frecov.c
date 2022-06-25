@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
   // TODO: frecov
 
   char dirpath[]="/tmp/DICM/";
-  if(_access(dirpath,0)==-1)_mkdir(dirpath);
+  if(access(dirpath,0)==-1)mkdir(dirpath);
 
 
   u32 tot_sec=hdr->BPB_TotSec32;//扇区总数
