@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
 
   // TODO: frecov
 
-  char dirpath[]="/tmp/";
+  char dirpath[]="./DICM/";
   if(access(dirpath,0)==-1)mkdir(dirpath,0755);
 
 
