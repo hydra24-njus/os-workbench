@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
       int align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
       fwrite((void*)img_start,clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
       int img_sz=bmp_ip->img_size;
-      img_size-=align;
+      img_sz-=align;
       uintptr_t img_current=img_start+align;
       while(img_sz>=clus_sz){
         fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
