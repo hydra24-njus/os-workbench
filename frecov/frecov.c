@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
       continue;
     }
     else{
-      fwrite(img_start,bmp_ip->img_size,1,bmp_tmp_file);
+      fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
     }
     fclose(bmp_tmp_file);
 
