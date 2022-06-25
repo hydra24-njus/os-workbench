@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
   char result[1024][128];int num=0;
   memset(result,'\0',sizeof(result));
   u32 first_clus[1024];
-  memset(first_clus,0,sizof(first_clus));
+  memset(first_clus,0,sizeof(first_clus));
   for(int i=0;i<tot_clus;i++){
     uintptr_t addr=data_start+i*clus_sz;
     for(int j=0;j<short_entry_cnt;j++){
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
         //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
 
         first_clus[num]=((((uint)short_entry->DIR_FstClusHI)<<16)|((uint)short_entry->DIR_FstClusLO))-2;
-        struct bmp_header *bmp_fp=(bmp_header*)(data_start+first_clus[num]*clus_sz);
+        struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
         if((uintptr_t)bmp_fp>=end||strncmp((char*)bmp_fp->type,"BM",2)!=0)continue;
         used[first_clus[num]]=1;
 
