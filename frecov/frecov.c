@@ -210,7 +210,8 @@ int main(int argc, char *argv[]) {
     char file_path[128]="sha1sum ./";
 #endif
     strcat(file_path,result[i]);
-    FILE *fp=popen(file_path,"r");
+    int fp=popen(file_path,"r");
+    panic_on(fp<0,"popen");
     fscanf(fp,"%s",buf);
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
