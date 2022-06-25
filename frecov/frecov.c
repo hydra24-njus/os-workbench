@@ -62,13 +62,13 @@ _Static_assert(sizeof(struct entry)==0x20,"Size of entry is wrong!");
 
 struct long_entry{
   u8  LDIR_Ord;
-  u8  LDIR_Name1[10];
+  u16  LDIR_Name1[5];
   u8  LDIR_Attr;
   u8  LDIR_Type;//为0
   u8  LDIR_Chksum;//check sum 校验和
-  u8  LDIR_Name2[12];
+  u16  LDIR_Name2[6];
   u16 LDIR_FstClusLO;//为0
-  u8  LDIR_Name3[4];
+  u16  LDIR_Name3[2];
 }__attribute__((packed));
 _Static_assert(sizeof(struct long_entry)==0x20,"Size of long entry is wrong!");
 
@@ -135,16 +135,16 @@ int main(int argc, char *argv[]) {
           struct long_entry *long_entry=(struct long_entry *)(addr+k*sizeof(struct entry));
           if(long_entry->LDIR_Attr==15&&long_entry->LDIR_Type==0&&long_entry->LDIR_FstClusLO==0){
             flag=0;//
-            for(int l=0;l<10;l++){
-              if(long_entry->LDIR_Name1[l]==0xFF)continue;
+            for(int l=0;l<5;l++){
+              if(long_entry->LDIR_Name1[l]==0xFFff)continue;
               filename[index++]=(char)long_entry->LDIR_Name1[l];
             }
-            for(int l=0;l<12;l++){
-              if(long_entry->LDIR_Name2[l]==0xFF)continue;
+            for(int l=0;l<6;l++){
+              if(long_entry->LDIR_Name2[l]==0xFFFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name2[l];
             }
-            for(int l=0;l<4;l++){
-              if(long_entry->LDIR_Name3[l]==0xFF)continue;
+            for(int l=0;l<2;l++){
+              if(long_entry->LDIR_Name3[l]==0xFFFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name3[l];
             }
           }
