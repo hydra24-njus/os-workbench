@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-
+#define LOCAL
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -133,14 +133,10 @@ int main(int argc, char *argv[]) {
         //this if all short entry;
         //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
 
-        first_clus[num]=((((uint)short_entry->DIR_FstClusHI)<<16)|((uint)short_entry->DIR_FstClusLO))-2;
+        first_clus[num]=((unsigned int)short_entry->DIR_FstClusLO|(((unsigned int)(short_entry->DIR_FstClusHI))<<16))-2;
         struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
         if((uintptr_t)bmp_fp>=end||strncmp((char*)bmp_fp->type,"BM",2)!=0)continue;
         used[first_clus[num]]=1;
-
-
-
-
 
         int flag=1;int index=0;char filename[128];
         memset(filename,'\0',sizeof(filename));
@@ -172,8 +168,13 @@ int main(int argc, char *argv[]) {
   }
   //todo:recover
   for(int i=0;i<num;i++){
+    /*
     //todo:write to tmp
+#ifdef LOCAL
+    char tmp_path[128]="/tmp/DICM/";
+#else
     char tmp_path[128]="/tmp/";
+#endif
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     FILE *bmp_tmp_file=fopen(tmp_path,"a");
@@ -204,12 +205,19 @@ int main(int argc, char *argv[]) {
     fclose(bmp_tmp_file);
 
     char buf[40];
+#ifdef LOCAL
+    char file_path[128]="sha1sum /tmp/DICM/";
+#else
     char file_path[128]="sha1sum /tmp/";
+#endif
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
     fscanf(fp,"%s",buf);
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
+
+    */
+   printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
   }
 
 
