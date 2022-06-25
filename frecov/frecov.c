@@ -211,7 +211,6 @@ int main(int argc, char *argv[]) {
 #endif
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
-    panic_on((int)fp<0,"popen");
     fscanf(fp,"%s",buf);
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
