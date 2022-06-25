@@ -186,7 +186,8 @@ int main(int argc, char *argv[]) {
 #endif
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
-    FILE *bmp_tmp_file=fopen(tmp_path,"a");
+    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
+    if(bmp_tmp_file==NULL)assert(0);
     fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
     struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
     fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
@@ -220,7 +221,8 @@ int main(int argc, char *argv[]) {
     char file_path[128]="sha1sum ./DICM/";
 #endif
     strcat(file_path,result[i]);
-    FILE *fp=popen(file_path,"r");
+    FILE *fp=NULL;fp=popen(file_path,"r");
+    if(fp==NULL)assert(0);
     fscanf(fp,"%s",buf);
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
