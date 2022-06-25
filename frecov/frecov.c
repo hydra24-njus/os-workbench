@@ -44,6 +44,54 @@ struct fat32hdr {
   u16 Signature_word;
 } __attribute__((packed));
 
+struct entry {
+  u8  DIR_Name[11];
+  u8  DIR_Attr;
+  u8  DIR_NTRes;
+  u8  DIR_CrtTimeTenth;
+  u16 DIR_CrtTime;
+  u16 DIR_CrtDate;
+  u16 DIR_LastAccDate;
+  u16 DIR_FstClusHI;
+  u16 DIR_WrtTime;
+  u16 DIR_WrtDate;
+  u16 DIR_FstClusLO;
+  u32 DIR_FileSize;
+} __attribute__((packed));
+_Static_assert(sizeof(struct entry)==0x20,"Size of entry is wrong!");
+
+struct long_entry{
+  u8  LDIR_Ord;
+  u8  LDIR_Name1[10];
+  u8  LDIR_Attr;
+  u8  LDIR_Type;//为0
+  u8  LDIR_Chksum;//check sum 校验和
+  u8  LDIR_Name2[12];
+  u16 LDIR_FstClusLO;//为0
+  u8  LDIR_Name3[4];
+}__attribute__((packed));
+_Static_assert(sizeof(struct long_entry)==0x20,"Size of long entry is wrong!");
+
+struct bmp_header{
+  u8  type[2];// BM
+  u32 file_size;
+  u16 unused[2];
+  u32 offset;
+}__attribute__((packed));
+
+struct bmp_infomation_header{
+  u32 header_size;
+  u32 width;
+  u32 height;
+  u16 nplanes;
+  u16 bits_per_pixel;
+  u32 compress_type;
+  u32 img_size;
+  u32 hers;
+  u32 vres;
+  u32 ncolors;
+  u32 nimpcolors;
+}__attribute__((packed));
 
 void *map_disk(const char *fname);
 
@@ -61,6 +109,31 @@ int main(int argc, char *argv[]) {
   struct fat32hdr *hdr = map_disk(argv[1]);
 
   // TODO: frecov
+  u32 tot_sec=hdr->BPB_TotSec32;//扇区总数
+  u32 offset_sec=hdr->BPB_RsvdSecCnt+hdr->BPB_NumFATs*hdr->BPB_FATSz32;//data开始扇区数
+  u32 data_sec=tot_sec-offset_sec;//data总数
+  u32 tot_clus=data_sec/hdr->BPB_SecPerClus;//clus总个数
+  u32 clus_sz=hdr->BPB_BytsPerSec*hdr->BPB_SecPerClus;//一个clus大小
+  u32 short_entry_cnt=clus_sz/sizeof(struct entry);//每个clus最多短目录数
+  uintptr_t data_start=(uintptr_t)hdr+offset_sec*hdr->BPB_BytsPerSec;
+  uintptr_t fat1=(uintptr_t)hdr+hdr->BPB_RsvdSecCnt*hdr->BPB_BytsPerSec;
+  uintptr_t end=(uintptr_t)hdr+tot_sec*hdr->BPB_BytsPerSec;
+  u8 *used=malloc(tot_clus+2);
+  memset(used,0,tot_clus+2);
+  char result[128][1024];
+  memset(result,'\0',sizeof(result));
+  for(int i=0;i<tot_clus;i++){
+    uintptr_t addr=data_start+i*clus_sz;
+    for(int j=0;j<short_entry_cnt;j++){
+      struct entry *short_entry=(struct entry *)(addr+j*sizeof(struct entry));
+      if(strncmp((char*)short_entry->DIR_Name+8,"BMP",3)==0){//BMP文件
+        if(short_entry->DIR_Name[0]==0xE5||short_entry->DIR_FileSize==0)continue;
+        printf("%s\n",short_entry->DIR_Name);
+      }
+    }
+  }
+
+
 
   // file system traversal
   munmap(hdr, hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
