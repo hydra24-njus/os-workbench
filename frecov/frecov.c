@@ -134,8 +134,8 @@ int main(int argc, char *argv[]) {
         //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
 
         first_clus[num]=((((uint)short_entry->DIR_FstClusHI)<<16)|((uint)short_entry->DIR_FstClusLO))-2;
-        struct bmp_header *bmp_fp=data_start+first_clus[num]*clus_sz;
-        if(bmp_fp>=end||strncmp((char*)bmp_fp->type,"BM",2)!=0)continue;
+        struct bmp_header *bmp_fp=(bmp_header*)(data_start+first_clus[num]*clus_sz);
+        if((uintptr_t)bmp_fp>=end||strncmp((char*)bmp_fp->type,"BM",2)!=0)continue;
         used[first_clus[num]]=1;
 
 
