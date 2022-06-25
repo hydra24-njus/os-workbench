@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-//#define LOCAL
+#define LOCAL
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 #ifdef LOCAL
     char tmp_path[128]="/tmp/DICM/";
 #else
-    char tmp_path[128]="./";
+    char tmp_path[128]="/tmp/";
 #endif
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
 #else
-    char file_path[128]="sha1sum ./";
+    char file_path[128]="sha1sum /tmp/";
 #endif
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
