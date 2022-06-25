@@ -10,7 +10,7 @@
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
-
+const char* sha="d60e7d3d2b47d19418af5b0ba52406b86ec6ef83";
 // Copied from the manual
 struct fat32hdr {
   u8  BS_jmpBoot[3];
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
         if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-        printf("%s\n",filename);
+        printf("%s %s\n",sha,filename);
       }
     }
   }
