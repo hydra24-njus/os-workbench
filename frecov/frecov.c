@@ -193,68 +193,22 @@ int main(int argc, char *argv[]) {
           //多个簇
           //continue;
           fwrite((void*)img_start,align,1,bmp_tmp_file);
-          int height=bmp_ip->height;
-          int width=bmp_ip->img_size/height;
-          if(width>=4096||width<0)goto print;
           int img_sz=bmp_ip->img_size-align;
-          char before[4096],current[4096];
-          int before_pos=clus_sz-align%width-width;
-          int current_pos=width-align%width;
-          if(before_pos<0){
-            uintptr_t img_current=img_start+align;
-            while(img_sz>=clus_sz){
-              fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
-              img_current+=clus_sz;
-              img_sz-=clus_sz;
-            }
-            if(img_sz>0){
-              fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
-            }
+          uintptr_t img_current=img_start+align;
+          while(img_sz>=clus_sz){
+            fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
+            img_current+=clus_sz;
+            img_sz-=clus_sz;
           }
-          else{
-            memcpy(before,(void*)(img_start+before_pos),width);
-            uintptr_t img_current=img_start+align;
-            while(img_sz>=clus_sz){
-              memcpy(current,(void*)(img_current+current_pos),4096);
-              unsigned delta=0;
-              for(int k=0;k<width;k++)delta+=abs(current[k]-before[k]);
-
-              uint delta_m=delta;
-              uint ind=0;
-              for(uint p=2;p<tot_clus;p++){
-                if(used[p])continue;
-                uintptr_t current_addr=data_start+p*clus_sz;
-                if(current_addr+current_pos+4096>end)break;
-                char *tmp=malloc(4096);
-                memcpy(tmp,(void*)(current_addr+current_pos),4096);
-                uint delta_=0;
-                for(int k1=0;k1<width;k1++)delta_+=abs(tmp[k1]-before[k1]);
-                if(delta_<delta_m){
-                  delta_m=delta_;
-                  img_current=current_addr;
-                  ind=p;
-                }
-                free(tmp);
-              }
-              if(delta_m!=delta)used[ind]=1;
-              else used[(img_current-data_start)/clus_sz]=1;
-              if(img_current+before_pos+width>end)break;
-              fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
-              before_pos=clus_sz-(clus_sz-current_pos)%width-width;
-              current_pos=width-(clus_sz-current_pos)%width;
-              memcpy(before,(void*)(img_current+before_pos),4096);
-              img_current+=clus_sz;
-              img_sz-=clus_sz;
-            }
-            if(img_sz>0){
-              fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
-            }
+          if(img_sz>0){
+            fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
           }
+      
         }
         else{
           fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
         }
-    print:
+        print:
         fclose(bmp_tmp_file);
 
         char buf[40];
