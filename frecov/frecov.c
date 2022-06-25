@@ -124,7 +124,6 @@ int main(int argc, char *argv[]) {
   u32 clus_sz=hdr->BPB_BytsPerSec*hdr->BPB_SecPerClus;//一个clus大小
   u32 short_entry_cnt=clus_sz/sizeof(struct entry);//每个clus最多短目录数
   uintptr_t data_start=(uintptr_t)hdr+offset_sec*hdr->BPB_BytsPerSec;
-  uintptr_t fat1=(uintptr_t)hdr+hdr->BPB_RsvdSecCnt*hdr->BPB_BytsPerSec;
   uintptr_t end=(uintptr_t)hdr+tot_sec*hdr->BPB_BytsPerSec;
   u8 *used=malloc(tot_clus+2);
   memset(used,0,tot_clus+2);
@@ -138,6 +137,7 @@ int main(int argc, char *argv[]) {
     for(int j=0;j<short_entry_cnt;j++){
       struct entry *short_entry=(struct entry *)(addr+j*sizeof(struct entry));
       if(strncmp((char*)short_entry->DIR_Name+8,"BMP",3)==0){//BMP文件
+      {
         if(short_entry->DIR_Name[0]==0xE5||short_entry->DIR_FileSize==0)continue;
         //this if all short entry;
         //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
@@ -172,8 +172,7 @@ int main(int argc, char *argv[]) {
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
         strcpy(result[num],filename);
-
-
+      }
 
 #ifdef LOCAL
     char tmp_path[128]="./DICM/";
@@ -181,115 +180,103 @@ int main(int argc, char *argv[]) {
     char tmp_path[128]="./DICM/";
 #endif
 
-    strcat(tmp_path,result[num]);
-    remove(tmp_path);
-    bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
-    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
-    if(bmp_tmp_file==NULL)assert(0);
-    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
-    struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
-    fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
-    uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
-    if(bmp_ip->img_size>align){
-      //多个簇
-      //continue;
-      fwrite((void*)img_start,align,1,bmp_tmp_file);
-      int img_sz=bmp_ip->img_size-align;
-      uintptr_t img_current=img_start+align;
-      while(img_sz>=clus_sz){
-        fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
-        img_current+=clus_sz;
-        img_sz-=clus_sz;
-      }
-      if(img_sz>0){
-        fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
-      }
-      
-    }
-    else{
-      fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
-    }
-    fclose(bmp_tmp_file);
+        strcat(tmp_path,result[num]);
+        remove(tmp_path);
+        bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
+        FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
+        if(bmp_tmp_file==NULL)assert(0);
+        fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
+        struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
+        fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
+        uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
+        if(bmp_ip->img_size>align){
+          //多个簇
+          //continue;
+          fwrite((void*)img_start,align,1,bmp_tmp_file);
+          int height=bmp_ip->height;
+          int width=bmp_ip->img_size/height;
+          if(width>=4096||width<0)goto print;
+          int img_sz=bmp_ip->img_size-align;
+          char before[4096],current[4096];
+          int before_pos=clus_sz-align%width-width;
+          int current_pos=width-align%width;
+          if(before_pos<0){
+            uintptr_t img_current=img_start+align;
+            while(img_sz>=clus_sz){
+              fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
+              img_current+=clus_sz;
+              img_sz-=clus_sz;
+            }
+            if(img_sz>0){
+              fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
+            }
+          }
+          else{
+            memcpy(before,img_start+before_pos,width);
+            uintptr_t img_current=img_start+align;
+            while(img_sz>=clus_sz){
+              memcpy(current,img_current+current_pos,4096);
+              unsigned delta=0;
+              for(int k=0;k<width;k++)delta+=abs(current[k]-before[k]);
 
-    char buf[40];
-    memset(buf,'\0',sizeof(buf));
+              uint delta_m=delta;
+              uint ind=0;
+              for(uint p=2;p<tot_clus;p++){
+                if(used[p])continue;
+                uintptr_t current_addr=data_start+p*clus_sz;
+                if(current_addr+current_pos+4096>end)break;
+                char *tmp=malloc(4096);
+                memcpy(tmp,current_addr+current_pos,4096);
+                uint delta_=0;
+                for(int k1=0;k1<width;k1++)delta_+=abs(tmp[k1]-before[k1]);
+                if(delta_<delta_m){
+                  delta_m=delta_;
+                  img_current=current_addr;
+                  ind=p;
+                }
+                free(tmp);
+              }
+              if(delta_m!=delta)used[ind]=1;
+              else used[(img_current-data_start)/clus_sz]=1;
+              if(img_current+before_pos+width>end)break;
+              fwrite(img_current,clus_sz,1,bmp_tmp_file);
+              before_pos=clus_sz-(clus_sz-current_pos)%width-width;
+              current_pos=wid-(clus_sz-current_pos)%width;
+              memcpy(before,img_current+before_pos,4096);
+              img_current+=clus_sz;
+              img_sz-=clus_sz;
+            }
+            if(img_sz>0){
+              fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
+            }
+          }
+        }
+        else{
+          fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
+        }
+    print:
+        fclose(bmp_tmp_file);
+
+        char buf[40];
+        memset(buf,'\0',sizeof(buf));
 #ifdef LOCAL
     char file_path[128]="sha1sum ./DICM/";
 #else
     char file_path[128]="sha1sum ./DICM/";
 #endif
-    strcat(file_path,result[num]);
-    FILE *fp=NULL;fp=popen(file_path,"r");
-    if(fp==NULL)assert(0);
-    fscanf(fp,"%s",buf);
-    pclose(fp);
-    if(buf[0]=='\0')
-      printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[num]);
-    else printf("%s %s\n",buf,result[num]);
-
+        strcat(file_path,result[num]);
+        FILE *fp=NULL;fp=popen(file_path,"r");
+        if(fp==NULL)assert(0);
+        fscanf(fp,"%s",buf);
+        pclose(fp);
+        if(buf[0]=='\0')
+          printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[num]);
+        else printf("%s %s\n",buf,result[num]);
+        fflush(stdout);
         num++;
       }
     }
   }
-  //todo:recover
-
-  for(int i=0;i<num;i++){
-    //printf("%s %s\n",sha,result[i]);fflush(stdout);
-    /*
-    //todo:write to tmp
-#ifdef LOCAL
-    char tmp_path[128]="./DICM/";
-#else
-    char tmp_path[128]="./DICM/";
-#endif
-
-    strcat(tmp_path,result[i]);
-    remove(tmp_path);
-    struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
-    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
-    if(bmp_tmp_file==NULL)assert(0);
-    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
-    struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
-    fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
-    uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
-    if(bmp_ip->img_size>align){
-      //多个簇
-      //continue;
-      fwrite((void*)img_start,align,1,bmp_tmp_file);
-      int img_sz=bmp_ip->img_size-align;
-      uintptr_t img_current=img_start+align;
-      while(img_sz>=clus_sz){
-        fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
-        img_current+=clus_sz;
-        img_sz-=clus_sz;
-      }
-      if(img_sz>0){
-        fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
-      }
-      
-    }
-    else{
-      fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
-    }
-    fclose(bmp_tmp_file);
-
-    char buf[40];
-    memset(buf,'\0',sizeof(buf));
-#ifdef LOCAL
-    char file_path[128]="sha1sum ./DICM/";
-#else
-    char file_path[128]="sha1sum ./DICM/";
-#endif
-    strcat(file_path,result[i]);
-    FILE *fp=NULL;fp=popen(file_path,"r");
-    if(fp==NULL)assert(0);
-    fscanf(fp,"%s",buf);
-    pclose(fp);
-    //if(buf[0]=='\0')
-      printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
-    //else printf("%s %s\n",buf,result[i]);*/
-  }
-
 
   // file system traversal
   munmap(hdr, hdr->BPB_TotSec32 * hdr->BPB_BytsPerSec);
