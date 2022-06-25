@@ -167,6 +167,7 @@ int main(int argc, char *argv[]) {
     }
   }
   //todo:recover
+  uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
   for(int i=0;i<num;i++){
     
     //todo:write to tmp
@@ -182,13 +183,11 @@ int main(int argc, char *argv[]) {
     struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
     fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
     uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
-    if(bmp_ip->img_size>clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header)){
+    if(bmp_ip->img_size>align){
       //多个簇
       //continue;
-      int align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
-      fwrite((void*)img_start,clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
-      int img_sz=bmp_ip->img_size;
-      img_sz-=align;
+      fwrite((void*)img_start,align,1,bmp_tmp_file);
+      int img_sz=bmp_ip->img_size-align;
       uintptr_t img_current=img_start+align;
       while(img_sz>=clus_sz){
         fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
