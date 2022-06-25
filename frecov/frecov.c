@@ -193,10 +193,10 @@ int main(int argc, char *argv[]) {
       while(img_sz>=clus_sz){
         fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
         img_current+=clus_sz;
-        img_size-=clus_sz;
+        img_sz-=clus_sz;
       }
       if(img_sz>0){
-        fwrite((void*)img_current,img_size,1,bmp_tmp_file);
+        fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
       }
     }
     else{
