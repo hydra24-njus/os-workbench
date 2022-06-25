@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
         if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-        strcpy(result[num++],filename);
+        strcpy(result[num],filename);num++;
       }
     }
   }
@@ -185,6 +185,7 @@ int main(int argc, char *argv[]) {
     char tmp_path[128]="./DICM/";
 #endif
     strcat(tmp_path,result[i]);
+    remove(tmp_path);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
     if(bmp_tmp_file==NULL)assert(0);
