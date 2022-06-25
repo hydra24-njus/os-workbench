@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#define LOCAL
+//#define LOCAL
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
     }
     fclose(bmp_tmp_file);
-/*
+
     char buf[40];
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
@@ -215,8 +215,8 @@ int main(int argc, char *argv[]) {
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
 
-    */
-   printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
+    
+   //printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
   }
 
 
