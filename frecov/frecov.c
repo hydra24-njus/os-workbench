@@ -136,15 +136,15 @@ int main(int argc, char *argv[]) {
           if(long_entry->LDIR_Attr==15&&long_entry->LDIR_Type==0&&long_entry->LDIR_FstClusLO==0){
             flag=0;//
             for(int l=0;l<10;l++){
-              if(long_entry->LDIR_Name1[l]==0xFF)break;
+              if(long_entry->LDIR_Name1[l]==0xFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name1[l];
             }
             for(int l=0;l<12;l++){
-              if(long_entry->LDIR_Name2[l]==0xFF)break;
+              if(long_entry->LDIR_Name2[l]==0xFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name2[l];
             }
             for(int l=0;l<4;l++){
-              if(long_entry->LDIR_Name3[l]==0xFF)break;
+              if(long_entry->LDIR_Name3[l]==0xFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name3[l];
             }
           }
