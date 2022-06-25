@@ -176,7 +176,6 @@ int main(int argc, char *argv[]) {
     char tmp_path[128]="/tmp/DICM/";
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
-    printf("%s\n",tmp_path);
     FILE *bmp_tmp_file=fopen(tmp_path,"a");
     fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
     struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
