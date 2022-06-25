@@ -181,6 +181,15 @@ int main(int argc, char *argv[]) {
     struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
     fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
     uintptr_t img_start=(uintptr_t)(bmp_fp+bmp_fp->offset);
+    if(bmp_ip->img_size>clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header)){
+      //多个簇
+      continue;
+    }
+    else{
+      fwrite(img_start,bmp_ip->img_size,1,bmp_tmp_file);
+    }
+    fclose(bmp_tmp_file);
+
     char buf[64];
     char file_path[128]="sha1sum /tmp/DICM";
     strcat(file_path,result[i]);
