@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     uintptr_t img_start=(uintptr_t)(bmp_fp+bmp_fp->offset);
     if(bmp_ip->img_size>clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header)){
       //多个簇
-      continue;
+      //continue;
     }
     else{
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
