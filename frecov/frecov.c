@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
     }
     fclose(bmp_tmp_file);
-*/
+
     char buf[40];
     memset(buf,'\0',sizeof(buf));
 #ifdef LOCAL
