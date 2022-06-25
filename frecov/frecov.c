@@ -185,7 +185,19 @@ int main(int argc, char *argv[]) {
     if(bmp_ip->img_size>clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header)){
       //多个簇
       //continue;
+      int align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
       fwrite((void*)img_start,clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
+      int img_sz=bmp_ip->img_size;
+      img_size-=align;
+      uintptr_t img_current=img_start+align;
+      while(img_sz>=clus_sz){
+        fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
+        img_current+=clus_sz;
+        img_size-=clus_sz;
+      }
+      if(img_sz>0){
+        fwrite((void*)img_current,img_size,1,bmp_tmp_file);
+      }
     }
     else{
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
