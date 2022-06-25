@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
                 uintptr_t current_addr=data_start+p*clus_sz;
                 if(current_addr+current_pos+4096>end)break;
                 char *tmp=malloc(4096);
-                memcpy(tmp,current_addr+current_pos,4096);
+                memcpy(tmp,(void*)(current_addr+current_pos),4096);
                 uint delta_=0;
                 for(int k1=0;k1<width;k1++)delta_+=abs(tmp[k1]-before[k1]);
                 if(delta_<delta_m){
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
               if(delta_m!=delta)used[ind]=1;
               else used[(img_current-data_start)/clus_sz]=1;
               if(img_current+before_pos+width>end)break;
-              fwrite(img_current,clus_sz,1,bmp_tmp_file);
+              fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
               before_pos=clus_sz-(clus_sz-current_pos)%width-width;
               current_pos=width-(clus_sz-current_pos)%width;
               memcpy(before,(void*)(img_current+before_pos),4096);
