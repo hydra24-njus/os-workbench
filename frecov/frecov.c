@@ -225,7 +225,7 @@ int main(int argc, char *argv[]) {
     pclose(fp);
     if(buf[0]=='\0')
       printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[num]);
-    else printf("%s %s\n",buf,result[num]);*/
+    else printf("%s %s\n",buf,result[num]);
 
         num++;
       }
