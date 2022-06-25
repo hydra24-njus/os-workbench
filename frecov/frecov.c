@@ -170,14 +170,14 @@ int main(int argc, char *argv[]) {
         if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-        strncpy(result[num],filename,128);num++;
+        strcpy(result[num],filename);num++;
       }
     }
   }
   //todo:recover
   uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
   for(int i=0;i<num;i++){
-    printf("%s %s\n",sha,result[i]);
+    printf("%s %s\n",sha,result[i]);fflush(stdout);
     /*
     //todo:write to tmp
 #ifdef LOCAL
