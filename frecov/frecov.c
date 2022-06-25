@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
   uintptr_t end=(uintptr_t)hdr+tot_sec*hdr->BPB_BytsPerSec;
   u8 *used=malloc(tot_clus+2);
   memset(used,0,tot_clus+2);
-  char result[128][1024];
+  char result[1024][128];
   memset(result,'\0',sizeof(result));
   for(int i=0;i<tot_clus;i++){
     uintptr_t addr=data_start+i*clus_sz;
@@ -128,7 +128,32 @@ int main(int argc, char *argv[]) {
       struct entry *short_entry=(struct entry *)(addr+j*sizeof(struct entry));
       if(strncmp((char*)short_entry->DIR_Name+8,"BMP",3)==0){//BMP文件
         if(short_entry->DIR_Name[0]==0xE5||short_entry->DIR_FileSize==0)continue;
-        printf("%s\n",short_entry->DIR_Name);
+        //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
+        int flag=1;int index=0;char filename[128];
+        memset(filename,'\0',sizeof(filename));
+        for(int k=j-1;k>=0;k--){
+          struct long_entry *long_entry=(struct long_entry *)(addr+k*sizeof(struct entry));
+          if(long_entry->LDIR_Attr==15&&long_entry->LDIR_Type==0&&long_entry->LDIR_FstClusLO==0){
+            flag=0;//
+            for(int l=0;l<10;l++){
+              if(long_entry->LDIR_Name1[l]==0xFF)break;
+              filename[index++]=(char)long_entry->LDIR_Name1[l];
+            }
+            for(int l=0;l<12;l++){
+              if(long_entry->LDIR_Name2[l]==0xFF)break;
+              filename[index++]=(char)long_entry->LDIR_Name2[l];
+            }
+            for(int l=0;l<4;l++){
+              if(long_entry->LDIR_Name3[l]==0xFF)break;
+              filename[index++]=(char)long_entry->LDIR_Name3[l];
+            }
+          }
+          else break;
+          if(flag==1){
+            for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
+          }
+          printf("%s\n",filename);
+        }
       }
     }
   }
