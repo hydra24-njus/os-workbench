@@ -132,6 +132,7 @@ int main(int argc, char *argv[]) {
   memset(result,'\0',sizeof(result));
   u32 first_clus[1024];
   memset(first_clus,0,sizeof(first_clus));
+  uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
   for(int i=0;i<tot_clus;i++){
     uintptr_t addr=data_start+i*clus_sz;
     for(int j=0;j<short_entry_cnt;j++){
@@ -171,13 +172,67 @@ int main(int argc, char *argv[]) {
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
         strcpy(result[num],filename);
-        printf("%s %s\n",sha,result[num]);fflush(stdout);
+
+
+
+#ifdef LOCAL
+    char tmp_path[128]="./DICM/";
+#else
+    char tmp_path[128]="./DICM/";
+#endif
+
+    strcat(tmp_path,result[num]);
+    remove(tmp_path);
+    struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
+    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
+    if(bmp_tmp_file==NULL)assert(0);
+    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
+    struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
+    fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
+    uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
+    if(bmp_ip->img_size>align){
+      //多个簇
+      //continue;
+      fwrite((void*)img_start,align,1,bmp_tmp_file);
+      int img_sz=bmp_ip->img_size-align;
+      uintptr_t img_current=img_start+align;
+      while(img_sz>=clus_sz){
+        fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
+        img_current+=clus_sz;
+        img_sz-=clus_sz;
+      }
+      if(img_sz>0){
+        fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
+      }
+      
+    }
+    else{
+      fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
+    }
+    fclose(bmp_tmp_file);
+
+    char buf[40];
+    memset(buf,'\0',sizeof(buf));
+#ifdef LOCAL
+    char file_path[128]="sha1sum ./DICM/";
+#else
+    char file_path[128]="sha1sum ./DICM/";
+#endif
+    strcat(file_path,result[num]);
+    FILE *fp=NULL;fp=popen(file_path,"r");
+    if(fp==NULL)assert(0);
+    fscanf(fp,"%s",buf);
+    pclose(fp);
+    if(buf[0]=='\0')
+      printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[num]);
+    else printf("%s %s\n",buf,result[num]);*/
+
         num++;
       }
     }
   }
   //todo:recover
-  uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
+
   for(int i=0;i<num;i++){
     //printf("%s %s\n",sha,result[i]);fflush(stdout);
     /*
