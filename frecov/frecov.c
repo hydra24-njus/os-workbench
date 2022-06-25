@@ -186,6 +186,14 @@ int main(int argc, char *argv[]) {
 #endif
     strcat(tmp_path,result[i]);
     remove(tmp_path);
+    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
+    if(bmp_tmp_file==NULL)assert(0);
+    struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
+    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
+    fclose(bmp_tmp_file);
+/*
+    strcat(tmp_path,result[i]);
+    remove(tmp_path);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
     if(bmp_tmp_file==NULL)assert(0);
@@ -196,7 +204,6 @@ int main(int argc, char *argv[]) {
     if(bmp_ip->img_size>align){
       //多个簇
       //continue;
-      /*
       fwrite((void*)img_start,align,1,bmp_tmp_file);
       int img_sz=bmp_ip->img_size-align;
       uintptr_t img_current=img_start+align;
@@ -208,18 +215,18 @@ int main(int argc, char *argv[]) {
       if(img_sz>0){
         fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
       }
-      */
+      
     }
     else{
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
     }
     fclose(bmp_tmp_file);
-
+*/
     char buf[40];
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
 #else
-    char file_path[128]="sha1sum ./DICM/";
+    char file_path[128]="sha1sum /tmp/";
 #endif
     strcat(file_path,result[i]);
     FILE *fp=NULL;fp=popen(file_path,"r");
@@ -227,7 +234,6 @@ int main(int argc, char *argv[]) {
     fscanf(fp,"%s",buf);
     pclose(fp);
     printf("%s %s\n",buf,result[i]);
-
     
    //printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
   }
