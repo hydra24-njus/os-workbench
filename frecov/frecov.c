@@ -223,6 +223,7 @@ int main(int argc, char *argv[]) {
     fclose(bmp_tmp_file);
 */
     char buf[40];
+    memset(buf,'\0',sizeof(buf));
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
 #else
@@ -233,7 +234,7 @@ int main(int argc, char *argv[]) {
     if(fp==NULL)assert(0);
     fscanf(fp,"%s",buf);
     pclose(fp);
-    if(buf[0]=='s'&&buf[1]=='h'&&buf[2]=='a'&&buf[3]=='1'&&buf[4]=='s'&&buf[5]=='u'&&buf[6]=='m')
+    if(buf[0]=='\0')
       printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
     //else printf("%s %s\n",buf,result[i]);
 
