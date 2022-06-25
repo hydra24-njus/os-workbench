@@ -183,13 +183,6 @@ int main(int argc, char *argv[]) {
 #else
     char tmp_path[128]="/tmp/DICM/";
 #endif
-    strcat(tmp_path,result[i]);
-    remove(tmp_path);
-    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
-    if(bmp_tmp_file==NULL)assert(0);
-    struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
-    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
-    fclose(bmp_tmp_file);
 
     strcat(tmp_path,result[i]);
     remove(tmp_path);
