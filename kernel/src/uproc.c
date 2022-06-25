@@ -69,6 +69,7 @@ int fork(task_t *task){
   t->pid=pid_alloc();
   t->ppid=task->pid;
   ucreate(t);
+  kmt->spin_lock(&tasklock);
   int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
   void *cr3=t->context[0]->cr3;
@@ -85,6 +86,7 @@ int fork(task_t *task){
     pgmap(t,va,npa);
   }
   pid=t->pid;
+  kmt->spin_unlock(&tasklock);
   return pid;
 }
 int wait(task_t *task,int *status){
