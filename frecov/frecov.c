@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
         strcpy(result[num],filename);
-        printf("%s %s\n",sha,result[NUM]);fflush(stdout);
+        printf("%s %s\n",sha,result[num]);fflush(stdout);
         num++;
       }
     }
