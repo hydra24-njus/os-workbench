@@ -149,11 +149,11 @@ int main(int argc, char *argv[]) {
             }
           }
           else break;
-          if(flag==1){
+        }
+        if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-          printf("%s\n",filename);
-        }
+        printf("%s\n",filename);
       }
     }
   }
