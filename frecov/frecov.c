@@ -12,7 +12,6 @@
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
-const char* sha="d60e7d3d2b47d19418af5b0ba52406b86ec6ef83";
 // Copied from the manual
 struct fat32hdr {
   u8  BS_jmpBoot[3];
@@ -112,7 +111,7 @@ int main(int argc, char *argv[]) {
 
   // TODO: frecov
 
-  char dirpath[]="./DICM/";
+  char dirpath[]="/tmp/DICM/";
   if(access(dirpath,0)==-1)
     if(mkdir(dirpath,0755)==-1)assert(0);
 
@@ -182,7 +181,7 @@ int main(int argc, char *argv[]) {
 #ifdef LOCAL
     char tmp_path[128]="/tmp/DICM/";
 #else
-    char tmp_path[128]="./DICM/";
+    char tmp_path[128]="/tmp/DICM/";
 #endif
     strcat(tmp_path,result[i]);
     remove(tmp_path);
@@ -191,7 +190,7 @@ int main(int argc, char *argv[]) {
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
     fclose(bmp_tmp_file);
-/*
+
     strcat(tmp_path,result[i]);
     remove(tmp_path);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
@@ -227,7 +226,7 @@ int main(int argc, char *argv[]) {
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
 #else
-    char file_path[128]="sha1sum /tmp/";
+    char file_path[128]="sha1sum /tmp/DICM/";
 #endif
     strcat(file_path,result[i]);
     FILE *fp=NULL;fp=popen(file_path,"r");
@@ -236,7 +235,7 @@ int main(int argc, char *argv[]) {
     pclose(fp);
     if(buf[0]=='\0')
       printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
-    //else printf("%s %s\n",buf,result[i]);
+    else printf("%s %s\n",buf,result[i]);
 
    //printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
   }
