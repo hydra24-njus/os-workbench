@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
 
         strcat(tmp_path,result[num]);
         remove(tmp_path);
-        bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
+        struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[num]*clus_sz);
         FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
         if(bmp_tmp_file==NULL)assert(0);
         fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
