@@ -109,6 +109,11 @@ int main(int argc, char *argv[]) {
   struct fat32hdr *hdr = map_disk(argv[1]);
 
   // TODO: frecov
+
+  char dirpath[]="/tmp/DICM/"
+  if(_access(dirpath,0)==-1)_mkdir(dirpath);
+
+
   u32 tot_sec=hdr->BPB_TotSec32;//扇区总数
   u32 offset_sec=hdr->BPB_RsvdSecCnt+hdr->BPB_NumFATs*hdr->BPB_FATSz32;//data开始扇区数
   u32 data_sec=tot_sec-offset_sec;//data总数
