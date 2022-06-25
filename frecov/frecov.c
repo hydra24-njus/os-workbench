@@ -113,9 +113,6 @@ int main(int argc, char *argv[]) {
   // TODO: frecov
 
   char dirpath[]="./DICM/";
-  if(access(dirpath,0)==-1)
-    if(mkdir(dirpath,0755)==-1)assert(0);
-
 
   u32 tot_sec=hdr->BPB_TotSec32;//扇区总数
   u32 offset_sec=hdr->BPB_RsvdSecCnt+hdr->BPB_NumFATs*hdr->BPB_FATSz32;//data开始扇区数
@@ -194,6 +191,7 @@ int main(int argc, char *argv[]) {
     if(bmp_ip->img_size>align){
       //多个簇
       //continue;
+      /*
       fwrite((void*)img_start,align,1,bmp_tmp_file);
       int img_sz=bmp_ip->img_size-align;
       uintptr_t img_current=img_start+align;
@@ -204,7 +202,7 @@ int main(int argc, char *argv[]) {
       }
       if(img_sz>0){
         fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
-      }
+      }*/
     }
     else{
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
