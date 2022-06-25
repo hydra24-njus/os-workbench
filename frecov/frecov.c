@@ -8,7 +8,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#define LOCAL
+//#define LOCAL
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
 
   // TODO: frecov
 
-  char dirpath[]="/tmp/DICM/";
+  char dirpath[]="/tmp/";
   if(access(dirpath,0)==-1)mkdir(dirpath,0755);
 
 
