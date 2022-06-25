@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
   //todo:recover
   uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
   for(int i=0;i<num;i++){
-    printf("%s %s\n",sha,filename);
+    printf("%s %s\n",sha,result[i]);
     /*
     //todo:write to tmp
 #ifdef LOCAL
