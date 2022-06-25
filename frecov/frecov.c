@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
     }
     fclose(bmp_tmp_file);
 
-    char buf[64];
+    char buf[40];
     char file_path[128]="sha1sum /tmp/DICM/";
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
