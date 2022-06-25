@@ -120,15 +120,28 @@ int main(int argc, char *argv[]) {
   uintptr_t end=(uintptr_t)hdr+tot_sec*hdr->BPB_BytsPerSec;
   u8 *used=malloc(tot_clus+2);
   memset(used,0,tot_clus+2);
-  char result[1024][128];
+  char result[1024][128];int num=0;
   memset(result,'\0',sizeof(result));
+  u32 first_clus[1024];
+  memset(first_clus,0,sizof(first_clus));
   for(int i=0;i<tot_clus;i++){
     uintptr_t addr=data_start+i*clus_sz;
     for(int j=0;j<short_entry_cnt;j++){
       struct entry *short_entry=(struct entry *)(addr+j*sizeof(struct entry));
       if(strncmp((char*)short_entry->DIR_Name+8,"BMP",3)==0){//BMP文件
         if(short_entry->DIR_Name[0]==0xE5||short_entry->DIR_FileSize==0)continue;
+        //this if all short entry;
         //printf("%s\n",short_entry->DIR_Name);输出所有文件名。97 right
+
+        first_clus[num]=((((uint)short_entry->DIR_FstClusHI)<<16)|((uint)short_entry->DIR_FstClusLO))-2;
+        struct bmp_header *bmp_fp=data_start+first_clus[num]*clus_sz;
+        if(bmp_fp>=end||strncmp((char*)bmp_fp->type,"BM",2)!=0)continue;
+        used[first_clus[num]]=1;
+
+
+
+
+
         int flag=1;int index=0;char filename[128];
         memset(filename,'\0',sizeof(filename));
         for(int k=j-1;k>=0;k--){
@@ -136,7 +149,7 @@ int main(int argc, char *argv[]) {
           if(long_entry->LDIR_Attr==15&&long_entry->LDIR_Type==0&&long_entry->LDIR_FstClusLO==0){
             flag=0;//
             for(int l=0;l<5;l++){
-              if(long_entry->LDIR_Name1[l]==0xFFff)continue;
+              if(long_entry->LDIR_Name1[l]==0xFFFF)continue;
               filename[index++]=(char)long_entry->LDIR_Name1[l];
             }
             for(int l=0;l<6;l++){
@@ -153,11 +166,21 @@ int main(int argc, char *argv[]) {
         if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-        printf("%s %s\n",sha,filename);
+        strcpy(result[num++],filename);
       }
     }
   }
-
+  //todo:recover
+  for(int i=0;i<num;i++){
+    //todo:write to tmp
+    char buf[64];
+    char file_path[128]="sha1sum /tmp/";
+    strcat(file_path,result[i]);
+    FILE *fp=popen(file_path,"r");
+    fscanf(fp,"%s",buf);
+    pclose(fp);
+    printf("%s %s\n",buf,result[i]);
+  }
 
 
   // file system traversal
