@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
   //todo:recover
   for(int i=0;i<num;i++){
     //todo:write to tmp
-    char tmp_path[128]="/tmp/DICM/";
+    char tmp_path[128]="/tmp/";
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     FILE *bmp_tmp_file=fopen(tmp_path,"a");
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
     fclose(bmp_tmp_file);
 
     char buf[40];
-    char file_path[128]="sha1sum /tmp/DICM/";
+    char file_path[128]="sha1sum /tmp/";
     strcat(file_path,result[i]);
     FILE *fp=popen(file_path,"r");
     fscanf(fp,"%s",buf);
