@@ -212,10 +212,10 @@ int main(int argc, char *argv[]) {
             }
           }
           else{
-            memcpy(before,img_start+before_pos,width);
+            memcpy(before,(void*)(img_start+before_pos),width);
             uintptr_t img_current=img_start+align;
             while(img_sz>=clus_sz){
-              memcpy(current,img_current+current_pos,4096);
+              memcpy(current,(void*)(img_current+current_pos),4096);
               unsigned delta=0;
               for(int k=0;k<width;k++)delta+=abs(current[k]-before[k]);
 
