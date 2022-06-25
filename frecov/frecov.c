@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
   }
   //todo:recover
   for(int i=0;i<num;i++){
-    /*
+    
     //todo:write to tmp
 #ifdef LOCAL
     char tmp_path[128]="/tmp/DICM/";
@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
       fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
     }
     fclose(bmp_tmp_file);
-
+/*
     char buf[40];
 #ifdef LOCAL
     char file_path[128]="sha1sum /tmp/DICM/";
