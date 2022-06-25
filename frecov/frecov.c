@@ -241,8 +241,8 @@ int main(int argc, char *argv[]) {
               if(img_current+before_pos+width>end)break;
               fwrite(img_current,clus_sz,1,bmp_tmp_file);
               before_pos=clus_sz-(clus_sz-current_pos)%width-width;
-              current_pos=wid-(clus_sz-current_pos)%width;
-              memcpy(before,img_current+before_pos,4096);
+              current_pos=width-(clus_sz-current_pos)%width;
+              memcpy(before,(void*)(img_current+before_pos),4096);
               img_current+=clus_sz;
               img_sz-=clus_sz;
             }
