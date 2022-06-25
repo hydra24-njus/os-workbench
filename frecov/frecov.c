@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
   //todo:recover
   for(int i=0;i<num;i++){
     //todo:write to tmp
-    char tmp_path[128]="tmp/DICM";
+    char tmp_path[128]="/tmp/DICM";
     strcat(tmp_path,result[i]);
     struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
     printf("%s\n",tmp_path);
