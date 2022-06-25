@@ -226,11 +226,9 @@ int main(int argc, char *argv[]) {
     if(fp==NULL)assert(0);
     fscanf(fp,"%s",buf);
     pclose(fp);
-    if(buf[0]=='\0')
+    //if(buf[0]=='\0')
       printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
-    else printf("%s %s\n",buf,result[i]);
-
-   //printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
+    //else printf("%s %s\n",buf,result[i]);
   }
 
 
