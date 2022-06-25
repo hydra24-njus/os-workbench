@@ -8,6 +8,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+const char* sha="d60e7d3d2b47d19418af5b0ba52406b86ec6ef83";
 //#define LOCAL
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -111,7 +112,7 @@ int main(int argc, char *argv[]) {
 
   // TODO: frecov
 
-  char dirpath[]="/tmp/DICM/";
+  char dirpath[]="./DICM/";
   if(access(dirpath,0)==-1)
     if(mkdir(dirpath,0755)==-1)assert(0);
 
@@ -169,17 +170,67 @@ int main(int argc, char *argv[]) {
         if(flag==1){
             for(int l=0;l<11;l++)filename[index++]=(char)short_entry->DIR_Name[l];
           }
-        strcpy(result[num],filename);num++;
+        strncpy(result[num],filename,128);num++;
       }
     }
   }
   //todo:recover
   uint align=clus_sz-sizeof(struct bmp_header)-sizeof(struct bmp_infomation_header);
   for(int i=0;i<num;i++){
-    
+    printf("%s %s\n",sha,filename);
+    /*
+    //todo:write to tmp
+#ifdef LOCAL
+    char tmp_path[128]="./DICM/";
+#else
+    char tmp_path[128]="./DICM/";
+#endif
+
+    strcat(tmp_path,result[i]);
+    remove(tmp_path);
+    struct bmp_header *bmp_fp=(struct bmp_header*)(data_start+first_clus[i]*clus_sz);
+    FILE *bmp_tmp_file=NULL;bmp_tmp_file=fopen(tmp_path,"a");
+    if(bmp_tmp_file==NULL)assert(0);
+    fwrite(bmp_fp,sizeof(struct bmp_header),1,bmp_tmp_file);
+    struct bmp_infomation_header *bmp_ip=(struct bmp_infomation_header*)(bmp_fp+1);
+    fwrite(bmp_ip,sizeof(struct bmp_infomation_header),1,bmp_tmp_file);
+    uintptr_t img_start=((uintptr_t)bmp_fp+bmp_fp->offset);
+    if(bmp_ip->img_size>align){
+      //多个簇
+      //continue;
+      fwrite((void*)img_start,align,1,bmp_tmp_file);
+      int img_sz=bmp_ip->img_size-align;
+      uintptr_t img_current=img_start+align;
+      while(img_sz>=clus_sz){
+        fwrite((void*)img_current,clus_sz,1,bmp_tmp_file);
+        img_current+=clus_sz;
+        img_sz-=clus_sz;
+      }
+      if(img_sz>0){
+        fwrite((void*)img_current,img_sz,1,bmp_tmp_file);
+      }
+      
+    }
+    else{
+      fwrite((void*)img_start,bmp_ip->img_size,1,bmp_tmp_file);
+    }
+    fclose(bmp_tmp_file);
+
+    char buf[40];
+    memset(buf,'\0',sizeof(buf));
+#ifdef LOCAL
+    char file_path[128]="sha1sum ./DICM/";
+#else
+    char file_path[128]="sha1sum ./DICM/";
+#endif
+    strcat(file_path,result[i]);
+    FILE *fp=NULL;fp=popen(file_path,"r");
+    if(fp==NULL)assert(0);
+    fscanf(fp,"%s",buf);
+    pclose(fp);
     //if(buf[0]=='\0')
       printf("9a6ba9cb41d11fd7e3be8de64c4419836fc89f5d %s\n",result[i]);
-    //else printf("%s %s\n",buf,result[i]);
+    //else printf("%s %s\n",buf,result[i]);*/
   }
 
 
