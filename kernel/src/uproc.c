@@ -6,8 +6,10 @@
 extern int ucreate(task_t *task);
 extern void teardown(task_t *task);
 extern task_t *cpu_currents[8];
+extern task_t *cpu_last[8];
 extern spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
+#define last cpu_last[cpu_current()]
 int pid_cnt=1;
 int alloc_pid(){
   return pid_cnt++;
@@ -59,12 +61,11 @@ int fork(task_t *task){
   return pid;
 }
 int wait(task_t *task,int *status){
-  return -1;
+  return 0;
 }
 int exit(task_t *task,int status){
   current->status=DEAD;
   for(int i=0;i<task->pgcnt;i++){
-    unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
     pmm->free(task->pa[i]);
     task->va[i]=NULL;
@@ -84,9 +85,20 @@ int getpid(task_t *task){
   return 0;
 }
 int sleep(task_t *task,int seconds){
-  uint64_t wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
-  int i=0;
-  while(wakeuptime>io_read(AM_TIMER_UPTIME).us){printf("sleep%d\n",i++);yield();}
+  kmt->spin_lock(&tasklock);
+  uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
+  current->wakeuptime=iotime+1000000*seconds;
+  debug("[%d]uptime:%d\twakeuptime:%d\n",cpu_current(),iotime/1000000,current->wakeuptime/1000000);
+  last=current;
+  current->status=SLEEPING+ZOMBIE;
+  kmt->spin_unlock(&tasklock);
+  yield();
+  kmt->spin_lock(&tasklock);
+  //printf("%s\t%s\n",last->name,current->name);
+  if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
+  current->status=ZOMBIE;
+  last=NULL;
+  kmt->spin_unlock(&tasklock);
   return 0;
 }
 int64_t uptime(task_t *task){
@@ -96,19 +108,19 @@ int64_t uptime(task_t *task){
 }
 Context *syscall(Event e,Context *c){
   assert(current->cn==1);
-  //panic_on(ienabled()==1,"cli");
-  //iset(true);
+  panic_on(ienabled()==1,"cli");
+  iset(true);
   switch(c->GPRx){
     case SYS_kputc:c->GPRx=kputc(current,c->GPR1);break;
     case SYS_exit:c->GPRx=exit(current,c->GPR1);break;
     case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
     case SYS_uptime:c->GPRx=uptime(current);break;
     case SYS_fork:c->GPRx=fork(current);break;
-    case SYS_wait:c->GPRx=wait(current,(int *)(c->GPR1));break;
+    case SYS_wait:c->GPRx=wait(current,(int *)c->GPR1);break;
     default:assert(0);
   }
-  //panic_on(ienabled()==0,"cli");
-  //iset(false);
+  panic_on(ienabled()==0,"cli");
+  iset(false);
   return NULL;
 }
 void uproc_init(){

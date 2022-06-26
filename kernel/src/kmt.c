@@ -1,9 +1,11 @@
 #include <os.h>
 task_t *cpu_currents[8];
 task_t *cpu_idle[8];
+task_t *cpu_last[8];
 task_t *cpu_header;
 spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
+#define last cpu_last[cpu_current()]
 #define idle cpu_idle[cpu_current()]
 static int ncli[8]={0};
 static int intena[8]={0};
@@ -50,7 +52,16 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
-  if(current->status==RUNNING)current->status=READY;
+  r_panic_on(current==NULL,"current==NULL");
+  r_panic_on(current->status==READY,"current status error(%d)",current->status);
+  if(current->status==RUNNING)current->status=ZOMBIE;
+  if(last&&last!=current){
+    if(last->status!=IDLE){
+    r_panic_on(last->status<ZOMBIE&&last->status!=SLEEPING,"last status error(%d).",last->status);
+    last->status-=ZOMBIE;
+    }
+  }
+  last=NULL;
   current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
@@ -61,8 +72,15 @@ static Context *kmt_schedule(Event ev,Context *context){
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
-    panic_on(p->status==DEAD,"DEAD task in lint-table");
     if(p->status==READY)break;
+    panic_on(p->status==DEAD,"DEAD task in lint-table");
+    if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
+      if(p->wakeuptime!=0){
+        if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
+          p->status-=SLEEPING;
+        }
+      }
+    }
     p=p->next;
   }
   if(p==NULL){
@@ -74,19 +92,13 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
   }
   if(p==NULL||p==current)p=idle;
+  panic_on(last!=NULL,"last!=NULL");
+  last=current;
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
   current->cn--;
-  /*
-  p=cpu_header;
-  while(p!=NULL){
-    printf("(%d)%d->",p->pid,p->status);
-    p=p->next;
-  }
-  printf("\n");
-  */
   spin_unlock(&tasklock);
   return current->context[current->cn];
 }
@@ -94,6 +106,7 @@ const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","id
 void kmt_init(){
   for(int i=0;i<cpu_count();i++){
     task_t *task=pmm->alloc(sizeof(task_t));
+    cpu_last[cpu_current()]=NULL;
     task->status=IDLE;
     task->name=name[i];
     task->next=NULL;
@@ -195,7 +208,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=WAITING;
+    current->status=WAITING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
