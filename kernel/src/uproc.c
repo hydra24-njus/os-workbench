@@ -88,6 +88,7 @@ int sleep(task_t *task,int seconds){
   uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
   current->wakeuptime=iotime+1000000*seconds;
   debug("[%d]uptime:%d\twakeuptime:%d\n",cpu_current(),iotime/1000000,current->wakeuptime/1000000);
+  current->status=READY;
   kmt->spin_unlock(&tasklock);
   while(current->wakeuptime>io_read(AM_TIMER_UPTIME).us)yield();
   return 0;
