@@ -87,6 +87,12 @@ static Context *kmt_schedule(Event ev,Context *context){
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
   current->cn--;
+  p=cpu_header;
+  while(p!=NULL){
+    printf("(%d)%d->",p->pid,p->status);
+    p=p->next;
+  }
+  printf("\n");
   spin_unlock(&tasklock);
   return current->context[current->cn];
 }
