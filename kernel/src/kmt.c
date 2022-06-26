@@ -52,6 +52,7 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
+  /*
   r_panic_on(current==NULL,"current==NULL");
   r_panic_on(current->status==READY,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
@@ -62,6 +63,7 @@ static Context *kmt_context_save(Event ev,Context *context){
     }
   }
   last=NULL;
+  */
   current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
@@ -92,8 +94,8 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
   }
   if(p==NULL||p==current)p=idle;
-  panic_on(last!=NULL,"last!=NULL");
-  last=current;
+  //panic_on(last!=NULL,"last!=NULL");
+  //last=current;
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
