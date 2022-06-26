@@ -64,6 +64,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     panic_on(p->status==DEAD,"DEAD task in lint-table");
     if(p->status==SLEEPING){
       if(p->wakeuptime!=0){
+        printf("awake\n");
         if(io_read(AM_TIMER_UPTIME).us>=p->wakeuptime){
           p->status=READY;
         }
