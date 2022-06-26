@@ -178,6 +178,7 @@ static void teardown(task_t *task){
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
     printf("%d->",tmp->pid);
+    tmp=tmp->next;
   }
   printf("\n");
   return;
