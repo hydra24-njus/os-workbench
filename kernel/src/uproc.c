@@ -10,9 +10,9 @@ extern task_t *cpu_last[8];
 extern spinlock_t tasklock;
 #define current cpu_currents[cpu_current()]
 #define last cpu_last[cpu_current()]
-
+int pid_cnt=1;
 int alloc_pid(){
-  return 0;
+  return pid_cnt++;
 }
 void free_pid(int pid){
 
@@ -125,7 +125,9 @@ void uproc_init(){
   os->on_irq(0,EVENT_SYSCALL,syscall);
   os->on_irq(0,EVENT_PAGEFAULT,pagefault);
   vme_init((void * (*)(int))pmm->alloc,pmm->free);
-  ucreate(pmm->alloc(sizeof(task_t)));
+  task_t *task=pmm->alloc(sizeof(task_t));
+  task->pid=alloc_pid();
+  ucreate(task);
   return;
 }
 MODULE_DEF(uproc) = {
