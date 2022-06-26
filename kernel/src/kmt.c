@@ -79,7 +79,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
       if(p->wakeuptime!=0){
         if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
-          p->status-=SLEEPING;
+          p->status=READY;
         }
       }
     }
@@ -211,7 +211,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=WAITING+ZOMBIE;
+    current->status=WAITING;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
