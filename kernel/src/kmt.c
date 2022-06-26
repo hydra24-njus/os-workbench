@@ -61,7 +61,6 @@ static Context *kmt_schedule(Event ev,Context *context){
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
-    if(p->status==READY)break;
     panic_on(p->status==DEAD,"DEAD task in lint-table");
     if(p->status==SLEEPING){
       if(p->wakeuptime!=0){
@@ -70,6 +69,7 @@ static Context *kmt_schedule(Event ev,Context *context){
         }
       }
     }
+    if(p->status==READY)break;
     p=p->next;
   }
   if(p==NULL){
