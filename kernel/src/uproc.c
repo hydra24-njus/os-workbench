@@ -77,7 +77,7 @@ int wait(task_t *task,int *status){
   current->status=ZOMBIE;
   last=NULL;
   kmt->spin_unlock(&tasklock);
-
+  current->status=READY;
   *status=task->child_val;
   return 0;
 }
