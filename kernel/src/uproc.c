@@ -116,6 +116,7 @@ Context *syscall(Event e,Context *c){
     case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
     case SYS_uptime:c->GPRx=uptime(current);break;
     case SYS_fork:c->GPRx=fork(current);break;
+    case SYS_wait:c->GPRx=wait(current,(int *)(c->GPR1));break;
     default:assert(0);
   }
   panic_on(ienabled()==0,"cli");
