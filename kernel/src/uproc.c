@@ -85,7 +85,8 @@ int getpid(task_t *task){
 }
 int sleep(task_t *task,int seconds){
   uint64_t wakeuptime=io_read(AM_TIMER_UPTIME).us+1000000*seconds;
-  while(wakeuptime>io_read(AM_TIMER_UPTIME).us){printf("sleep\n");yield();}
+  int i=0;
+  while(wakeuptime>io_read(AM_TIMER_UPTIME).us){printf("sleep%d\n",i++);yield();}
   return 0;
 }
 int64_t uptime(task_t *task){
