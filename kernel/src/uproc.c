@@ -39,6 +39,7 @@ int kputc(task_t *task,char ch){
   return 0;
 }
 int fork(task_t *task){
+  task->child_cnt++;
   task_t *t=pmm->alloc(sizeof(task_t));
   t->pid=alloc_pid();
   ucreate(t);
@@ -57,15 +58,40 @@ int fork(task_t *task){
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
   }
+  t->father=task;
   pid=t->pid;
   return pid;
 }
 int wait(task_t *task,int *status){
+  if(task->child_cnt==0)return -1;
+
+  kmt->spin_lock(&tasklock);
+  last=current;
+  current->status=WAITING+ZOMBIE;
+  kmt->spin_unlock(&tasklock);
+
+  yield();
+
+  kmt->spin_lock(&tasklock);
+  if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
+  current->status=ZOMBIE;
+  last=NULL;
+  kmt->spin_unlock(&tasklock);
+
+  *status=task->child_val;
   return 0;
 }
 int exit(task_t *task,int status){
   current->status=DEAD;
+  if(task->father!=NULL){
+    if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
+      task->father->child_val=status;
+      task->father->status-=WAITING;
+      task->father->child_cnt--;
+    }
+  }
   for(int i=0;i<task->pgcnt;i++){
+    unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
     pmm->free(task->pa[i]);
     task->va[i]=NULL;
@@ -111,12 +137,12 @@ Context *syscall(Event e,Context *c){
   panic_on(ienabled()==1,"cli");
   iset(true);
   switch(c->GPRx){
-    case SYS_kputc:c->GPRx=kputc(current,c->GPR1);break;
-    case SYS_exit:c->GPRx=exit(current,c->GPR1);break;
-    case SYS_sleep:c->GPRx=sleep(current,c->GPR1);break;
-    case SYS_uptime:c->GPRx=uptime(current);break;
-    case SYS_fork:c->GPRx=fork(current);break;
-    case SYS_wait:c->GPRx=wait(current,(int *)c->GPR1);break;
+    case SYS_kputc:kputc(current,c->GPR1);break;
+    case SYS_exit:exit(current,c->GPR1);break;
+    case SYS_sleep:sleep(current,c->GPR1);break;
+    case SYS_uptime:uptime(current);break;
+    case SYS_fork:fork(current);break;
+    case SYS_wait:wait(current,(int *)c->GPR1);break;
     default:assert(0);
   }
   panic_on(ienabled()==0,"cli");
