@@ -36,7 +36,7 @@ void ide(void *arg){
   while(1);
 }
 static void os_init() {
-  //ioe_init();
+  ioe_init();
   pmm->init();
   kmt->init();
   dev->init();
