@@ -170,7 +170,6 @@ static void teardown(task_t *task){
     }
     panic_on(head==NULL,"cannot find task");
   }
-  spin_unlock(&tasklock);
   pmm->free(task);
   
   task_t *tmp=cpu_header;
@@ -181,6 +180,7 @@ static void teardown(task_t *task){
     tmp=tmp->next;
   }
   printf("\n");
+  spin_unlock(&tasklock);
   return;
 }
 
