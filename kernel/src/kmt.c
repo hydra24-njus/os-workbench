@@ -69,6 +69,7 @@ static Context *kmt_context_save(Event ev,Context *context){
 static Context *kmt_schedule(Event ev,Context *context){
   spin_lock(&tasklock);
   panic_on(ienabled()==1,"cli");
+  if(ev.event==EVENT_SYSCALL)goto next;
   task_t *p=current->next;
   if(current==idle)p=cpu_header;
   while(p!=NULL){
@@ -95,6 +96,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   panic_on(last!=NULL,"last!=NULL");
   last=current;
   current=p;
+next:
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
