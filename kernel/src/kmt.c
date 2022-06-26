@@ -173,7 +173,7 @@ static void teardown(task_t *task){
     panic_on(head==NULL,"cannot find task");
   }
   pmm->free(task);
-  /*
+  
   task_t *tmp=cpu_header;
   printf("teardown(%d):",task->pid);
   if(tmp==NULL)printf("NULL\n");
@@ -181,7 +181,7 @@ static void teardown(task_t *task){
     printf("%d->",tmp->pid);
     tmp=tmp->next;
   }
-  printf("\n");*/
+  printf("\n");
   spin_unlock(&tasklock);
   return;
 }
