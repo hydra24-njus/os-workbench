@@ -172,6 +172,14 @@ static void teardown(task_t *task){
   }
   spin_unlock(&tasklock);
   pmm->free(task);
+  
+  task_t *tmp=cpu_header;
+  printf("teardown(%d):",task->pid);
+  if(tmp==NULL)printf("NULL\n");
+  while(tmp!=NULL){
+    printf("%d->",tmp->pid);
+  }
+  printf("\n");
   return;
 }
 
