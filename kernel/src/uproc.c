@@ -150,9 +150,9 @@ Context *syscall(Event e,Context *c){
   return NULL;
 }
 void uproc_init(){
+  vme_init((void * (*)(int))pmm->alloc,pmm->free);
   os->on_irq(0,EVENT_SYSCALL,syscall);
   os->on_irq(0,EVENT_PAGEFAULT,pagefault);
-  vme_init((void * (*)(int))pmm->alloc,pmm->free);
   task_t *task=pmm->alloc(sizeof(task_t));
   task->pid=alloc_pid();
   ucreate(task);
