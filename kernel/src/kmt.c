@@ -52,7 +52,6 @@ static void spin_unlock(spinlock_t *lk){
 static Context *kmt_context_save(Event ev,Context *context){
   spin_lock(&tasklock);
   //debug("save\n");
-  /*
   r_panic_on(current==NULL,"current==NULL");
   r_panic_on(current->status==READY,"current status error(%d)",current->status);
   if(current->status==RUNNING)current->status=ZOMBIE;
@@ -63,7 +62,6 @@ static Context *kmt_context_save(Event ev,Context *context){
     }
   }
   last=NULL;
-  */
   current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
@@ -79,7 +77,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
       if(p->wakeuptime!=0){
         if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
-          p->status=READY;
+          p->status-=SLEEPING;
         }
       }
     }
@@ -94,8 +92,8 @@ static Context *kmt_schedule(Event ev,Context *context){
     }
   }
   if(p==NULL||p==current)p=idle;
-  //panic_on(last!=NULL,"last!=NULL");
-  //last=current;
+  panic_on(last!=NULL,"last!=NULL");
+  last=current;
   current=p;
   if(current!=idle)current->status=RUNNING;
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
@@ -173,7 +171,7 @@ static void teardown(task_t *task){
     panic_on(head==NULL,"cannot find task");
   }
   pmm->free(task);
-  /*
+  
   task_t *tmp=cpu_header;
   printf("teardown(%d):",task->pid);
   if(tmp==NULL)printf("NULL\n");
@@ -182,7 +180,6 @@ static void teardown(task_t *task){
     tmp=tmp->next;
   }
   printf("\n");
-*/
   spin_unlock(&tasklock);
   return;
 }
@@ -211,7 +208,7 @@ static void sem_wait(sem_t *sem){
   if(sem->value<0){
     flag=1;
     enqueue(sem,current);
-    current->status=WAITING;
+    current->status=WAITING+ZOMBIE;
   }
   spin_unlock(&sem->lock);
   spin_unlock(&tasklock);
