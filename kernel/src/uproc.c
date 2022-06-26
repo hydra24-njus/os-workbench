@@ -66,6 +66,7 @@ int wait(task_t *task,int *status){
 int exit(task_t *task,int status){
   current->status=DEAD;
   for(int i=0;i<task->pgcnt;i++){
+    unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
     pmm->free(task->pa[i]);
     task->va[i]=NULL;
