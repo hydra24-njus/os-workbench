@@ -108,7 +108,7 @@ void *mmap(task_t *task,void *addr,int length,int prot,int flags){
   return NULL;
 }
 int getpid(task_t *task){
-  return 0;
+  return task->pid;
 }
 int sleep(task_t *task,int seconds){
   kmt->spin_lock(&tasklock);
@@ -142,7 +142,8 @@ Context *syscall(Event e,Context *c){
     case SYS_sleep:sleep(current,c->GPR1);break;
     case SYS_uptime:uptime(current);break;
     case SYS_fork:fork(current);break;
-    case SYS_wait:wait(current,(int *)c->GPR1);break;
+    case SYS_wait:c->GPRx=wait(current,(int *)c->GPR1);break;
+    case SYS_getpid:c->GPRx=getpid(current);break;
     default:assert(0);
   }
   //panic_on(ienabled()==0,"cli");
