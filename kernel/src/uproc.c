@@ -65,6 +65,7 @@ int wait(task_t *task,int *status){
 int exit(task_t *task,int status){
   current->status=DEAD;
   for(int i=0;i<task->pgcnt;i++){
+    map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
     pmm->free(task->pa[i]);
     task->va[i]=NULL;
     task->pa[i]=NULL;
@@ -82,9 +83,6 @@ void *mmap(task_t *task,void *addr,int length,int prot,int flags){
 int getpid(task_t *task){
   return 0;
 }
-void debug_smp(){
-  return;
-}
 int sleep(task_t *task,int seconds){
   kmt->spin_lock(&tasklock);
   uint64_t iotime=io_read(AM_TIMER_UPTIME).us;
@@ -94,7 +92,6 @@ int sleep(task_t *task,int seconds){
   current->status=SLEEPING+ZOMBIE;
   kmt->spin_unlock(&tasklock);
   yield();
-  debug_smp();
   kmt->spin_lock(&tasklock);
   //printf("%s\t%s\n",last->name,current->name);
   if(last->status>=ZOMBIE&&last->status!=DEAD)last->status-=ZOMBIE;
