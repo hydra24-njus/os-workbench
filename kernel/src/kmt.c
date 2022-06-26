@@ -101,7 +101,7 @@ next:
   r_panic_on(current->status!=RUNNING&&current->status!=IDLE,"in schedule,%d",current->status);
   //debug("(%d)schedule:%s\n",cpu_current(),current->name);
   current->cn--;
-  printf("new pid=%d",current->pid);
+  //printf("new pid=%d",current->pid);
   spin_unlock(&tasklock);
   return current->context[current->cn];
 }
