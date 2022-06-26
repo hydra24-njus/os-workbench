@@ -91,9 +91,6 @@ int sleep(task_t *task,int seconds){
   current->status=SLEEPING;
   kmt->spin_unlock(&tasklock);
   yield();
-  kmt->spin_lock(&tasklock);
-  //printf("%s\t%s\n",last->name,current->name);
-  kmt->spin_unlock(&tasklock);
   return 0;
 }
 int64_t uptime(task_t *task){
