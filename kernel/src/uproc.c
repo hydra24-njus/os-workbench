@@ -44,12 +44,12 @@ int fork(task_t *task){
   t->pid=alloc_pid();
   ucreate(t);
   int pid=0;
-  uintptr_t rsp0=t->context[0]->rsp0;
-  void *cr3=t->context[0]->cr3;
-  memcpy(t->context[0],task->context[0],sizeof(Context));
-  t->context[0]->rsp0=rsp0;
-  t->context[0]->cr3=cr3;
-  t->context[0]->GPRx=0;
+  uintptr_t rsp0=t->context[0].rsp0;
+  void *cr3=t->context[0].cr3;
+  t->context[0]=task->context[0];
+  t->context[0].rsp0=rsp0;
+  t->context[0].cr3=cr3;
+  t->context[0].GPRx=0;
   for(int i=0;i<task->pgcnt;i++){
     int sz=task->as.pgsize;
     void *va=task->va[i];
@@ -82,7 +82,7 @@ int wait(task_t *task,int *status){
   return 0;
 }
 int exit(task_t *task,int status){
-  current->status=DEAD;
+  task->status=DEAD;
   if(task->father!=NULL){
     if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
       task->father->child_val=status;

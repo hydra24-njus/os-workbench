@@ -62,7 +62,7 @@ static Context *kmt_context_save(Event ev,Context *context){
     }
   }
   last=NULL;
-  current->context[current->cn++]=context;
+  current->context[current->cn++]=*context;
   spin_unlock(&tasklock);
   return NULL;
 }
@@ -104,7 +104,7 @@ next:
   current->cn--;
   //printf("new pid=%d",current->pid);
   spin_unlock(&tasklock);
-  return current->context[current->cn];
+  return &current->context[current->cn];
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
@@ -117,7 +117,7 @@ void kmt_init(){
     cpu_idle[i]=task;
     cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
-    task->context[0]=kcontext(stack,NULL,NULL);
+    task->context[0]=*kcontext(stack,NULL,NULL);
     task->cn=1;
   }
   spin_init(&tasklock,"kmtlock");
@@ -134,7 +134,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
     cpu_header->next=task;
   }
   Area stack={&task->context+1,task+1};
-  task->context[0]=kcontext(stack,entry,arg);
+  task->context[0]=*kcontext(stack,entry,arg);
   task->cn=1;
   spin_unlock(&tasklock);
   return 0;
@@ -151,7 +151,7 @@ int ucreate(task_t *task){
   }
   protect(&task->as);
   Area stack={&task->context+1,task+1};
-  task->context[0]=ucontext(&task->as,stack,task->as.area.start);
+  task->context[0]=*ucontext(&task->as,stack,task->as.area.start);
   task->cn=1;
   spin_unlock(&tasklock);
   return 0;
