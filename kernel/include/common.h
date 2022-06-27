@@ -63,7 +63,7 @@ enum{
 };
 struct task {
   // TODO
-  //union{
+  union{
     struct {
     int status,pid;
     int child_cnt,child_val;
@@ -76,8 +76,8 @@ struct task {
     struct task *next;
     int cn;
     Context   context[4];
-  //};
-  uint8_t stack[4096];
+  };
+  uint8_t stack[8192];
   };
 };
 
