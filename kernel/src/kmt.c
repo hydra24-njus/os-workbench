@@ -145,8 +145,9 @@ int ucreate(task_t *task){
   task->name="user task";
   if(cpu_header==NULL)cpu_header=task;
   else{
-    task->next=cpu_header->next;
-    cpu_header->next=task;
+    task_t *tail=cpu_header;
+    while(tail->next!=NULL)tail=tail->next;
+    tail->next=task;task->next=NULL;
   }
   protect(&task->as);
   Area stack={&task->context+1,task+1};

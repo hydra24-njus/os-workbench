@@ -134,7 +134,7 @@ int64_t uptime(task_t *task){
 }
 Context *syscall(Event e,Context *c){
   assert(current->cn==1);
-  //panic_on(ienabled()==1,"cli");
+  panic_on(ienabled()==1,"cli");
   //iset(true);
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
