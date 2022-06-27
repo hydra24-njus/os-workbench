@@ -148,7 +148,7 @@ Context *syscall(Event e,Context *c){
     case SYS_uptime:uptime(current);break;
     case SYS_fork:fork(current);break;
     case SYS_wait:c->GPRx=wait(current,(int *)c->GPR1);break;
-    case SYS_getpid:c->GPRx=getpid(current);break;
+    case SYS_getpid:c->GPRx=getpid(current);printf("GPRx=%d\n",c->GPRx);break;
     default:assert(0);
   }
   //panic_on(ienabled()==0,"cli");
