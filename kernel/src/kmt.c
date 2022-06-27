@@ -139,6 +139,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   return 0;
 }
 int ucreate(task_t *task){
+  memset(task,0,sizeof(task_t));
   spin_lock(&tasklock);
   task->status=READY;
   task->name="user task";
