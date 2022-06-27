@@ -74,8 +74,8 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(current==idle)p=cpu_header;
   while(p!=NULL){
     if(p->status==READY)break;
-    if(p->status==DEAD)continue;
-    panic_on(p->status==DEAD,"DEAD task in lint-table");
+    //if(p->status==DEAD)continue;
+    //panic_on(p->status==DEAD,"DEAD task in lint-table");
     if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
       if(p->wakeuptime!=0){
         if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
