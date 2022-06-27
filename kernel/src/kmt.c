@@ -177,7 +177,7 @@ static void teardown(task_t *task){
   pmm->free(task);
   
   task_t *tmp=cpu_header;
-  printf("teardown(%d):",task->pid);
+  printf("teardown(%d,%d):",task->pid,task->father->pid);
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
     printf("(%d,%d)",tmp->status,tmp->child_cnt);
