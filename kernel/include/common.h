@@ -77,7 +77,7 @@ struct task {
     int cn;
     Context   context[4];
   };
-  uint8_t stack[8192];
+  uint8_t stack[4096];
   };
 };
 
