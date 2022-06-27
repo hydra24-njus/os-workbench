@@ -96,6 +96,7 @@ int exit(task_t *task,int status){
       printf("after=%d\n",task->father->child_cnt);
       if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
+    else task->father->child_cnt--;
   }
   unprotect(&task->as);
   for(int i=0;i<task->pgcnt;i++){
