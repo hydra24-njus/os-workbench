@@ -86,8 +86,8 @@ int exit(task_t *task,int status){
   if(task->father!=NULL){
     if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
       task->father->child_val=status;
-      task->father->status-=WAITING;
       task->father->child_cnt--;
+      if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
   }/*
   for(int i=0;i<task->pgcnt;i++){
