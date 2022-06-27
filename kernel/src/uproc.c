@@ -41,6 +41,7 @@ int kputc(task_t *task,char ch){
 int fork(task_t *task){
   task->child_cnt++;
   task_t *t=pmm->alloc(sizeof(task_t));
+  t->father=task;
   ucreate(t);
   t->pid=alloc_pid();
   int pid=0;
@@ -59,7 +60,6 @@ int fork(task_t *task){
     pgmap(t,va,npa);
     t->va[i]=va;t->pa[i]=npa;
   }
-  t->father=task;
   pid=t->pid;
   return pid;
 }
