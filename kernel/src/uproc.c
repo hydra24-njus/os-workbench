@@ -112,6 +112,7 @@ void *mmap(task_t *task,void *addr,int length,int prot,int flags){
   return NULL;
 }
 int getpid(task_t *task){
+  printf("pid=%d\n",task->pid);
   return task->pid;
 }
 int sleep(task_t *task,int seconds){
