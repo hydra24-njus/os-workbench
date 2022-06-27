@@ -50,6 +50,7 @@ int fork(task_t *task){
   t->context[0].rsp0=rsp0;
   t->context[0].cr3=cr3;
   t->context[0].GPRx=0;
+  task->context[0].GPRx=t->pid;
   for(int i=0;i<task->pgcnt;i++){
     int sz=task->as.pgsize;
     void *va=task->va[i];
