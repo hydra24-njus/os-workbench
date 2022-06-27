@@ -139,8 +139,8 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
   return 0;
 }
 int ucreate(task_t *task){
-  task_t *father=task->father;
-  int pid=task->pid;
+  //task_t *father=task->father;
+  //int pid=task->pid;
   memset(task,0,sizeof(task_t));
   spin_lock(&tasklock);
   task->status=READY;
@@ -154,7 +154,7 @@ int ucreate(task_t *task){
   Area stack={&task->context+1,task+1};
   task->context[0]=ucontext(&task->as,stack,task->as.area.start);
   task->cn=1;
-
+/*
   task_t *tmp=cpu_header;
   printf("ucreate(pid=%d,ppid=%d):\n\t",pid,father->pid);
   if(tmp==NULL)printf("NULL\n");
@@ -164,7 +164,7 @@ int ucreate(task_t *task){
     tmp=tmp->next;
   }
   printf("\n");
-
+*/
   spin_unlock(&tasklock);
   return 0;
 }
@@ -188,7 +188,7 @@ static void teardown(task_t *task){
     panic_on(head==NULL,"cannot find task");
   }
   pmm->free(task);
-  
+  /*
   task_t *tmp=cpu_header;
   printf("teardown(pid=%d,ppid=%d):\n\t",task->pid,task->father->pid);
   if(tmp==NULL)printf("NULL\n");
@@ -198,7 +198,7 @@ static void teardown(task_t *task){
     tmp=tmp->next;
   }
   printf("\n");
-
+*/
   spin_unlock(&tasklock);
   return;
 }

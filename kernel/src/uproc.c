@@ -87,13 +87,13 @@ int wait(task_t *task,int *status){
 int exit(task_t *task,int status){
   current->status=DEAD;
 
-    printf("exit-wait:pid=%d,ppid=%d,child_cnt=%d\n",task->pid,task->father->pid,task->father->child_cnt);
+    //printf("exit-wait:pid=%d,ppid=%d,child_cnt=%d\n",task->pid,task->father->pid,task->father->child_cnt);
   if(task->father!=(void*)0x12345678){
     if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
       task->father->child_val=status;
-      printf("before=%d\n",task->father->child_cnt);
+      //printf("before=%d\n",task->father->child_cnt);
       task->father->child_cnt--;
-      printf("after=%d\n",task->father->child_cnt);
+      //printf("after=%d\n",task->father->child_cnt);
       if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
     else task->father->child_cnt--;
