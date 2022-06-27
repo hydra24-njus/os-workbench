@@ -179,7 +179,7 @@ static void teardown(task_t *task){
   printf("teardown(%d):",task->pid);
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
-    printf("(%d)",tmp->status);
+    printf("(%d,%d)",tmp->status,tmp->child_cnt);
     printf("%d->",tmp->pid);
     tmp=tmp->next;
   }
