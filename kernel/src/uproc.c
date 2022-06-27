@@ -41,8 +41,8 @@ int kputc(task_t *task,char ch){
 int fork(task_t *task){
   task->child_cnt++;
   task_t *t=pmm->alloc(sizeof(task_t));
-  t->pid=alloc_pid();
   ucreate(t);
+  t->pid=alloc_pid();
   int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
   void *cr3=t->context[0]->cr3;
