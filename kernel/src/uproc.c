@@ -86,7 +86,7 @@ int wait(task_t *task,int *status){
 }
 int exit(task_t *task,int status){
   current->status=DEAD;
-  if(task->father!=NULL){
+  if(task->father!=(void*)0x12345678){
     printf("exit-wait:pid=%d,ppid=%d\n",task->pid,task->father->pid);
     if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
       task->father->child_val=status;
@@ -162,7 +162,7 @@ void uproc_init(){
   int pid=alloc_pid();
   task->pid=pid;task->father=NULL;
   ucreate(task);
-  task->pid=pid;task->father=NULL;
+  task->pid=pid;task->father=(void*)0x12345678;
 
   return;
 }
