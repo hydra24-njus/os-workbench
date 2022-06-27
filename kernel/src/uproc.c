@@ -64,6 +64,7 @@ int fork(task_t *task){
   return pid;
 }
 int wait(task_t *task,int *status){
+  *status=task->child_val;
   if(task->child_cnt==0)return -1;
 
   kmt->spin_lock(&tasklock);
