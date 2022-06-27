@@ -94,7 +94,7 @@ int exit(task_t *task,int status){
       printf("before=%d\n",task->father->child_cnt);
       task->father->child_cnt--;
       printf("after=%d\n",task->father->child_cnt);
-      if(task->child_cnt==0)task->father->status-=WAITING;
+      if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
   }
   unprotect(&task->as);
