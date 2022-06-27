@@ -90,14 +90,14 @@ int exit(task_t *task,int status){
       task->father->status-=WAITING;
       task->father->child_cnt--;
     }
-  }/*
+  }
   for(int i=0;i<task->pgcnt;i++){
     //unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
     pmm->free(task->pa[i]);
     task->va[i]=NULL;
     task->pa[i]=NULL;
-  }*/
+  }
   task->pgcnt=0;
   kmt->teardown(task);
   return 0;
