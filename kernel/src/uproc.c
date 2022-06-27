@@ -64,7 +64,7 @@ int fork(task_t *task){
 }
 int wait(task_t *task,int *status){
   if(task->child_cnt==0)return -1;
-
+  int before=*status;int after=0;
   kmt->spin_lock(&tasklock);
   last=current;
   current->status=WAITING+ZOMBIE;
@@ -79,6 +79,8 @@ int wait(task_t *task,int *status){
   kmt->spin_unlock(&tasklock);
   current->status=READY;
   *status=task->child_val;
+  after=*status;
+  printf("before=%d;after=%d\n",before,after);
   return 0;
 }
 int exit(task_t *task,int status){
