@@ -89,7 +89,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     p=cpu_header;
     while(p!=NULL){
       if(p->status==READY)break;
-      panic_on(p->status==DEAD,"DEAD task in lint-table");
+      //panic_on(p->status==DEAD,"DEAD task in lint-table");
       p=p->next;
     }
   }
