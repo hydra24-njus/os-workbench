@@ -159,8 +159,11 @@ void uproc_init(){
   os->on_irq(0,EVENT_SYSCALL,syscall);
   os->on_irq(0,EVENT_PAGEFAULT,pagefault);
   task_t *task=pmm->alloc(sizeof(task_t));
-  task->pid=alloc_pid();
+  int pid=alloc_pid();
+  task->pid=pid;task->father=NULL;
   ucreate(task);
+  task->pid=pid;task->father=NULL;
+
   return;
 }
 MODULE_DEF(uproc) = {
