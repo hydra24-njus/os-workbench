@@ -91,7 +91,9 @@ int exit(task_t *task,int status){
       task->father->child_cnt--;
       if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
-  }/*
+  }
+  printf("status=%d\n",status);
+  /*
   for(int i=0;i<task->pgcnt;i++){
     //unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
