@@ -57,6 +57,7 @@ int fork(task_t *task){
     void *npa=pmm->alloc(sz);
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
+    t->va[i]=va;t->pa[i]=npa;
   }
   t->father=task;
   pid=t->pid;
