@@ -62,7 +62,7 @@ static Context *kmt_context_save(Event ev,Context *context){
     }
   }
   last=NULL;
-  current->context[current->cn++]=*context;
+  current->context[current->cn++]=context;
   spin_unlock(&tasklock);
   return NULL;
 }
@@ -74,8 +74,7 @@ static Context *kmt_schedule(Event ev,Context *context){
   if(current==idle)p=cpu_header;
   while(p!=NULL){
     if(p->status==READY)break;
-    //if(p->status==DEAD)continue;
-    //panic_on(p->status==DEAD,"DEAD task in lint-table");
+    panic_on(p->status==DEAD,"DEAD task in lint-table");
     if(p->status==SLEEPING||p->status==SLEEPING+ZOMBIE){
       if(p->wakeuptime!=0){
         if(io_read(AM_TIMER_UPTIME).us>p->wakeuptime){
@@ -89,7 +88,7 @@ static Context *kmt_schedule(Event ev,Context *context){
     p=cpu_header;
     while(p!=NULL){
       if(p->status==READY)break;
-      //panic_on(p->status==DEAD,"DEAD task in lint-table");
+      panic_on(p->status==DEAD,"DEAD task in lint-table");
       p=p->next;
     }
   }
@@ -104,7 +103,7 @@ next:
   current->cn--;
   //printf("new pid=%d",current->pid);
   spin_unlock(&tasklock);
-  return &current->context[current->cn];
+  return current->context[current->cn];
 }
 const char* name[8]={"idle0","idle1","idle2","idle3","idle4","idle5","idle6","idle7"};
 void kmt_init(){
@@ -117,7 +116,7 @@ void kmt_init(){
     cpu_idle[i]=task;
     cpu_currents[i]=task;
     Area stack={&task->context+1,task+1};
-    task->context[0]=*kcontext(stack,NULL,NULL);
+    task->context[0]=kcontext(stack,NULL,NULL);
     task->cn=1;
   }
   spin_init(&tasklock,"kmtlock");
@@ -134,7 +133,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
     cpu_header->next=task;
   }
   Area stack={&task->context+1,task+1};
-  task->context[0]=*kcontext(stack,entry,arg);
+  task->context[0]=kcontext(stack,entry,arg);
   task->cn=1;
   spin_unlock(&tasklock);
   return 0;
@@ -145,26 +144,13 @@ int ucreate(task_t *task){
   task->name="user task";
   if(cpu_header==NULL)cpu_header=task;
   else{
-    task_t *tail=cpu_header;
-    while(tail->next!=NULL)tail=tail->next;
-    tail->next=task;task->next=NULL;
+    task->next=cpu_header->next;
+    cpu_header->next=task;
   }
   protect(&task->as);
   Area stack={&task->context+1,task+1};
-  task->context[0]=*ucontext(&task->as,stack,task->as.area.start);
+  task->context[0]=ucontext(&task->as,stack,task->as.area.start);
   task->cn=1;
-
-
-  task_t *tmp=cpu_header;
-  printf("teardown(%d):",task->pid);
-  if(tmp==NULL)printf("NULL\n");
-  while(tmp!=NULL){
-    printf("%d->",tmp->pid);
-    tmp=tmp->next;
-  }
-  printf("\n");
-
-
   spin_unlock(&tasklock);
   return 0;
 }

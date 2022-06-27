@@ -44,13 +44,12 @@ int fork(task_t *task){
   t->pid=alloc_pid();
   ucreate(t);
   int pid=0;
-  uintptr_t rsp0=t->context[0].rsp0;
-  void *cr3=t->context[0].cr3;
-  t->context[0]=task->context[task->cn];
-  t->context[0].rsp0=rsp0;
-  t->context[0].cr3=cr3;
-  t->context[0].GPRx=0;
-  task->context[0].GPRx=t->pid;
+  uintptr_t rsp0=t->context[0]->rsp0;
+  void *cr3=t->context[0]->cr3;
+  memcpy(t->context[0],task->context[0],sizeof(Context));
+  t->context[0]->rsp0=rsp0;
+  t->context[0]->cr3=cr3;
+  t->context[0]->GPRx=0;
   for(int i=0;i<task->pgcnt;i++){
     int sz=task->as.pgsize;
     void *va=task->va[i];
@@ -58,8 +57,6 @@ int fork(task_t *task){
     void *npa=pmm->alloc(sz);
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
-    t->va[i]=va;
-    t->pa[i]=npa;
   }
   t->father=task;
   pid=t->pid;
@@ -67,7 +64,7 @@ int fork(task_t *task){
 }
 int wait(task_t *task,int *status){
   if(task->child_cnt==0)return -1;
-  int before=*status;int after=0;
+
   kmt->spin_lock(&tasklock);
   last=current;
   current->status=WAITING+ZOMBIE;
@@ -82,21 +79,17 @@ int wait(task_t *task,int *status){
   kmt->spin_unlock(&tasklock);
   current->status=READY;
   *status=task->child_val;
-  after=*status;
-  printf("before=%d;after=%d\n",before,after);
   return 0;
 }
 int exit(task_t *task,int status){
-  task->status=DEAD;
+  current->status=DEAD;
   if(task->father!=NULL){
     if(task->father->status==WAITING||task->father->status==WAITING+ZOMBIE){
       task->father->child_val=status;
+      task->father->status-=WAITING;
       task->father->child_cnt--;
-      if(task->father->child_cnt==0)task->father->status-=WAITING;
     }
-  }
-  printf("status=%d\n",status);
-  /*
+  }/*
   for(int i=0;i<task->pgcnt;i++){
     //unprotect(&task->as);
     map(&task->as,task->va[i],task->pa[i],MMAP_NONE);
@@ -104,8 +97,8 @@ int exit(task_t *task,int status){
     task->va[i]=NULL;
     task->pa[i]=NULL;
   }*/
-  //task->pgcnt=0;
-  //kmt->teardown(task);
+  task->pgcnt=0;
+  kmt->teardown(task);
   return 0;
 }
 int kill(task_t *task,int pid){
@@ -115,7 +108,6 @@ void *mmap(task_t *task,void *addr,int length,int prot,int flags){
   return NULL;
 }
 int getpid(task_t *task){
-  printf("pid=%d\n",task->pid);
   return task->pid;
 }
 int sleep(task_t *task,int seconds){
@@ -142,7 +134,7 @@ int64_t uptime(task_t *task){
 }
 Context *syscall(Event e,Context *c){
   assert(current->cn==1);
-  panic_on(ienabled()==1,"cli");
+  //panic_on(ienabled()==1,"cli");
   //iset(true);
   switch(c->GPRx){
     case SYS_kputc:kputc(current,c->GPR1);break;
@@ -151,7 +143,7 @@ Context *syscall(Event e,Context *c){
     case SYS_uptime:uptime(current);break;
     case SYS_fork:fork(current);break;
     case SYS_wait:c->GPRx=wait(current,(int *)c->GPR1);break;
-    case SYS_getpid:c->GPRx=getpid(current);printf("GPRx=%d\n",c->GPRx);break;
+    case SYS_getpid:c->GPRx=getpid(current);break;
     default:assert(0);
   }
   //panic_on(ienabled()==0,"cli");
