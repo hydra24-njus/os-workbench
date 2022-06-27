@@ -47,7 +47,6 @@ int fork(task_t *task){
   uintptr_t rsp0=t->context[0].rsp0;
   void *cr3=t->context[0].cr3;
   t->context[0]=task->context[0];
-  t->context[0]=task->context[0];
   t->context[0].rsp0=rsp0;
   t->context[0].cr3=cr3;
   t->context[0].GPRx=0;
@@ -58,6 +57,8 @@ int fork(task_t *task){
     void *npa=pmm->alloc(sz);
     memcpy(npa,pa,sz);
     pgmap(t,va,npa);
+    t->va[i]=va;
+    t->pa[i]=npa;
   }
   t->father=task;
   pid=t->pid;
