@@ -97,8 +97,8 @@ int exit(task_t *task,int status){
     task->va[i]=NULL;
     task->pa[i]=NULL;
   }*/
-  task->pgcnt=0;
-  kmt->teardown(task);
+  //task->pgcnt=0;
+  //kmt->teardown(task);
   return 0;
 }
 int kill(task_t *task,int pid){
