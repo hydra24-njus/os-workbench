@@ -156,7 +156,7 @@ int ucreate(task_t *task){
   task->cn=1;
 
   task_t *tmp=cpu_header;
-  printf("ucreate(%d,%d):\n",pid,father->pid);
+  printf("ucreate(%d,%d):\n\t",pid,father->pid);
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
     printf("(%d,%d)",tmp->status,tmp->child_cnt);
@@ -190,7 +190,7 @@ static void teardown(task_t *task){
   pmm->free(task);
   
   task_t *tmp=cpu_header;
-  printf("teardown(%d,%d):",task->pid,task->father->pid);
+  printf("teardown(%d,%d):\n\t",task->pid,task->father->pid);
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
     printf("(%d,%d)",tmp->status,tmp->child_cnt);
