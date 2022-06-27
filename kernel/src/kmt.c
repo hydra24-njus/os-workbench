@@ -153,6 +153,18 @@ int ucreate(task_t *task){
   Area stack={&task->context+1,task+1};
   task->context[0]=*ucontext(&task->as,stack,task->as.area.start);
   task->cn=1;
+
+
+  task_t *tmp=cpu_header;
+  printf("teardown(%d):",task->pid);
+  if(tmp==NULL)printf("NULL\n");
+  while(tmp!=NULL){
+    printf("%d->",tmp->pid);
+    tmp=tmp->next;
+  }
+  printf("\n");
+
+
   spin_unlock(&tasklock);
   return 0;
 }
