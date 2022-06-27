@@ -42,6 +42,7 @@ int fork(task_t *task){
   task->child_cnt++;
   task_t *t=pmm->alloc(sizeof(task_t));
   t->pid=alloc_pid();
+  t->father=task;
   ucreate(t);
   int pid=0;
   uintptr_t rsp0=t->context[0]->rsp0;
