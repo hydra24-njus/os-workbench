@@ -140,6 +140,7 @@ static int kcreate(task_t *task,const char *name,void (*entry)(void *arg),void *
 }
 int ucreate(task_t *task){
   task_t *father=task->father;
+  int pid=task->pid;
   memset(task,0,sizeof(task_t));
   spin_lock(&tasklock);
   task->status=READY;
@@ -155,7 +156,7 @@ int ucreate(task_t *task){
   task->cn=1;
 
   task_t *tmp=cpu_header;
-  printf("ucreate(%d,%d):",task->pid,father->pid);
+  printf("ucreate(%d,%d):\n",pid,father->pid);
   if(tmp==NULL)printf("NULL\n");
   while(tmp!=NULL){
     printf("(%d,%d)",tmp->status,tmp->child_cnt);
