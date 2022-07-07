@@ -40,13 +40,13 @@ static void os_init() {
   pmm->init();
   kmt->init();
   //dev->init();
-  uproc->init();
+  //uproc->init();
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
 }
 static void os_run() {
   iset(true);
-  while (1);
+  while (1)printf("hello\n");
 }
 Context *os_trap(Event ev, Context *context){
   panic_on(ienabled()==1,"cli");
