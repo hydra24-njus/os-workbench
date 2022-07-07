@@ -41,8 +41,8 @@ static void os_init() {
   kmt->init();
   dev->init();
   //uproc->init();
-  //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
-  //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
+  kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
+  kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
 }
 static void os_run() {
   iset(true);
