@@ -39,14 +39,14 @@ static void os_init() {
   ioe_init();
   pmm->init();
   kmt->init();
-  //dev->init();
+  dev->init();
   //uproc->init();
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty1");
   //kmt->create(task_alloc(), "tty_reader", tty_reader, "tty2");
 }
 static void os_run() {
   iset(true);
-  while (1)printf("hello\n");
+  while (1);
 }
 Context *os_trap(Event ev, Context *context){
   panic_on(ienabled()==1,"cli");
