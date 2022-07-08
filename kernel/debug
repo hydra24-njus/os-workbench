@@ -2,6 +2,7 @@
 
 make && \
 qemu-system-x86_64 \
+	-nographic \
 	-serial none \
 	-machine accel=tcg \
 	-smp 1 \
