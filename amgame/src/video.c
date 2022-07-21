@@ -38,8 +38,8 @@ void draw_action(int i,int j){
     for (int x = 0; x * SIDE <= w; x ++) {
     for (int y = 0; y * SIDE <= h; y++) {
       if (x!=i||y!=j)
-        draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0xffffff); // white
-      else draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0x000000); 
+        draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0x000000); // white
+      else draw_tile(x * SIDE, y * SIDE, SIDE, SIDE, 0xffffff); 
     }
   }
 }

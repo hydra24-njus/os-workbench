@@ -8,7 +8,7 @@ int main(const char *args) {
   puts("\"\n");
 
   splash();
-  puts("Press any key to see its key code...\n");
+  //puts("Press any key to see its key code...\n");
   while (1) {
     char ch=read_key();
     game_action(ch);
