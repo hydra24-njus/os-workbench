@@ -10,7 +10,7 @@ qemu-system-x86_64 \
 	-drive format=raw,file=build/kernel-x86_64-qemu &
 pid=$!
 
-gdb -x build/kernel-x86_64-qemu\
+gdb -x build/kernel-x86_64-qemu.elf\
 	-ex "target remot localhost:1234" \
 	-ex "set confirm off" \
 	-ex "file build/kernel-x86_64-qemu.elf" 
